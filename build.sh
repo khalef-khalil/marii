@@ -5,8 +5,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
 MAIN="${MAIN:-main}"
+OUTPUT_PDF="${OUTPUT_PDF:-Mariem_ElWedani_PFE.pdf}"
 BUILD_DIR="$ROOT/build"
-PDF_OUT="$ROOT/${MAIN}.pdf"
+PDF_OUT="$ROOT/$OUTPUT_PDF"
 
 clean_aux() {
   rm -rf "$BUILD_DIR"
@@ -23,8 +24,8 @@ clean_aux() {
 
 usage() {
   echo "Usage: $0 [build|clean]" >&2
-  echo "  build (default) — compile ${MAIN}.tex to ${MAIN}.pdf and remove auxiliary files" >&2
-  echo "  clean           — remove auxiliary files and ${MAIN}.pdf" >&2
+  echo "  build (default) — compile ${MAIN}.tex to ${OUTPUT_PDF} and remove auxiliary files" >&2
+  echo "  clean           — remove auxiliary files and ${OUTPUT_PDF}" >&2
 }
 
 build() {
@@ -53,7 +54,8 @@ case "${1:-build}" in
   clean)
     clean_aux
     rm -f "$PDF_OUT"
-    echo "Cleaned auxiliary files and removed ${MAIN}.pdf"
+    rm -f "$ROOT/main.pdf"
+    echo "Cleaned auxiliary files and removed ${OUTPUT_PDF}"
     ;;
   -h | --help | help)
     usage
