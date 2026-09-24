@@ -1,0 +1,87 @@
+\chapter{Recommandations et perspectives}
+\label{chap:perspectives}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+Ce chapitre tire les enseignements transversaux du travail, formule
+des recommandations pratiques pour la détection multi-étiquettes des
+émotions, et ouvre les perspectives de recherche.
+
+\section{Enseignements transversaux}
+\label{sec:persp-enseignements}
+
+Trois constats dépassent le cadre de HAKE-MER. D'abord,
+\textbf{l'effet d'une composante architecturale dépend fortement du
+backbone} : la hiérarchie seule améliore RoBERTa mais dégrade
+DistilBERT — une évaluation mono-backbone aurait conduit à des
+conclusions erronées. Ensuite, \textbf{les choix de prétraitement et
+d'initialisation peuvent dominer l'effet architectural} s'ils ne sont
+pas contrôlés (chapitre 4, leçons méthodologiques). Enfin, \textbf{les
+métriques globales masquent l'essentiel} : sans le F1 par classe et
+l'analyse des confusions, l'échec persistant sur les classes quasi
+vides et la difficulté de la frontière avec \emph{neutral} seraient
+restés invisibles.
+
+\section{Recommandations pratiques}
+\label{sec:persp-recommandations}
+
+Pour un praticien souhaitant déployer une détection multi-étiquettes
+des émotions :
+
+\begin{itemize}
+\item \textbf{Configuration recommandée} : M1+M2+M3 (hiérarchie +
+  attention croisée + lexique NRC) sur RoBERTa si la ressource de
+  calcul le permet ; à budget contraint, M1+M2+M3 sur DistilBERT
+  offre le meilleur compromis (F1-macro 0,499 pour un coût
+  d'entraînement moitié moindre) ;
+\item \textbf{Toujours évaluer sur plusieurs backbones} et à budget
+  strictement constant avant de conclure à l'apport d'une
+  composante ;
+\item \textbf{Choisir la ressource externe par alignement
+  taxonomique} : un lexique catégoriel aligné sur les étiquettes
+  cibles rapporte plus qu'une ressource sémantiquement plus riche
+  mais mal alignée ;
+\item \textbf{Surveiller le F1 par classe} : les moyennes globales ne
+  suffisent pas pour un déploiement responsable, en particulier si
+  les classes rares portent l'enjeu applicatif.
+\end{itemize}
+
+\section{Perspectives de recherche}
+\label{sec:persp-recherche}
+
+\begin{itemize}
+\item \textbf{Traitement du déséquilibre.} Remplacer l'entropie
+  croisée uniforme par des objectifs sensibles à la distribution —
+  perte focale \cite{lin2017focal}, perte équilibrée en distribution
+  \cite{wu2020distribution,huang2021balancing} — et calibrer des
+  seuils de décision par émotion : les leviers les plus prometteurs
+  pour les classes rares, non exploités ici ;
+\item \textbf{Module d'enrichissement « riche ».} Passer du biais
+  global sur les requêtes à une agrégation de connaissance au niveau
+  des phrases et à une fusion adaptative par émotion, susceptible de
+  mieux exploiter les ressources dimensionnelles comme SenticNet ;
+\item \textbf{Validation externe.} Répliquer l'ablation sur
+  SemEval-2018 Tâche~1 \cite{mohammad2018semeval} (y compris ses
+  sous-ensembles arabe et espagnol) et avec plusieurs graines
+  aléatoires, pour tester la généralisation et la significativité
+  statistique ;
+\item \textbf{Sens commun et émotions implicites.} Exploiter les
+  relations de réaction d'ATOMIC \cite{sap2019} via COMET
+  \cite{bosselut2019} pour couvrir les émotions implicites qui
+  échappent aux lexiques ;
+\item \textbf{Grands modèles de langue.} Les LLM généralistes restent
+  en difficulté sur l'émotion fine \cite{kocon2023chatgpt} ; la
+  complémentarité entre les biais inductifs de HAKE-MER et les LLM
+  affectifs spécialisés \cite{liu2024emollms} — distillation,
+  génération d'a priori — constitue une question ouverte ;
+\item \textbf{Valorisation.} L'état de l'art de ce mémoire a été
+  structuré en survey autonome (avec l'ablation de HAKE-MER comme
+  étude de cas) en vue d'une soumission après la soutenance.
+\end{itemize}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+Les recommandations et perspectives ci-dessus tracent la suite
+naturelle du travail : consolider les classes rares (objectifs de
+perte, seuils par émotion), enrichir l'intégration de connaissances,
+et valider la généralisation au-delà de GoEmotions.

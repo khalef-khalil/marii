@@ -1,0 +1,272 @@
+\chapter{Expérimentations et résultats}
+\label{chap:experimentation}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+Ce chapitre évalue HAKE-MER sur GoEmotions par une ablation
+cumulative à protocole strictement constant, complétée par une
+comparaison des ressources de connaissances externes et par des
+analyses qualitative et d'erreur. Les hypothèses H1 à H4 du
+chapitre 3 y sont confrontées aux résultats.
+
+\section{Cadre expérimental}
+\label{sec:expe-cadre}
+
+\subsection{Jeu de données}
+Toutes les expériences utilisent GoEmotions \cite{demszky2020}
+(configuration \emph{simplified}) : 43\,410 exemples d'entraînement,
+5\,426 de validation et 5\,427 de test, 27 émotions plus la classe
+neutre ($K{=}28$), en multi-étiquettes. L'analyse exploratoire
+éclaire trois choix : le \textbf{déséquilibre} (\emph{neutral} :
+14\,219 occurrences contre 77 pour \emph{grief}, rapport de 185)
+impose le F1-macro comme métrique décisive ; la
+\textbf{multi-étiquette} est réelle (16{,}4\,\% des exemples portent
+au moins deux émotions ; paires fréquentes :
+\emph{admiration}+\emph{gratitude} 279,
+\emph{anger}+\emph{annoyance} 269) ; la \textbf{structure} (longueur
+moyenne 19 tokens, 42{,}2\,\% de textes multi-phrases) justifie les
+bornes du prétraitement hiérarchique ($M{=}4$ phrases de 32 tokens —
+à 20 tokens, 24{,}1\,\% des exemples étaient tronqués contre
+1{,}8\,\% à 32).
+
+\subsection{Protocole}
+Toutes les configurations partagent : 5~époques (budget fixé après
+constat d'un plateau au-delà), graine aléatoire 42, taille de lot 24
+(32 pour la ligne de base plate), précision mixte sur GPU~T4, et les
+mêmes métriques : F1-micro, \textbf{F1-macro} (métrique de référence,
+seule sensible aux émotions rares), correspondance exacte et mAP.
+L'architecture est implémentée comme une classe unique à indicateurs
+d'activation : les configurations comparées ne diffèrent que par les
+modules activés.
+
+\section{Choix des backbones}
+\label{sec:expe-backbones}
+
+Un comparatif préliminaire de quatre encodeurs à protocole identique
+(tableau~\ref{tab:backbones}) a guidé le choix : RoBERTa-base
+\cite{liu2019roberta} domine sur F1-macro et mAP ; DistilBERT-base
+\cite{sanh2019distilbert} offre le meilleur compromis
+coût/performance ; ALBERT \cite{lan2020albert}, malgré son faible
+nombre de paramètres, est le plus lent à entraîner et le plus faible
+en F1-macro. La suite rapporte systématiquement DistilBERT \emph{et}
+RoBERTa.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+Modèle & Params & Temps (5 ép., T4) & F1-micro & F1-macro & mAP\\
+\midrule
+RoBERTa-base \cite{liu2019roberta}       & 125M & 805\,s  & \textbf{0,588} & \textbf{0,488} & \textbf{0,516}\\
+BERT-base \cite{devlin2019}              & 110M & 787\,s  & 0,579 & 0,480 & 0,500\\
+DistilBERT-base \cite{sanh2019distilbert}& 67M  & \textbf{415\,s} & 0,579 & 0,475 & 0,498\\
+ALBERT-base-v2 \cite{lan2020albert}      & 12M  & 1\,020\,s & 0,584 & 0,467 & 0,491\\
+\bottomrule
+\end{tabular}
+\caption{Comparatif préliminaire des encodeurs sur GoEmotions (test),
+protocole identique.}
+\label{tab:backbones}
+\end{table}
+
+\section{Ablation cumulative}
+\label{sec:expe-ablation}
+
+Le tableau~\ref{tab:ablation} présente le résultat central du
+travail : l'ablation cumulative des quatre modules, sur les deux
+backbones.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{l cccc cccc}
+\toprule
+& \multicolumn{4}{c}{RoBERTa-base} & \multicolumn{4}{c}{DistilBERT-base}\\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+Configuration & F1-mi & F1-ma & Exact & mAP & F1-mi & F1-ma & Exact & mAP\\
+\midrule
+Ligne de base (PLM affiné)      & 0,584 & 0,476 & \textbf{0,475} & 0,504 & \textbf{0,590} & 0,459 & \textbf{0,473} & 0,502\\
+M1 (hiérarchique)               & 0,575 & 0,509 & 0,461 & 0,512 & 0,558 & 0,438 & 0,448 & 0,487\\
+M1+M2 (attention croisée)       & \textbf{0,588} & 0,510 & 0,466 & 0,520 & 0,586 & 0,480 & 0,468 & 0,505\\
+M1+M2+M3 (enrichissement)       & 0,585 & \textbf{0,523} & 0,458 & \textbf{0,532} & 0,586 & \textbf{0,499} & 0,467 & 0,511\\
+M1+M2+M3+M4 (complet)           & 0,586 & 0,496 & 0,461 & 0,520 & 0,584 & 0,485 & 0,463 & \textbf{0,512}\\
+\bottomrule
+\end{tabular}
+\caption{Ablation cumulative de HAKE-MER sur GoEmotions (test),
+protocole constant (5~époques, graine~42). Les chiffres RoBERTa
+proviennent d'une unique session entraînant les cinq configurations
+(modèle final) ; les chiffres DistilBERT de runs par module au même
+budget (meilleur point de contrôle sur validation).}
+\label{tab:ablation}
+\end{table}
+
+\subsection{Lecture des résultats}
+
+\textbf{Le F1-macro progresse à chaque module jusqu'à M3.} Sur
+RoBERTa : $0{,}476 \to 0{,}509$ (M1) $\to 0{,}510$ (M2)
+$\to \mathbf{0{,}523}$ (M3), soit $\mathbf{+0{,}047}$ au-dessus de la
+ligne de base — sur la métrique qui capture les émotions rares,
+l'objectif central du sujet. Le mAP suit la même trajectoire (0,504
+$\to$ 0,532). L'hypothèse H1 est validée \emph{conditionnellement au
+backbone} : la hiérarchie seule améliore nettement RoBERTa
+($+0{,}033$ de F1-macro) mais \emph{dégrade} DistilBERT ($-0{,}021$).
+
+\textbf{L'attention croisée corrige la hiérarchie seule (H2).} Sur
+les deux backbones, M2 restaure le F1-micro que M1 dégradait
+(DistilBERT : $0{,}558 \to 0{,}586$) tout en maintenant ou améliorant
+le F1-macro — cohérent avec les co-occurrences mesurées.
+
+\textbf{Le module 4 ne justifie pas son ajout (H4).} La pondération
+dynamique fait reculer le F1-macro sur les deux backbones
+($0{,}523 \to 0{,}496$ sur RoBERTa). Ce résultat négatif, assumé,
+illustre la nécessité de l'ablation contrôlée : une composante
+plausible peut ne rien apporter. La meilleure configuration retenue
+est donc \textbf{M1+M2+M3}.
+
+\section{Comparaison des connaissances externes}
+\label{sec:expe-ressources}
+
+L'hypothèse H3 est testée à architecture et budget fixés, en ne
+faisant varier que la ressource injectée par la porte du module~3
+(tableau~\ref{tab:ressources}).
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{llccccc}
+\toprule
+Backbone & Ressource (type) & F1-micro & F1-macro & Exact & mAP & porte $g$\\
+\midrule
+DistilBERT & NRC (lexical, 10-d)          & 0,586 & \textbf{0,499} & 0,467 & \textbf{0,511} & $+0{,}029$\\
+DistilBERT & SenticNet (conceptuel, 5-d)  & 0,587 & 0,486 & 0,470 & 0,507 & $+0{,}027$\\
+RoBERTa    & NRC (lexical, 10-d)          & \textbf{0,595} & \textbf{0,492} & \textbf{0,479} & \textbf{0,525} & $-0{,}027$\\
+RoBERTa    & SenticNet (conceptuel, 5-d)  & 0,588 & 0,461 & 0,471 & 0,510 & $+0{,}023$\\
+\bottomrule
+\end{tabular}
+\caption{Module 3 avec deux ressources de connaissance, à
+architecture et budget fixés. La porte $g$ non nulle atteste
+l'utilisation effective de la connaissance.}
+\label{tab:ressources}
+\end{table}
+
+Le NRC \cite{mohammad2013} domine SenticNet
+\cite{cambria2018senticnet} sur le F1-macro pour les deux backbones
+($+0{,}013$ DistilBERT, $+0{,}031$ RoBERTa) : les catégories
+d'émotions du lexique s'alignent directement sur les étiquettes de
+GoEmotions, là où les dimensions abstraites de SenticNet exigeraient
+une mise en correspondance que l'injection par biais ne fournit pas.
+H3 est validée : le rendement de la connaissance dépend de
+l'\emph{alignement taxonomique}.
+
+\section{Analyse qualitative}
+\label{sec:expe-qualitatif}
+
+Le suivi d'exemples de classes rares, configuration par
+configuration (tableau~\ref{tab:qualitatif}), illustre le rôle de
+chaque module : la hiérarchie corrige \emph{relief} là où la ligne de
+base prédit \emph{sadness} ; l'attention croisée retrouve le couple
+complet \emph{joy}+\emph{surprise}. À l'inverse, \emph{grief} n'est
+détectée par aucune configuration (6 exemples de test seulement) —
+l'illustration extrême du problème des classes quasi vides.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{p{4.6cm}p{2.2cm}p{2.0cm}p{2.0cm}p{2.4cm}}
+\toprule
+Exemple (extrait) & Vraies étiquettes & Ligne de base & M1 & M1+M2(+M3)\\
+\midrule
+« Resetting a dislocated knee hurts... feels a lot better immediately after » & relief & sadness & \textbf{relief} & \textbf{relief}\\
+« A surprise turn of events! I'm so glad... » & joy, surprise & surprise & admiration & \textbf{joy, surprise}\\
+« [NAME] death is just so... senseless. Why? WHY??? » & grief & sadness & disappointment & sadness\\
+\bottomrule
+\end{tabular}
+\caption{Évolution des prédictions sur des exemples de classes rares
+(backbone RoBERTa).}
+\label{tab:qualitatif}
+\end{table}
+
+\section{Analyse d'erreur}
+\label{sec:expe-erreur}
+
+Sur le modèle complet (RoBERTa), les confusions sont dominées par la
+frontière avec \emph{neutral} : les paires les plus fréquentes
+(étiquette vraie manquée $\to$ étiquette prédite à la place) sont
+neutral$\to$curiosity (69), annoyance$\to$neutral (64) et
+approval$\to$neutral (63) — le modèle peine à départager les émotions
+\emph{subtiles} du neutre, davantage qu'à confondre deux émotions
+marquées. Le F1 par classe confirme la structure attendue : minimal
+sur \emph{grief} (0,00), \emph{relief} (0,13), \emph{realization}
+(0,26) et \emph{nervousness} (0,30), maximal sur \emph{gratitude}
+(0,92), \emph{amusement} (0,82) et \emph{love} (0,80) — classes
+fréquentes aux indices lexicaux saillants.
+
+\section{Positionnement par rapport à la littérature}
+\label{sec:expe-sota}
+
+À titre indicatif, le F1-macro obtenu par la meilleure configuration
+(M1+M2+M3, RoBERTa) est rapproché du chiffre de référence publié par
+les auteurs du jeu de données GoEmotions \cite{demszky2020}, qui
+rapportent un F1-macro de 0,46 et un F1-micro de 0,51 pour un
+classifieur BERT-base affiné sur la taxonomie complète à 28 classes
+(tableau~\ref{tab:sota}).
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{llcc}
+\toprule
+Étude & Modèle & F1-micro & F1-macro\\
+\midrule
+Demszky et al. (2020) \cite{demszky2020} & BERT-base & 0,51 & 0,46\\
+Notre travail (ce mémoire) & HAKE-MER M1+M2+M3 (RoBERTa) & \textbf{0,585} & \textbf{0,523}\\
+\bottomrule
+\end{tabular}
+\caption{Repère indicatif par rapport au chiffre de référence publié
+sur GoEmotions. Comparaison non strictement contrôlée : le protocole
+d'entraînement original (nombre d'époques, taille de séquence,
+recherche d'hyperparamètres) n'est pas reproduit à l'identique ; seule
+la comparaison interne par ablation (tableau~\ref{tab:ablation}) isole
+rigoureusement l'apport des modules de HAKE-MER.}
+\label{tab:sota}
+\end{table}
+
+Cet écart positif est cohérent avec les gains internes mesurés par
+ablation, mais ne constitue pas une preuve de supériorité au sens
+strict : contrairement au protocole d'ablation cumulative de ce
+chapitre, où seul le budget d'entraînement est maintenu constant, la
+configuration exacte de \cite{demszky2020} (nombre d'époques, longueur
+de séquence, recherche d'hyperparamètres) n'a pas été reproduite à
+l'identique. Ce repère situe néanmoins HAKE-MER par rapport au point
+d'ancrage le plus largement cité de la littérature sur GoEmotions,
+sans remplacer la comparaison contrôlée qui reste la preuve principale
+de ce mémoire.
+
+\section{Leçons méthodologiques}
+\label{sec:expe-lecons}
+
+Trois incidents résolus en cours de développement méritent d'être
+consignés, car chacun modifiait matériellement les conclusions :
+
+\begin{itemize}
+\item \textbf{Troncature du prétraitement.} La première borne de
+  20 tokens/phrase tronquait 18{,}7\,\% des exemples et faisait
+  passer le module 1 \emph{sous} la ligne de base — l'écart mesurait
+  le prétraitement, pas l'architecture. Borne recalibrée à 32 tokens.
+\item \textbf{Échelle d'initialisation.} Les requêtes d'émotions
+  initialisées en $\mathcal{N}(0,1)$ produisaient une perte initiale
+  de 1,86 (contre 0,18 après correction en
+  $\mathcal{N}(0,0{,}02^2)$).
+\item \textbf{Équité des budgets.} Comparer des configurations à
+  budgets d'entraînement différents inversait certaines conclusions ;
+  d'où le protocole à budget strictement constant.
+\end{itemize}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+L'ablation cumulative établit que la configuration M1+M2+M3 sur
+RoBERTa atteint un F1-macro de 0,523, soit $+0{,}047$ au-dessus du
+PLM affiné, le gain se concentrant sur les émotions rares ; le NRC
+surpasse SenticNet à architecture fixée ; et le module 4 ne justifie
+pas son ajout. Les analyses qualitative et d'erreur situent les
+limites restantes : classes quasi vides et frontière avec le neutre.

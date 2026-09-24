@@ -1,0 +1,39 @@
+\chapter*{Conclusion générale et Perspectives}
+\addcontentsline{toc}{chapter}{Conclusion générale et Perspectives}
+\markboth{Conclusion générale et Perspectives}{}
+
+Ce mémoire a abordé la détection des émotions multiples dans les
+textes, une tâche où les approches classiques échouent à refléter la
+réalité des états affectifs — souvent mélangés au sein d'un même
+énoncé — et où le déséquilibre sévère des classes concentre la
+difficulté sur les émotions rares.
+
+Nous avons conçu et implémenté HAKE-MER, une architecture modulaire
+composant quatre mécanismes : un encodage hiérarchique du texte
+préservant les signaux portés par chaque phrase, une attention
+croisée donnant à chaque émotion sa propre lecture du texte et
+modélisant les interactions entre émotions, un enrichissement
+sémantique injectant un lexique affectif externe par une porte
+apprise et interprétable, et une pondération dynamique des
+intensités. L'évaluation sur GoEmotions, menée par ablation
+cumulative à protocole strictement constant sur deux backbones,
+établit que la configuration hiérarchie + attention croisée +
+connaissance lexicale (NRC) atteint un F1-macro de 0,523 avec
+RoBERTa, soit un gain de $+0{,}047$ par rapport au modèle
+pré-entraîné affiné — gain concentré sur les émotions rares,
+objectif central du sujet. La comparaison des ressources à
+architecture fixée valide la supériorité du lexique catégoriel sur
+la ressource conceptuelle, tandis que la pondération dynamique ne
+justifie pas son ajout : un résultat négatif assumé, que seul le
+protocole d'ablation contrôlée permettait d'établir.
+
+Les limites de ce travail — une seule graine par configuration, un
+seul jeu de données, la version simple du module d'enrichissement —
+tracent ses prolongements immédiats : objectifs d'apprentissage
+sensibles au déséquilibre, fusion adaptative des connaissances,
+validation croisée sur SemEval-2018 et étude de la complémentarité
+avec les grands modèles de langue affectifs. Au-delà, ce travail
+plaide pour une pratique d'évaluation plus rigoureuse dans le
+domaine : comparaison multi-backbones, budgets contrôlés, et analyse
+par classe systématique — conditions nécessaires pour que les progrès
+mesurés reflètent des progrès réels.

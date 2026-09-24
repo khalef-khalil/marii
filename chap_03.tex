@@ -1,0 +1,201 @@
+\chapter{Conception de l'approche HAKE-MER}
+\label{chap:conception}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+Ce chapitre présente la conception de \textbf{HAKE-MER}
+(\emph{Hierarchical Attention with Knowledge Enhancement for
+Multi-Emotion Recognition}), l'architecture proposée pour la
+détection multi-étiquettes des émotions. Nous formalisons d'abord le
+problème et les limites des approches existantes, puis nous
+détaillons les quatre modules de l'architecture et les hypothèses de
+recherche qu'elle permet de tester.
+
+\section{Formulation du problème et limites existantes}
+\label{sec:conception-formulation}
+
+Soit un texte $x$ et un inventaire d'émotions
+$\mathcal{E}=\{e_1,\dots,e_K\}$ ($K{=}28$ pour GoEmotions
+\cite{demszky2020}). La classification multi-étiquettes apprend une
+fonction $f : x \mapsto Y \subseteq \mathcal{E}$, réalisée par $K$
+sorties sigmoïdes $\hat{y}_k = \sigma(z_k)$ entraînées par entropie
+croisée binaire :
+\begin{equation}
+\mathcal{L}_{\mathrm{BCE}}
+= -\frac{1}{K}\sum_{k=1}^{K}
+\left[\, y_k \log \hat{y}_k + (1-y_k)\log(1-\hat{y}_k) \,\right].
+\label{eq:bce}
+\end{equation}
+Une étiquette est prédite si $\hat{y}_k > 0{,}5$.
+
+Trois limites des approches standards motivent la conception :
+
+\begin{itemize}
+\item \textbf{L1 — Indépendance des étiquettes.} La tête
+  « pertinence binaire » sur un vecteur global partagé ignore les
+  co-occurrences d'émotions, pourtant systématiques dans les données
+  (chapitre 2) ;
+\item \textbf{L2 — Cécité à la structure du texte.} Une
+  représentation plate (le seul vecteur \texttt{[CLS]}) mélange les
+  signaux portés par des phrases différentes — or 42{,}2\,\% des
+  exemples de GoEmotions sont multi-phrases ;
+\item \textbf{L3 — Pauvreté du signal pour les émotions rares.} Avec
+  moins de cent exemples d'entraînement pour les classes de la longue
+  traîne, l'apprentissage purement supervisé ne suffit pas.
+\end{itemize}
+
+\section{Vue d'ensemble de l'architecture}
+\label{sec:conception-vue}
+
+HAKE-MER répond à ces limites par quatre modules composables,
+construits au-dessus d'un backbone pré-entraîné partagé
+(figure~\ref{fig:hakemer-archi}) : le \textbf{Module 1 (Encodage
+Hiérarchique)} préserve la structure du texte (L2) ; le
+\textbf{Module 2 (Attention Croisée Multi-Émotions)} modélise les
+interactions entre émotions (L1) ; le \textbf{Module 3
+(Enrichissement Sémantique)} injecte une connaissance affective
+externe (L3) ; le \textbf{Module 4 (Pondération Dynamique)} adapte
+l'intensité de chaque émotion au contexte. Chaque module s'active par
+un indicateur de configuration, ce qui permet l'ablation cumulative
+du chapitre 4.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\small,
+  node distance=4mm and 6mm,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=9mm, inner sep=3pt},
+  mod/.style={box, thick},
+  flow/.style={-{Stealth[length=2.5mm]}, thick}
+]
+\node[box, fill=gray!12] (input) {Texte d'entrée\\ $M$ phrases $\times$ 32 tokens};
+\node[box, fill=gray!22, right=of input] (plm) {Backbone partagé\\ (RoBERTa / DistilBERT)};
+\node[mod, fill=red!14, right=of plm] (m1) {\textbf{Module 1}\\ Encodage Hiérarchique\\ attention mot$\to$phrase};
+\node[mod, fill=blue!12, right=of m1] (xatt) {\textbf{Module 2}\\ attention croisée\\ émotion$\to$phrases};
+\node[box, fill=blue!8, right=of xatt] (inter) {auto-attention\\ inter-émotions};
+\node[mod, fill=violet!14, right=of inter] (m4) {\textbf{Module 4}\\ Pondération\\ Dynamique};
+\node[box, fill=gray!25, right=of m4] (out) {$K$ sorties\\ sigmoïdes};
+\node[box, fill=blue!6, below=9mm of xatt] (q) {$K$ requêtes d'émotions\\ $Q_k + g\cdot\mathrm{prior}$};
+\node[mod, fill=green!16, below=9mm of q] (gate) {\textbf{Module 3}\\ Enrichissement Sémantique\\ porte $g$ (init.~0)};
+\node[box, fill=green!8, left=of gate] (proj) {projection\\ $+\;\tanh$};
+\node[box, fill=green!12, left=of proj] (nrc) {Lexique affectif\\ (NRC / SenticNet)};
+\draw[flow] (input) -- (plm);
+\draw[flow] (plm) -- (m1);
+\draw[flow] (m1) -- node[above, font=\footnotesize\itshape] {$s_1..s_M$} (xatt);
+\draw[flow] (xatt) -- (inter);
+\draw[flow] (inter) -- (m4);
+\draw[flow] (m4) -- (out);
+\draw[flow] (q) -- (xatt);
+\draw[flow] (nrc) -- (proj);
+\draw[flow] (proj) -- (gate);
+\draw[flow] (gate) -- (q);
+\end{tikzpicture}}
+\caption{Architecture de HAKE-MER : quatre modules composables
+au-dessus d'un backbone partagé.}
+\label{fig:hakemer-archi}
+\end{figure}
+
+\section{Module 1 : Encodage Hiérarchique}
+\label{sec:conception-m1}
+
+Le texte est segmenté en phrases ($M{=}4$ au plus, 32 tokens par
+phrase — bornes calibrées empiriquement, section 4.1), encodées par
+le backbone en un seul appel vectorisé. Pour une phrase de
+représentations de tokens $H=(h_1,\dots,h_T)$ et de masque $m$,
+l'agrégation par \emph{attention additive}
+\cite{bahdanau2015,yang2016} calcule :
+\begin{equation}
+u_t = v^\top \tanh(W h_t), \qquad
+\alpha_t = \frac{\exp(u_t)}{\sum_{t'} \exp(u_{t'})}, \qquad
+s = \sum_t \alpha_t\, h_t,
+\label{eq:attnpool}
+\end{equation}
+les positions masquées recevant un score $-\infty$ avant le softmax.
+On obtient les vecteurs de phrases $s_1,\dots,s_M$. Utilisé seul, le
+module applique une seconde attention additive phrase$\to$document et
+une tête linéaire partagée ; au sein du modèle complet, ce sont les
+vecteurs de phrases qui alimentent le module 2.
+
+\section{Module 2 : Attention Croisée Multi-Émotions}
+\label{sec:conception-m2}
+
+Chaque émotion $k$ possède une requête apprise $Q_k \in \mathbb{R}^d$
+(initialisée en $\mathcal{N}(0, 0{,}02^2)$ — une échelle
+d'initialisation standard s'est avérée indispensable à la
+convergence, section 4.7). L'attention croisée multi-têtes
+\cite{vaswani2017} (8 têtes) utilise les requêtes d'émotions comme
+\emph{queries} et les vecteurs de phrases comme \emph{keys/values} :
+\begin{equation}
+r_k = \mathrm{MHA}\big(Q_k,\; [s_1,\dots,s_M],\; [s_1,\dots,s_M]\big),
+\label{eq:mha}
+\end{equation}
+produisant une représentation contextuelle \emph{par émotion} :
+chaque émotion « lit » le texte à sa manière. Une couche d'encodeur
+Transformer appliquée sur l'axe des émotions modélise ensuite leurs
+interactions (renforcement ou inhibition mutuels). La tête de
+classification est \emph{par étiquette} : chaque émotion a son propre
+vecteur de poids, $z_k = w_k^\top r_k + b_k$.
+
+\section{Module 3 : Enrichissement Sémantique}
+\label{sec:conception-m3}
+
+Un vecteur affectif de document $c \in \mathbb{R}^{d_c}$ est extrait
+d'une ressource externe : le NRC Emotion Lexicon \cite{mohammad2013}
+($d_c{=}10$, catégories binaires) ou SenticNet
+\cite{cambria2018senticnet} ($d_c{=}5$, dimensions continues du
+modèle Hourglass). Il est projeté, borné, puis ajouté aux requêtes
+d'émotions, pondéré par une \emph{porte apprise} $g$ initialisée à
+zéro :
+\begin{equation}
+\mathrm{prior} = \tanh(W_c\, c), \qquad
+\tilde{Q}_k = Q_k + g \cdot \mathrm{prior}.
+\label{eq:gate}
+\end{equation}
+À l'initialisation ($g{=}0$), le module 3 est strictement équivalent
+au module 2 : le modèle apprend la quantité de connaissance à
+injecter, et la valeur finale $|g|$ mesure directement l'utilisation
+de la ressource — une sonde d'interprétabilité intégrée.
+
+\section{Module 4 : Pondération Dynamique}
+\label{sec:conception-m4}
+
+Une porte d'intensité par émotion, conditionnée par le contexte
+émotionnel global $\bar{r} = \frac{1}{K}\sum_k r_k$ :
+\begin{equation}
+\gamma_k = \sigma\!\big(W_2\,\mathrm{ReLU}(W_1 [r_k ; \bar{r}]) + b_2\big),
+\qquad r_k \leftarrow \gamma_k \cdot r_k,
+\label{eq:dyngate}
+\end{equation}
+avec $b_2$ initialisé à $+3$ (soit $\gamma_k \approx 0{,}95$) : le
+module démarre proche de l'identité et apprend à moduler
+progressivement l'intensité de chaque émotion selon le texte.
+
+\section{Hypothèses de recherche}
+\label{sec:conception-hypotheses}
+
+L'évaluation du chapitre 4 teste quatre hypothèses :
+
+\begin{itemize}
+\item[\textbf{H1.}] La hiérarchie explicite (M1) améliore la
+  reconnaissance des émotions rares (F1-macro) en préservant les
+  signaux par phrase ;
+\item[\textbf{H2.}] La modélisation des interactions entre émotions
+  (M2) apporte un gain robuste par rapport à la prédiction
+  indépendante ;
+\item[\textbf{H3.}] L'injection d'un lexique affectif (M3) aide là où
+  la supervision manque, et une ressource \emph{catégorielle} alignée
+  sur la taxonomie cible (NRC) est plus efficace qu'une ressource
+  \emph{dimensionnelle} abstraite (SenticNet) ;
+\item[\textbf{H4.}] Chaque module doit justifier son ajout par
+  ablation contrôlée — la plausibilité architecturale ne suffit pas.
+\end{itemize}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+Ce chapitre a présenté la conception de HAKE-MER : quatre modules
+composables répondant chacun à une limite identifiée des approches
+existantes, avec deux portes apprises et interprétables (connaissance
+externe, intensité). Le chapitre suivant évalue cette architecture
+par ablation cumulative à protocole strictement constant, sur deux
+backbones.

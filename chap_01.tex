@@ -1,0 +1,155 @@
+\chapter{Contexte général et problématique}
+\label{chap:contexte}
+
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+
+Ce chapitre introduit le contexte scientifique et les motivations du présent
+travail sur la détection des émotions multiples dans les textes. Il commence
+par situer le cadre institutionnel du projet, avant de formuler la
+problématique de recherche. Les objectifs et les questions de recherche qui
+en découlent sont ensuite présentés, puis le chapitre se conclut par la
+description du plan de travail adopté, qui structure la démarche
+méthodologique suivie tout au long du mémoire.
+
+\section{Cadre général du projet}
+\label{sec:cadre-general}
+
+Ce travail s'inscrit dans le cadre du Projet de Fin d'Études du Mastère de
+Recherche en Informatique, spécialité Sciences et Technologies de
+l'Information, réalisé à l'Institut Supérieur d'Informatique (ISI) de
+l'Université de Tunis El Manar, sous l'encadrement du Dr.~Sahbi Bahroun. Le
+sujet porte sur la conception d'une architecture neuronale pour la
+détection des émotions multiples dans les textes, combinant attention
+hiérarchique et connaissances sémantiques externes.
+
+L'analyse automatique des émotions dans le texte s'est imposée comme un
+sous-domaine central du traitement automatique des langues, avec des
+applications directes en modération de contenu, en analyse de l'expérience
+client, en santé mentale numérique et en systèmes conversationnels
+affectifs. Contrairement à l'analyse de sentiment classique, qui réduit un
+texte à une polarité (positif, négatif, neutre), la détection d'émotions
+vise à identifier des catégories affectives fines (joie, colère, tristesse,
+surprise, etc.), souvent multiples et simultanées au sein d'un même énoncé.
+
+\section{Problématique}
+\label{sec:problematique}
+
+La plupart des travaux en classification des émotions textuelles reposent
+sur l'hypothèse simplificatrice qu'un texte exprime une émotion dominante
+unique \cite{mohammad2013}. Cette hypothèse ne reflète pas la réalité des
+états affectifs humains, qui se manifestent fréquemment sous forme de
+mélanges d'émotions coexistant dans un même énoncé — par exemple
+l'expression simultanée de la surprise et de la joie, ou de la déception et
+de la colère. Les jeux de données récents à annotation multi-étiquettes,
+tels que GoEmotions \cite{demszky2020}, révèlent qu'une proportion
+substantielle des textes porte effectivement plusieurs émotions
+simultanées, ce qui invalide l'approche mono-étiquette pour un grand nombre
+de cas réels.
+
+Trois limites structurelles freinent les approches existantes de
+détection multi-émotions, détaillées et documentées au chapitre~2 :
+
+\begin{itemize}
+\item \textbf{L'indépendance supposée des étiquettes.} Les architectures de
+  classification multi-label standards traitent chaque émotion comme une
+  décision binaire indépendante, ignorant les corrélations et
+  incompatibilités entre émotions (la joie et la tristesse sont rarement
+  co-actives, tandis que la surprise accompagne souvent la peur ou la
+  joie).
+\item \textbf{La perte de la structure du texte.} L'encodage global d'un
+  texte en un unique vecteur de représentation efface les signaux
+  localisés à l'échelle de la phrase, alors que dans les textes
+  multi-phrases, différentes émotions sont souvent portées par des
+  segments distincts du texte.
+\item \textbf{Le déséquilibre sévère des classes.} La distribution des
+  émotions dans les corpus réels suit une loi de puissance : quelques
+  émotions fréquentes (joie, neutralité) dominent très largement les
+  émotions rares (deuil, soulagement, nervosité), ce qui pénalise
+  l'apprentissage des classes minoritaires — précisément celles pour
+  lesquelles la détection est la plus critique en pratique.
+\end{itemize}
+
+Ces limites motivent la question de recherche centrale de ce mémoire :
+\textit{dans quelle mesure une architecture combinant encodage
+hiérarchique, attention croisée entre émotions et enrichissement par
+connaissances sémantiques externes peut-elle améliorer la détection des
+émotions rares et multiples dans le texte, par rapport à un modèle
+pré-entraîné affiné de façon standard ?}
+
+\section{Objectifs de recherche}
+\label{sec:objectifs}
+
+Pour répondre à cette question, ce travail poursuit les objectifs suivants :
+
+\begin{itemize}
+\item \textbf{Concevoir} une architecture modulaire, HAKE-MER, structurée
+  en quatre composantes cumulables (encodage hiérarchique, attention
+  croisée multi-émotions, enrichissement sémantique, pondération
+  dynamique), permettant d'isoler la contribution de chaque mécanisme ;
+\item \textbf{Évaluer} cette architecture de façon rigoureuse sur le jeu de
+  données GoEmotions, par un protocole d'ablation cumulative à budget
+  d'entraînement strictement constant, sur deux backbones pré-entraînés
+  (DistilBERT et RoBERTa), afin de garantir que les gains observés sont
+  attribuables aux composantes architecturales et non à des facteurs
+  confondus ;
+\item \textbf{Comparer} deux ressources de connaissances externes de nature
+  différente (lexique catégoriel NRC contre ressource conceptuelle
+  SenticNet) afin de déterminer laquelle s'intègre le mieux à
+  l'architecture proposée ;
+\item \textbf{Analyser} les résultats au niveau de la classe, au-delà des
+  métriques globales, pour évaluer l'apport réel de chaque composante sur
+  les émotions rares — l'enjeu applicatif central du sujet.
+\end{itemize}
+
+\section{Plan de travail}
+\label{sec:plan-travail}
+
+La démarche suivie dans ce mémoire s'inspire d'un processus itératif de
+type CRISP-DM (Cross-Industry Standard Process for Data Mining), adapté au
+contexte d'un projet de recherche en apprentissage profond. Le
+Tableau~\ref{tab:plan-travail} résume les phases méthodologiques adoptées.
+
+\begin{table}[H]
+\centering
+\caption{Phases méthodologiques du plan de travail}
+\label{tab:plan-travail}
+\begin{tabular}{p{4cm}p{9cm}}
+\hline
+\textbf{Phase} & \textbf{Contenu} \\
+\hline
+Analyse du problème et revue de littérature &
+Formulation de la problématique, revue critique des approches de
+détection multi-émotions, d'attention hiérarchique et d'intégration de
+connaissances externes (chapitre~2), identification du positionnement de
+HAKE-MER. \\[4pt]
+Compréhension et préparation des données &
+Analyse du jeu de données GoEmotions (distribution des étiquettes,
+déséquilibre, proportion de textes multi-phrases), choix du
+prétraitement et de la longueur de séquence. \\[4pt]
+Conception et modélisation &
+Formulation du problème, conception de l'architecture HAKE-MER et de ses
+quatre modules, définition des hypothèses de recherche H1--H4
+(chapitre~3). \\[4pt]
+Expérimentation et évaluation &
+Implémentation, protocole d'ablation cumulative à budget constant sur
+deux backbones, comparaison des ressources de connaissances, analyse par
+classe et analyse des erreurs (chapitre~4). \\[4pt]
+Documentation et valorisation &
+Rédaction du mémoire, synthèse des enseignements méthodologiques et des
+recommandations pratiques (chapitre~5), structuration de l'état de
+l'art en survey autonome en vue d'une valorisation après soutenance. \\
+\hline
+\end{tabular}
+\end{table}
+
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+Ce premier chapitre a présenté le cadre général du projet, formulé la
+problématique de la détection des émotions multiples dans les textes et
+défini les objectifs de recherche qui en découlent. Il a également décrit
+le plan de travail structurant la démarche adoptée dans ce mémoire. Le
+chapitre suivant propose une revue critique de la littérature, permettant
+de situer précisément l'architecture HAKE-MER par rapport aux travaux
+existants.
