@@ -7,9 +7,10 @@ Le chapitre~\ref{chap:conception} a fixé l'architecture HAKE-MER, les choix
 de segmentation et d'extraction lexicale, ainsi que les hypothèses H1 à
 H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
-statistiques de corpus \emph{mesurées} avant entraînement. Les tableaux
-de performances et la validation des hypothèses seront ajoutés après
-exécution des runs ; aucun score propre à HAKE-MER n'est reporté ici.
+statistiques de corpus \emph{mesurées} avant entraînement. La
+\textbf{baseline PLM} (étape~0, sans modules M1 à M4) a été entraînée
+selon ce protocole ; les scores HAKE-MER complets et la validation de
+H1 à H4 attendent l'activation progressive des modules.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -259,18 +260,63 @@ L'hypothèse
 H3 teste l'alignement taxonomique (NRC) plutôt que la supériorité
 a priori d'un graphe conceptuel.
 
-\section{Résultats et analyses (à produire après entraînement)}
+\section{Résultats et analyses}
 \label{sec:expe-analyses-plan}
 
-Une fois les modèles entraînés, les éléments suivants compléteront ce
-chapitre :
+\subsection{Baseline PLM (étape 0, DistilBERT-base)}
+\label{sec:expe-baseline-distilbert}
+
+La configuration de référence du tableau~\ref{tab:expe-ablation-flags}
+(tous modules désactivés) a été entraînée sur DistilBERT-base
+\cite{sanh2019distilbert} avec encodage \emph{document} entier tronqué
+à 128 tokens, selon les hyperparamètres du
+tableau~\ref{tab:expe-hyperparams}. Trois graines ($42$, $123$, $456$)
+ont été lancées ; le checkpoint retenu sur chaque run est celui qui
+maximise le F1-macro sur la validation. Le
+tableau~\ref{tab:expe-baseline-distilbert} agrège les métriques de
+test (moyenne $\pm$ écart-type).
+
+\begin{table}[H]
+\centering
+\caption{Baseline PLM sur GoEmotions (test, $n{=}5\,427$, trois graines)}
+\label{tab:expe-baseline-distilbert}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
+Étape 0 (DistilBERT-base) & $0{,}586 \pm 0{,}002$ & $0{,}470 \pm 0{,}002$ & $0{,}467 \pm 0{,}002$ & $0{,}511 \pm 0{,}002$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Sur le même split de test, les F1-macro par graine valent
+$0{,}472$, $0{,}468$ et $0{,}471$ ; l'écart restreint confirme la
+stabilité du protocole sous ré-initialisation. Les trois époques ont
+été conservées pour chaque graine (amélioration monotone du F1-macro
+validation entre les époques 1 et 3).
+
+\paragraph{Lecture par rapport à la littérature.}
+Sur GoEmotions, \textcite{demszky2020} rapportent un F1-macro de
+$0{,}46$ avec BERT-base sous leur pipeline officiel. Notre baseline
+DistilBERT atteint $0{,}470 \pm 0{,}002$ en F1-macro : même ordre de
+grandeur, avec un backbone plus léger, une troncature document à 128
+tokens et un budget de trois époques fixé \emph{a priori} dans ce
+mémoire. Cette ligne sert de \textbf{référence interne} pour H1
+(M1 vs représentation \texttt{[CLS]} seule) ; elle ne préjuge pas des
+gains une fois M1 à M4 activés.
+
+\subsection{Analyses complémentaires (en cours)}
+\label{sec:expe-analyses-suite}
+
+Les éléments suivants compléteront ce chapitre lorsque les étapes
+d'ablation M1 à M4 seront entraînées :
 \begin{itemize}
-\item tableaux d'ablation (F1-micro, F1-macro, exact match, mAP) ;
+\item tableau d'ablation cumulatif (mêmes métriques, RoBERTa-base en
+      parallèle de DistilBERT) ;
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
-\item comparaison commentée avec les chiffres publiés sur GoEmotions
-      \cite{demszky2020}, avec écart de protocole explicité ;
 \item confrontation explicite aux hypothèses H1 à H4.
 \end{itemize}
 
@@ -292,9 +338,11 @@ Avant de tirer des conclusions, les points suivants seront contrôlés :
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Le protocole expérimental est désormais spécifié : corpus GoEmotions,
-statistiques de segmentation et de couverture NRC, hyperparamètres
-communs, drapeaux d'ablation, correspondance NRC et rappel SenticNet.
-La prochaine étape est l'implémentation complète de l'architecture et
-l'exécution des runs ; les scores et la validation de H1 à H4
-compléteront la section~\ref{sec:expe-analyses-plan}.
+Le protocole expérimental est spécifié et partiellement exécuté :
+corpus GoEmotions, statistiques de segmentation et de couverture NRC,
+hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
+rappel SenticNet. La baseline PLM DistilBERT
+(section~\ref{sec:expe-baseline-distilbert}) fixe une référence
+quantitative sur le test. L'implémentation des modules M1 à M4 et les
+runs d'ablation associés permettront de compléter la
+section~\ref{sec:expe-analyses-suite} et de tester H1 à H4.
