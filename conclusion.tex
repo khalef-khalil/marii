@@ -2,38 +2,25 @@
 \addcontentsline{toc}{chapter}{Conclusion générale et Perspectives}
 \markboth{Conclusion générale et Perspectives}{}
 
-Ce mémoire a abordé la détection des émotions multiples dans les
-textes, une tâche où les approches classiques échouent à refléter la
-réalité des états affectifs — souvent mélangés au sein d'un même
-énoncé — et où le déséquilibre sévère des classes concentre la
-difficulté sur les émotions rares.
+Ce mémoire vise la détection des émotions multiples dans les textes,
+une tâche où les approches mono-étiquette et les représentations
+textuelles plates peinent à refléter la cooccurrence des affects et
+le déséquilibre sévère des classes sur des corpus tels que
+GoEmotions \cite{demszky2020}.
 
-Nous avons conçu et implémenté HAKE-MER, une architecture modulaire
-composant quatre mécanismes : un encodage hiérarchique du texte
-préservant les signaux portés par chaque phrase, une attention
-croisée donnant à chaque émotion sa propre lecture du texte et
-modélisant les interactions entre émotions, un enrichissement
-sémantique injectant un lexique affectif externe par une porte
-apprise et interprétable, et une pondération dynamique des
-intensités. L'évaluation sur GoEmotions, menée par ablation
-cumulative à protocole strictement constant sur deux backbones,
-établit que la configuration hiérarchie + attention croisée +
-connaissance lexicale (NRC) atteint un F1-macro de 0,523 avec
-RoBERTa, soit un gain de $+0{,}047$ par rapport au modèle
-pré-entraîné affiné — gain concentré sur les émotions rares,
-objectif central du sujet. La comparaison des ressources à
-architecture fixée valide la supériorité du lexique catégoriel sur
-la ressource conceptuelle, tandis que la pondération dynamique ne
-justifie pas son ajout : un résultat négatif assumé, que seul le
-protocole d'ablation contrôlée permettait d'établir.
+L'architecture \textbf{HAKE-MER} a été \emph{conçue} de manière
+modulaire (encodage hiérarchique, attention croisée entre émotions,
+enrichissement par ressources externes, pondération dynamique) afin de
+permettre une évaluation par ablation à protocole constant. À ce
+stade du projet, l'implémentation, l'entraînement et l'analyse
+quantitative décrits au chapitre~\ref{chap:experimentation} restent
+\emph{à mener} ; aucun résultat expérimental ne doit être interprété
+comme acquis tant qu'il n'est pas reproduit et documenté.
 
-Les limites de ce travail — une seule graine par configuration, un
-seul jeu de données, la version simple du module d'enrichissement —
-tracent ses prolongements immédiats : objectifs d'apprentissage
-sensibles au déséquilibre, fusion adaptative des connaissances,
-validation croisée sur SemEval-2018 et étude de la complémentarité
-avec les grands modèles de langue affectifs. Au-delà, ce travail
-plaide pour une pratique d'évaluation plus rigoureuse dans le
-domaine : comparaison multi-backbones, budgets contrôlés, et analyse
-par classe systématique — conditions nécessaires pour que les progrès
-mesurés reflètent des progrès réels.
+Les perspectives immédiates consistent à exécuter ce protocole sur
+GoEmotions (plusieurs graines, F1-macro et analyse par classe),
+comparer les ressources NRC et SenticNet comme prévu au
+chapitre~\ref{chap:conception}, puis, si les ressources le
+permettent, étendre la validation à d'autres jeux de données
+(SemEval-2018, etc.). Les enseignements méthodologiques et
+recommandations détaillés figurent au chapitre~\ref{chap:perspectives}.

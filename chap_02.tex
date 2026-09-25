@@ -7,7 +7,7 @@ La compréhension automatique des émotions humaines dans le texte constitue l'u
 \noindent Le présent travail s'inscrit dans ce contexte en proposant l'architecture \textbf{HAKE-MER} (\textit{Hierarchical Attention with Knowledge Enhancement for Multi-Emotion Recognition}), une approche qui ambitionne de dépasser les limitations des méthodes existantes en combinant : \\
 (i) une modélisation hiérarchique multi-niveaux basée sur les transformers \cite{vaswani2017,devlin2019,yang2016}, \\
 (ii) un mécanisme d'attention croisée pour capturer les interactions inter-émotions,\\
-(iii) une intégration de connaissances sémantiques externes issues de bases telles que \textit{ConceptNet} \cite{speer2017} et \textit{EmoNet}.
+(iii) une intégration de connaissances sémantiques externes (lexiques et, dans la littérature, graphes tels que \textit{ConceptNet} \cite{speer2017}).
 
 \noindent Le présent état de l'art explore les cinq axes thématiques suivantes : les méthodes de détection d'émotions multiples, les architectures d'attention hiérarchique et les transformers, l'intégration de connaissances externes, les techniques de raisonnement par bon sens, et les approches d'apprentissage multi-niveaux et multi-granularités.
 
@@ -170,7 +170,7 @@ où $Q$, $K$, $V$ désignent respectivement les matrices \textit{query}, \textit
     \end{tabular}
 \end{table}
 \newpage 
-\noindent HAKE-MER se distingue en combinant ces dimensions complémentaires dans une architecture unifiée : l'encodage hiérarchique multi-niveaux (tokens $\rightarrow$ phrases $\rightarrow$ document), l'attention croisée inter-émotions pour modéliser les corrélations et incompatibilités entre étiquettes, l'enrichissement sémantique par \textit{ConceptNet} et \textit{EmoNet} pour l'inférence des émotions implicites, et la pondération dynamique pour gérer les intensités différentielles. Cette combinaison vise une amélioration de 3 à 5\% en F1-score par rapport à l'état de l'art sur \textit{GoEmotions} et \textit{SemEval-2018}.
+\noindent HAKE-MER se distingue en combinant, dans une architecture unifiée et ablatable : l'encodage hiérarchique multi-niveaux (tokens $\rightarrow$ phrases $\rightarrow$ document), l'attention croisée inter-émotions, l'enrichissement par ressources externes — en priorité le NRC Emotion Lexicon et SenticNet pour le module~3, les graphes tels que \textit{ConceptNet} \cite{speer2017} restant une piste pour travaux ultérieurs — et la pondération dynamique des intensités. L'apport de chaque composante sur \textit{GoEmotions} (et, le cas échéant, \textit{SemEval-2018}) doit être \emph{mesuré} par ablation, sans présupposer un gain en pourcentage fixe.
 
 
 
