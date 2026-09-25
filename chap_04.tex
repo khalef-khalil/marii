@@ -6,11 +6,15 @@
 Ce chapitre définit le cadre expérimental pour évaluer HAKE-MER sur
 GoEmotions : jeu de données, métriques, protocole d'ablation et
 analyses associées. Il expose le protocole ; les tableaux de résultats
-et la confrontation aux hypothèses H1--H4 compléteront le mémoire
+et la confrontation aux hypothèses H1 à H4 compléteront le mémoire
 après entraînement.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
+
+Cette section fixe le corpus, les règles communes d'entraînement et les
+encodeurs retenus pour que toutes les comparaisons ultérieures
+portent sur le même cadre.
 
 \subsection{Jeu de données}
 Les expériences ciblent GoEmotions  (configuration
@@ -31,7 +35,7 @@ d'entraînement (nombre d'époques fixé \emph{a priori}, une graine
 documentée au minimum, plusieurs graines si possible), la même
 métrique de validation, et les mêmes métriques de test : F1-micro,
 \textbf{F1-macro}, correspondance exacte et mAP. L'implémentation
-sera une classe unique activable par modules (M1--M4) afin que seuls
+sera une classe unique activable par modules (M1 à M4) afin que seuls
 les composants architecturaux diffèrent entre runs.
 
 \subsection{Backbones}
@@ -47,7 +51,7 @@ d'entraînement et stabilité, pas par un seul chiffre isolé.
 L'évaluation principale suivra une ablation cumulative sur les deux
 backbones :
 \begin{enumerate}[label=\arabic*.]
-\item Ligne de base : PLM affiné, représentation plate (sans M1--M4).
+\item Ligne de base : PLM affiné, représentation plate (sans M1 à M4).
 \item M1 : encodage hiérarchique seul.
 \item M1+M2 : ajout de l'attention croisée entre émotions.
 \item M1+M2+M3 : ajout de l'enrichissement (NRC vs SenticNet,
@@ -102,7 +106,7 @@ contrôlés :
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 Ce chapitre fixe le protocole d'évaluation de HAKE-MER. Les
-résultats quantitatifs et la validation des hypothèses H1--H4
+résultats quantitatifs et la validation des hypothèses H1 à H4
 seront reportés après implémentation et exécution des expériences ;
 jusque-là, toute mention de scores dans d'autres chapitres doit être
 traitée comme obsolète ou prospective.

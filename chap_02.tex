@@ -4,28 +4,33 @@
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-Ce chapitre situe le travail dans la littérature sur la
-\textbf{détection multi-étiquettes des émotions dans le texte}, en
-retenant les fils directement liés à \textbf{HAKE-MER} et au
-protocole d'évaluation du chapitre~\ref{chap:experimentation}.
+Le chapitre~\ref{chap:contexte} a posé une question de recherche et
+trois limitations (L1 à L3) auxquelles HAKE-MER doit répondre. Nous
+montrons ici comment la littérature sur la \textbf{détection
+multi-étiquettes des émotions dans le texte} éclaire ces points et
+justifie les choix de corpus, de métriques et de familles de modèles
+retenus pour la suite.
 
-La démarche est organisée en cinq blocs : (1)~formulation de la
-tâche, jeux de données et métriques ; (2)~approches neuronales
-multi-étiquettes et modélisation des dépendances entre émotions ;
-(3)~représentations hiérarchiques du texte ; (4)~enrichissement par
-ressources lexicales externes ; (5)~synthèse des lacunes et
-positionnement de notre architecture. Les trois limites identifiées
-au chapitre~\ref{chap:contexte} (indépendance des étiquettes,
-perte de structure textuelle, classes rares) structurent cette
-revue.
+La progression suit le fil de la preuve : d'abord la tâche et
+GoEmotions, puis les approches neuronales et la baseline par modèles
+pré-entraînés, ensuite les réponses hiérarchiques et lexicales aux
+limitations L2 et L3, et enfin une synthèse qui relie lacunes et
+modules M1 à M3 (le module M4 et le protocole d'évaluation complet
+sont détaillés aux chapitres~\ref{chap:conception}
+et~\ref{chap:experimentation}).
 
 \section{Tâche, jeux de données et métriques}
 \label{sec:etat-tache-donnees}
 
+Nous commençons par la formulation de la tâche, le corpus retenu pour
+l'évaluation et les métriques qui guideront l'interprétation des
+expériences.
+
 \subsection{Classification multi-étiquettes vs mono-étiquette}
 
-La détection d'émotions dans le texte est souvent réduite, dans les
-premiers travaux, à l'identification d'une \emph{émotion dominante}
+Comme souligné au chapitre~\ref{chap:contexte}, la détection
+d'émotions dans le texte est souvent réduite, dans les premiers
+travaux, à l'identification d'une \emph{émotion dominante}
 ou d'une polarité globale. Or, dans le langage naturel, plusieurs
 affects peuvent coexister dans un même énoncé. Le cadre adapté est
 la \textbf{classification multi-étiquettes} : étant donné un texte
@@ -132,6 +137,10 @@ moyennes globales dans le chapitre de résultats.
 \section{Approches neuronales multi-étiquettes}
 \label{sec:etat-neural-multilabel}
 
+Les modèles neuronaux et les modèles de langue pré-entraînés
+constituent le socle sur lequel s'appuient HAKE-MER et la baseline
+obligatoire du protocole.
+
 \subsection{De l'ingénierie de traits au deep learning}
 
 Les premières approches combinaient traits lexicaux (n-grammes,
@@ -186,6 +195,9 @@ interactions entre émotions.
 \section{Modélisation hiérarchique du texte}
 \label{sec:etat-hierarchie}
 
+Cette partie couvre la réponse littéraire à la limitation L2 : préserver
+la structure phrase et document plutôt qu'un seul vecteur global.
+
 \subsection{Motivation}
 
 De nombreux textes portent des signaux affectifs \textbf{localisés}
@@ -216,6 +228,10 @@ longueur fixées au chapitre~\ref{chap:experimentation}.
 \section{Enrichissement par ressources lexicales externes}
 \label{sec:etat-lexiques}
 
+Nous examinons ensuite comment des lexiques affectifs peuvent compléter
+la supervision pour les classes rares (L3), avant de comparer NRC et
+SenticNet dans le protocole.
+
 \subsection{Intérêt pour les émotions rares}
 
 Les classes rares offrent peu d'exemples supervisés ; les
@@ -233,7 +249,7 @@ Le protocole prévoit de comparer deux types de ressources à
 architecture fixée (M1+M2+M3) :
 \begin{itemize}
 \item le \textbf{NRC Emotion Lexicon} \cite{mohammad2013} : lexique
-      d'associations mot--émotion obtenu par crowdsourcing, fondé sur
+      d'associations mot-émotion obtenu par crowdsourcing, fondé sur
       huit émotions de base (cadre Plutchik) et projeté vers les 28
       étiquettes GoEmotions ;
 \item \textbf{SenticNet} \cite{cambria2018senticnet} : ressource de
@@ -257,6 +273,9 @@ sur l'injection lexicale NRC/SenticNet.
 
 \section{Synthèse et positionnement de HAKE-MER}
 \label{sec:etat-synthese}
+
+Les tableaux ci-dessous condensent les lacunes repérées dans la
+littérature et la réponse modulaire proposée par HAKE-MER.
 
 \subsection{Limites récurrentes et modules proposés}
 
@@ -321,7 +340,7 @@ structure, connaissances externes).
         Souvent combiné sans hiérarchie ni interaction entre labels \\
         \hline
         \textbf{HAKE-MER} &
-        Modules M1--M4 ablatables &
+        Modules M1 à M4 ablatables &
         Coût computationnel ; évaluation par ablation \\
         \hline
     \end{tabular}
@@ -338,9 +357,9 @@ chapitre~\ref{chap:experimentation}.
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-Cet état de l'art a resserré la littérature autour de cinq axes
-directement utiles au mémoire : tâche et métriques sur GoEmotions,
-baselines par modèles pré-entraînés, modélisation des dépendances
-entre émotions, encodage hiérarchique, et enrichissement lexical
-externe. Le chapitre suivant formalise l'architecture HAKE-MER et les
-hypothèses H1--H4 qui en découlent.
+Nous disposons désormais d'un corpus et de métriques justifiés, d'une
+baseline PLM de référence sur GoEmotions et d'arguments littéraires
+pour traiter séparément les interactions entre émotions, la structure
+multi-phrases et l'enrichissement lexical. Le chapitre~3 transforme
+cette synthèse en architecture HAKE-MER et en hypothèses H1 à H4
+testables par ablation.

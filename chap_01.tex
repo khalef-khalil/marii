@@ -42,10 +42,9 @@ unique. Cette hypothèse ne reflète pas la réalité des
 mélanges d'émotions coexistant dans un même énoncé, par exemple
 l'expression simultanée de la surprise et de la joie, ou de la déception et
 de la colère. Les jeux de données récents à annotation multi-étiquettes,
-tels que GoEmotions \cite{demszky2020}, révèlent qu'une proportion
-substantielle des textes porte effectivement plusieurs émotions
-simultanées, ce qui invalide l'approche mono-étiquette pour un grand nombre
-de cas réels.
+tels que GoEmotions \cite{demszky2020}, montrent qu'environ 17\,\% des
+textes portent au moins deux émotions simultanées, ce qui invalide
+l'approche mono-étiquette pour un grand nombre de cas réels.
 
 Trois limites structurelles freinent les approches existantes de
 détection multi-émotions, détaillées et documentées au chapitre~2 :
@@ -130,7 +129,7 @@ prétraitement et de la longueur de séquence. \\
 \hline
 Conception et modélisation &
 Formulation du problème, conception de l'architecture HAKE-MER et de ses
-quatre modules, définition des hypothèses de recherche H1--H4
+quatre modules, définition des hypothèses de recherche H1 à H4
 (chapitre~3). \\
 \hline
 Expérimentation et évaluation &
@@ -151,8 +150,9 @@ l'art en survey autonome en vue d'une valorisation après soutenance. \\
 
 Ce premier chapitre a présenté le cadre général du projet, formulé la
 problématique de la détection des émotions multiples dans les textes et
-défini les objectifs de recherche qui en découlent. Il a également décrit
-le plan de travail structurant la démarche adoptée dans ce mémoire. Le
-chapitre suivant propose une revue critique de la littérature, permettant
-de situer précisément l'architecture HAKE-MER par rapport aux travaux
-existants.
+défini les objectifs de recherche qui en découlent, ainsi que le plan de
+travail du mémoire. Pour rendre la question centrale opérationnelle, il
+reste à fixer la tâche et le corpus de référence, à identifier une
+baseline crédible et à examiner comment la littérature répond aux
+limitations L1 à L3 (étiquettes, structure du texte, classes rares) avant
+de positionner HAKE-MER ; c'est l'objet du chapitre~2.

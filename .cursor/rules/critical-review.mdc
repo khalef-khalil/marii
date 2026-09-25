@@ -44,6 +44,18 @@ The report should read like a **serious research memoire**, not a liability disc
 
 Integrity and confidence **coexist**: never invent results; never bury the contribution under hedging.
 
+## Chapter transitions
+
+Handoffs between chapters should feel **continuous**, not like a new abstract each time.
+
+**Do:** End each chapter with a **forward thread** (one concrete gap or next step), not a table-of-contents repeat. Open the next chapter by **picking up that thread** (reference the prior chapter's question or limitation once), then move into new material. Vary wording: do not copy the same numbered outline from conclusion to introduction.
+
+**Avoid:** Bland symmetry (conclusion lists five sections, introduction lists the same five sections). Stacked recaps of « ce chapitre a présenté… » without adding why the next chapter follows.
+
+## Section headings (no orphans)
+
+Never stack headings without prose between them: a `\section` must not be immediately followed by a `\subsection` (or lower) with no paragraph in between; same rule between `\subsection` and `\subsubsection`. After every sectioning command, add at least one sentence (bridge, scope, or lead-in) before the next heading or before a list/environment. Fix orphan stacks when editing a chapter.
+
 ## Always check
 
 - **Internal consistency:** title, abstracts, chapter claims, architecture (ch. 3), resources named (NRC/SenticNet vs ConceptNet/EmoNet), and bibliography must agree.
@@ -62,6 +74,6 @@ Integrity and confidence **coexist**: never invent results; never bury the contr
 
 Never mention Cursor rules, AI workflow, or “local download policy” in `.tex` files.
 
-**No em dashes** in `.tex` prose: do not use `---` (LaTeX em dash) or the Unicode character `—`. Rephrase with commas, colons, parentheses, or split into two sentences. Keep `--` only where LaTeX requires en-dashes (e.g. page ranges `4040--4054`, hyphens in compound terms). When editing existing chapters, replace em dashes you touch; do not introduce new ones.
+**No dash punctuation in report text:** In `.tex` chapters (prose, `\item` lists, headings, captions, table cells), do not use `---`, `—`, or `--` (LaTeX en/em dash). That includes module/hypothesis ranges (`M1--M4`, `H1--H4`, `L1--L3`) and association wording (`mot--émotion`): write « M1 à M4 », « H1 à H4 », « mot-émotion », commas, or parentheses instead. **List markers:** default French `itemize` prints em dashes; keep `\setlist[itemize]{label=\textbullet}` in `main.tex` (or explicit `[label=\textbullet]`). **Exception:** TikZ/`tikzpicture` arrows and `biblio.bib` page ranges (e.g. `4040--4054`) only.
 
 **Table grid lines:** Every `tabular` in the report must use **vertical rules between all columns** (`|...|` column spec, including outer borders) and **horizontal `\hline` between every row** (header, body, footer). No `booktabs`-style borderless tables (`\toprule`, `\midrule` without vertical bars) in chapter content. Prefer `\hline` after each data row, not only at top/bottom.
