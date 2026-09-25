@@ -3,13 +3,13 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Ce chapitre présente la conception de \textbf{HAKE-MER}
+Le chapitre~\ref{chap:etat_art} a fixé le corpus GoEmotions, une baseline
+par modèles pré-entraînés et les réponses littéraires aux limitations
+L1 à L3. Ce chapitre en déduit l'architecture \textbf{HAKE-MER}
 (\emph{Hierarchical Attention with Knowledge Enhancement for
-Multi-Emotion Recognition}), l'architecture proposée pour la
-détection multi-étiquettes des émotions. Nous formalisons d'abord le
-problème et les limites des approches existantes, puis nous
-détaillons les quatre modules de l'architecture et les hypothèses de
-recherche qu'elle permet de tester.
+Multi-Emotion Recognition}) : formalisation de la tâche, description
+des modules M1 à M4 et hypothèses H1 à H4 que le
+chapitre~\ref{chap:experimentation} fera trancher par ablation.
 
 \section{Formulation du problème et limites existantes}
 \label{sec:conception-formulation}
@@ -39,9 +39,11 @@ Trois limites des approches standards motivent la conception :
   représentation plate (le seul vecteur \texttt{[CLS]}) mélange les
   signaux portés par des phrases différentes ; les commentaires Reddit
   de GoEmotions comportent souvent plusieurs phrases \cite{demszky2020} ;
-\item \textbf{L3 : Pauvreté du signal pour les émotions rares.} Avec
-  moins de cent exemples d'entraînement pour les classes de la longue
-  traîne, l'apprentissage purement supervisé ne suffit pas.
+\item \textbf{L3 : Pauvreté du signal pour les émotions rares.} Les
+  fréquences d'émotions restent très inégales (par exemple l'admiration
+  environ trente fois plus fréquente que le deuil sur le corpus)
+  \cite{demszky2020}, ce qui limite l'apprentissage purement supervisé
+  sur la longue traîne.
 \end{itemize}
 
 \section{Vue d'ensemble de l'architecture}
@@ -138,11 +140,15 @@ vecteur de poids, $z_k = w_k^\top r_k + b_k$.
 \label{sec:conception-m3}
 
 Un vecteur affectif de document $c \in \mathbb{R}^{d_c}$ est extrait
-d'une ressource externe : le NRC Emotion Lexicon 
-($d_c{=}8$, huit émotions de base \cite{mohammad2013}) ou SenticNet
- ($d_c{=}5$, dimensions continues du
-modèle Hourglass). Il est projeté, borné, puis ajouté aux requêtes
-d'émotions, pondéré par une \emph{porte apprise} $g$ initialisée à
+d'une ressource externe. Pour le \textbf{NRC Emotion Lexicon}, on
+agrège au niveau document un score par émotion de base ($d_c{=}8$,
+cadre Plutchik \cite{mohammad2013}), puis on applique une table de
+correspondance vers les $K{=}28$ étiquettes GoEmotions (détail du
+mapping au chapitre~\ref{chap:experimentation}). Pour
+\textbf{SenticNet}, on agrège des scores conceptuels continus issus de
+SenticNet~5 \cite{cambria2018senticnet} ($d_c{=}5$ dans le pipeline
+prévu). Dans les deux cas, $c$ est projeté, borné, puis injecté dans
+les requêtes d'émotions via une \emph{porte apprise} $g$ initialisée à
 zéro :
 \begin{equation}
 \mathrm{prior} = \tanh(W_c\, c), \qquad
@@ -172,7 +178,8 @@ progressivement l'intensité de chaque émotion selon le texte.
 \label{sec:conception-hypotheses}
 
 Le protocole du chapitre~\ref{chap:experimentation} est conçu pour
-tester quatre hypothèses :
+tester quatre hypothèses. Chacune lie un module à une prédiction
+vérifiable sur GoEmotions, sans supposer de gains déjà mesurés :
 
 \begin{itemize}
 \item[\textbf{H1.}] La hiérarchie explicite (M1) améliore la
@@ -192,8 +199,8 @@ tester quatre hypothèses :
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 Ce chapitre a présenté la conception de HAKE-MER : quatre modules
-composables répondant chacun à une limite identifiée des approches
-existantes, avec deux portes apprises et interprétables (connaissance
-externe, intensité). Le chapitre suivant détaille le protocole d'évaluation par ablation
-cumulative à budget constant, sur deux backbones ; les résultats y
-seront reportés après exécution des expériences.
+composables répondant aux limitations L1 à L3, avec deux portes apprises
+et interprétables (connaissance externe, intensité). Le
+chapitre~\ref{chap:experimentation} précise le protocole d'ablation à
+budget constant, les backbones et les analyses qui permettront de
+valider ou d'infirmer H1 à H4.
