@@ -1,9 +1,50 @@
 \chapter*{Introduction générale}
-\addcontentsline{toc}{chapter}{Introduction générale} % to include the introduction to the table of content
-\markboth{Introduction générale}{} %To redefine the section page head
+\addcontentsline{toc}{chapter}{Introduction générale}
+\markboth{Introduction générale}{}
 
-% Exemple d'utilisation de la bibliographie utilisée \cite{webArticle2}. Le style utilisé est IEEE \cite{webArticle1}.\\
-\noindent
+Les textes produits en ligne — commentaires, messages, avis — véhiculent
+des états affectifs qui dépassent souvent une simple polarité positive ou
+négative. La \textbf{détection d'émotions} vise à identifier des catégories
+affectives fines (joie, colère, tristesse, peur, etc.), fréquemment
+\textbf{plusieurs à la fois} dans un même énoncé. Cette tâche relève de la
+classification \emph{multi-étiquettes} : chaque émotion est une décision
+binaire, et les cooccurrences ainsi que le \textbf{déséquilibre} des classes
+— quelques labels très fréquents, beaucoup d'autres rares — compliquent
+l'apprentissage et l'évaluation.
 
+Ce mémoire s'inscrit dans le Mastère de Recherche à l'Institut Supérieur
+d'Informatique (ISI), sous l'encadrement de M.~Sahbi Bahroun. Il porte sur
+la conception de \textbf{HAKE-MER} (\emph{Hierarchical Attention with
+Knowledge Enhancement for Multi-Emotion Recognition}), une architecture
+modulaire destinée à mieux exploiter la \textbf{structure} du texte
+(phrases, document), les \textbf{interactions entre émotions}, et des
+\textbf{ressources sémantiques externes} (lexiques affectifs). L'évaluation
+est planifiée sur le corpus GoEmotions \cite{demszky2020}, référence
+courante pour les émotions fines en anglais, avec un protocole d'ablation à
+budget d'entraînement constant et un accent sur le \textbf{F1-macro}, métrique
+sensible aux classes rares.
 
+\textbf{Contributions prévues} (à confirmer par les expériences) :
+\begin{itemize}[noitemsep]
+\item une architecture en quatre modules cumulables (encodage hiérarchique,
+      attention croisée, enrichissement lexical, pondération dynamique) ;
+\item un protocole expérimental explicite (hypothèses H1--H4, deux backbones
+      pré-entraînés, comparaison NRC / SenticNet) ;
+\item une analyse visant les performances \emph{par classe}, au-delà des
+      moyennes globales.
+\end{itemize}
 
+À ce stade, le travail documenté dans ce rapport correspond à la
+problématique, à l'état de l'art, à la conception et au protocole
+d'évaluation ; l'implémentation, l'entraînement et les tableaux de
+résultats restent à produire (chapitre~\ref{chap:experimentation}).
+
+\paragraph{Organisation du mémoire.}
+Le chapitre~\ref{chap:contexte} présente le contexte, la problématique et
+les objectifs. Le chapitre~\ref{chap:etat_art} situe HAKE-MER par rapport
+à la littérature sur les émotions multiples, l'attention hiérarchique et
+l'intégration de connaissances. Le chapitre~\ref{chap:conception} détaille
+l'architecture et les hypothèses de recherche. Le
+chapitre~\ref{chap:experimentation} fixe le cadre expérimental. Le
+chapitre~\ref{chap:perspectives} discute recommandations et prolongements.
+Une conclusion générale clôt le document.
