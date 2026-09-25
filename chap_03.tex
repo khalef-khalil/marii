@@ -70,35 +70,62 @@ chapitre~\ref{chap:experimentation}.
 
 \begin{figure}[H]
 \centering
-\resizebox{\textwidth}{!}{%
+\resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
   font=\small,
-  node distance=4mm and 6mm,
-  box/.style={draw, rounded corners=2pt, align=center, minimum height=9mm, inner sep=3pt},
-  mod/.style={box, thick},
-  flow/.style={-{Stealth[length=2.5mm]}, thick}
+  node distance=8mm and 12mm,
+  every node/.style={align=center},
+  box/.style={draw, rounded corners=3pt, minimum height=13mm,
+    inner sep=5pt, minimum width=26mm},
+  mod/.style={box, line width=1.05pt, minimum width=34mm, minimum height=15mm},
+  flow/.style={-{Stealth[length=3mm]}, line width=0.95pt},
+  lbl/.style={font=\itshape\footnotesize, text=gray!45!black}
 ]
-\node[box, fill=gray!12] (input) {Texte d'entrée\\ $M$ phrases $\times$ 32 tokens};
-\node[box, fill=gray!22, right=of input] (plm) {Backbone partagé\\ RoBERTa / DistilBERT};
-\node[mod, fill=red!14, right=of plm] (m1) {\textbf{Module 1}\\ Encodage Hiérarchique\\ attention mot$\to$phrase};
-\node[mod, fill=blue!12, right=of m1] (xatt) {\textbf{Module 2}\\ attention croisée\\ émotion$\to$phrases};
-\node[box, fill=blue!8, right=of xatt] (inter) {auto-attention\\ inter-émotions};
-\node[mod, fill=violet!14, right=of inter] (m4) {\textbf{Module 4}\\ Pondération\\ Dynamique};
-\node[box, fill=gray!25, right=of m4] (out) {$K$ sorties\\ sigmoïdes};
-\node[box, fill=blue!6, below=9mm of xatt] (q) {$K$ requêtes d'émotions\\ $Q_k + g\cdot\mathrm{prior}$};
-\node[mod, fill=green!16, below=9mm of q] (gate) {\textbf{Module 3}\\ Enrichissement Sémantique\\ porte $g$ (init.~0)};
-\node[box, fill=green!8, left=of gate] (proj) {projection\\ $+\;\tanh$};
-\node[box, fill=green!12, left=of proj] (nrc) {Lexique affectif\\ (NRC / SenticNet)};
+\node[box, fill=gray!12, minimum width=28mm] (input)
+  {Texte d'entrée\\[-2pt]{\footnotesize $M$ phrases $\times$ 32 tokens}};
+\node[box, fill=gray!22, right=of input, minimum width=30mm] (plm)
+  {Backbone partagé\\[-2pt]{\footnotesize RoBERTa / DistilBERT}};
+\node[mod, fill=red!14, right=of plm] (m1)
+  {\textbf{Module 1}\\[-2pt]{\footnotesize Encodage hiérarchique}\\[-2pt]{\footnotesize attention mot$\to$phrase}};
+\node[mod, fill=blue!12, right=of m1] (xatt)
+  {\textbf{Module 2}\\[-2pt]{\footnotesize Attention croisée}\\[-2pt]{\footnotesize émotion $\to$ phrases}};
+\node[mod, fill=blue!10, right=of xatt, minimum width=28mm] (inter)
+  {\footnotesize Auto-attention\\[-2pt]{\footnotesize inter-émotions}};
+\node[mod, fill=violet!14, right=of inter, minimum width=28mm] (m4)
+  {\textbf{Module 4}\\[-2pt]{\footnotesize Pondération}\\[-2pt]{\footnotesize dynamique}};
+\node[box, fill=gray!25, right=of m4, minimum width=24mm] (out)
+  {$K$ sorties\\[-2pt]{\footnotesize sigmoïdes}};
+
+\coordinate (m3mid) at ($(m1.south)!0.5!(xatt.south)+(0,-2.6cm)$);
+\node[box, fill=green!12, minimum width=30mm] (nrc) at ($(m3mid)+(-6.2cm,0)$)
+  {Lexique affectif\\[-2pt]{\footnotesize NRC / SenticNet}};
+\node[box, fill=green!8, minimum width=22mm, right=14mm of nrc] (proj)
+  {Projection\\[-2pt]{\footnotesize $+\tanh$}};
+\node[mod, fill=green!16, right=14mm of proj, minimum width=32mm] (gate)
+  {\textbf{Module 3}\\[-2pt]{\footnotesize Enrichissement}\\[-2pt]{\footnotesize porte $g{=}0$}};
+\node[box, fill=blue!6, minimum width=32mm, right=14mm of gate] (q)
+  {$K$ requêtes\\[-2pt]{\footnotesize $\tilde{Q}_k = Q_k + g\,\mathrm{prior}$}};
+
+\node[lbl, above=3mm of m1] (lblmain) {Tronc principal};
+\node[lbl, below=3mm of gate] (lblm3) {Branche lexicale (M3)};
+
 \draw[flow] (input) -- (plm);
 \draw[flow] (plm) -- (m1);
-\draw[flow] (m1) -- node[above, font=\footnotesize\itshape] {$s_1..s_M$} (xatt);
+\draw[flow] (m1) -- node[above, font=\footnotesize\itshape] {$s_1,\ldots,s_M$} (xatt);
 \draw[flow] (xatt) -- (inter);
 \draw[flow] (inter) -- (m4);
 \draw[flow] (m4) -- (out);
-\draw[flow] (q) -- (xatt);
 \draw[flow] (nrc) -- (proj);
 \draw[flow] (proj) -- (gate);
 \draw[flow] (gate) -- (q);
+\draw[flow] (q.north) -- ++(0,0.55) -| (xatt.south);
+
+\begin{scope}[on background layer]
+  \node[draw=gray!55, dashed, rounded corners=5pt, inner sep=11pt,
+    fit=(input)(plm)(m1)(xatt)(inter)(m4)(out)(lblmain)] {};
+  \node[draw=green!45!black, dashed, rounded corners=5pt, inner sep=11pt,
+    fit=(nrc)(proj)(gate)(q)(lblm3)] {};
+\end{scope}
 \end{tikzpicture}}
 \caption{Architecture de HAKE-MER : tronc principal (M1, M2, M4)
 et branche lexicale (M3) alimentant les requêtes d'émotions.}
