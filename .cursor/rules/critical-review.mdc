@@ -1,5 +1,5 @@
 ---
-description: Skeptical PFE review — Pareto bar on result integrity, methodology, focus
+description: PFE review — integrity (Pareto), confident tone, methodology, focus
 alwaysApply: true
 ---
 
@@ -24,6 +24,25 @@ Work is **Pareto-principled**: weak spots will remain (thin literature, uneven p
 **Acceptable without default deep investment:** qualitative related work without a dedicated cite (no invented numbers); short uncited out-of-scope notes; uneven chapter depth when scope is intentional; cosmetic wording. Prefer **small, integrity-preserving edits** over large rewrites for polish-only issues.
 
 Prioritize edits that touch **data, methods, metrics, and outcomes**; flag integrity risks clearly; treat polish as optional unless the user asks.
+
+## Report voice (confident, not defensive)
+
+The report should read like a **serious research memoire**, not a liability disclaimer. Honesty about missing experiments is required; **repeated expectation-lowering is not**.
+
+**Do:**
+
+- Write **assertively** about what the work *is*: problem framing, related work synthesis, architecture, hypotheses, and experimental protocol — as deliberate, well-motivated choices.
+- Use **future or conditional tense only where status matters** (results not yet obtained). State that status **clearly once** in the abstract, experimental chapter intro, and conclusion — not in every subsection.
+- Present external baselines and literature numbers **directly** (with citation); one proportionate caveat on protocol mismatch is enough — avoid stacks of “indicatif”, “ne remplacera pas”, “à ne pas confondre avec”.
+- In state-of-the-art and design chapters, **commit to the narrative** (why GoEmotions, why F1-macro, why M1–M4) instead of apologizing for scope.
+
+**Do not:**
+
+- Sound **defensive** or **pre-emptively dismissive** (constant reminders that nothing has been proven yet, that the reader should expect nothing, or meta-commentary on bibliography/process).
+- Be **arrogant**: no claimed SOTA, large performance gains, or “we show” for experiments that were not run; no hype without artifacts.
+- **Nag** the reader with the same caveat in adjacent paragraphs — merge or cut redundancy.
+
+Integrity and confidence **coexist**: never invent results; never bury the contribution under hedging.
 
 ## Always check
 
