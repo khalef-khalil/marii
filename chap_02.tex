@@ -100,10 +100,10 @@ inter-annotateurs}. Sur GoEmotions, seulement 31\,\% des exemples
 obtiennent un accord d'au moins une étiquette entre trois annotateurs
 ou plus \cite{demszky2020} ; 1{,}6\,\% sont explicitement jugés difficiles
 à étiqueter. Ces biais compliquent l'apprentissage et
-l'interprétation des erreurs. Le \textbf{déséquilibre extrême} ---
-quelques classes très fréquentes, dont \emph{neutral}, face à des
-émotions rares (certaines avec un rappel quasi nul dans la ligne de
-base BERT des auteurs) --- fait que les métriques globales favorisant
+l'interprétation des erreurs. Le \textbf{déséquilibre extrême}
+(quelques classes très fréquentes, dont \emph{neutral}, face à des
+émotions rares, certaines avec un rappel quasi nul dans la ligne de
+base BERT des auteurs) fait que les métriques globales favorisant
 les classes majoritaires peuvent masquer un échec sur les classes
 minoritaires, pourtant centrales pour la problématique de ce mémoire.
 
@@ -139,7 +139,7 @@ implicites.
 Les architectures convolutionnelles et récurrentes (CNN, LSTM,
 BiLSTM) ont ensuite permis l'apprentissage de représentations à
 partir du texte brut. Les mécanismes d'\textbf{attention} \cite{bahdanau2015,vaswani2017} permettent
-de pondérer les tokens selon leur pertinence pour la prédiction ---
+de pondérer les tokens selon leur pertinence pour la prédiction,
 point de départ des encodeurs modernes et des extensions
 \emph{label-specific} où chaque émotion dispose de sa propre
 lecture du texte.
@@ -149,8 +149,9 @@ lecture du texte.
 L'affinement de \textbf{modèles de langue pré-entraînés}
 \cite{devlin2019,liu2019roberta,sanh2019distilbert} avec une tête
 multi-étiquettes sigmoïde constitue aujourd'hui la \textbf{ligne de
-base} la plus répandue sur GoEmotions \cite{demszky2020}. Cette configuration --- encodeur contextuel + classifieur
-binaire par émotion --- sert de point de comparaison obligatoire dans
+base} la plus répandue sur GoEmotions \cite{demszky2020}. Cette
+configuration (encodeur contextuel + classifieur binaire par émotion)
+sert de point de comparaison obligatoire dans
 notre protocole d'ablation : toute contribution architecturale (M1,
 M2, M3) doit être mesurée \emph{à budget et backbone constants} par
 rapport à cet affinage standard.
@@ -158,7 +159,7 @@ rapport à cet affinage standard.
 Sur la taxonomie complète (28 classes), les auteurs rapportent pour
 BERT-base \cite{devlin2019} un \textbf{F1-macro de 0{,}46} sur leur
 jeu de test (précision macro 0{,}40, rappel macro 0{,}63)
-\cite{demszky2020}, avec de fortes disparités par émotion --- ordre de
+\cite{demszky2020}, avec de fortes disparités par émotion ; ordre de
 grandeur bibliographique obtenu avec leur filtrage, split 80/10/10 et
 hyperparamètres. Nos comparaisons principales restent les ablations
 internes au protocole du chapitre~\ref{chap:experimentation}.
@@ -184,8 +185,8 @@ interactions entre émotions.
 De nombreux textes portent des signaux affectifs \textbf{localisés}
 à l'échelle de la phrase : une phrase peut exprimer la gratitude,
 une autre la surprise. Aplatir le document en un unique vecteur
-(\texttt{[CLS]} ou pooling global) mélange ces signaux --- limitation
-\textbf{L2} du chapitre~\ref{chap:conception}. Les architectures
+(\texttt{[CLS]} ou pooling global) mélange ces signaux (limitation
+\textbf{L2} du chapitre~\ref{chap:conception}). Les architectures
 \textbf{hiérarchiques} visent à encoder d'abord les phrases (ou
 segments), puis à agréger au niveau document avec des poids appris.
 
@@ -217,7 +218,7 @@ d'émotions ou dimensions de sentiment) peuvent fournir un signal
 auxiliaire, en particulier lorsque les mots du texte sont couverts
 par le lexique. L'intégration se fait typiquement par
 concaténation, features document-level, initialisation d'embeddings
-ou --- comme dans HAKE-MER --- injection contrôlée via une porte
+ou, comme dans HAKE-MER, injection contrôlée via une porte
 apprise sur les requêtes d'attention par émotion.
 
 \subsection{Ressources retenues dans ce mémoire : NRC et SenticNet}
@@ -266,15 +267,15 @@ composantes de HAKE-MER.
 \hline
 \textbf{Limite} & \textbf{Manifestation} & \textbf{Module HAKE-MER} \\
 \hline
-L1 — Indépendance des étiquettes &
+L1 : Indépendance des étiquettes &
 Sorties sigmoïdes sur un contexte global unique &
 M2 : attention croisée par émotion \\
 \hline
-L2 — Structure du texte &
+L2 : Structure du texte &
 Un seul vecteur document &
 M1 : encodage hiérarchique phrase$\to$doc \\
 \hline
-L3 — Classes rares &
+L3 : Classes rares &
 Peu d'exemples supervisés &
 M3 : prior lexical (NRC / SenticNet) ; M4 : pondération dynamique \\
 \hline

@@ -37,12 +37,12 @@ surprise, etc.), souvent multiples et simultanées au sein d'un même énoncé.
 
 La plupart des travaux en classification des émotions textuelles reposent
 sur l'hypothèse simplificatrice qu'un texte exprime une émotion dominante
-unique . Cette hypothèse ne reflète pas la réalité des
+unique. Cette hypothèse ne reflète pas la réalité des
 états affectifs humains, qui se manifestent fréquemment sous forme de
-mélanges d'émotions coexistant dans un même énoncé — par exemple
+mélanges d'émotions coexistant dans un même énoncé, par exemple
 l'expression simultanée de la surprise et de la joie, ou de la déception et
 de la colère. Les jeux de données récents à annotation multi-étiquettes,
-tels que GoEmotions , révèlent qu'une proportion
+tels que GoEmotions \cite{demszky2020}, révèlent qu'une proportion
 substantielle des textes porte effectivement plusieurs émotions
 simultanées, ce qui invalide l'approche mono-étiquette pour un grand nombre
 de cas réels.
@@ -66,7 +66,7 @@ détection multi-émotions, détaillées et documentées au chapitre~2 :
   émotions dans les corpus réels suit une loi de puissance : quelques
   émotions fréquentes (joie, neutralité) dominent très largement les
   émotions rares (deuil, soulagement, nervosité), ce qui pénalise
-  l'apprentissage des classes minoritaires — précisément celles pour
+  l'apprentissage des classes minoritaires, précisément celles pour
   lesquelles la détection est la plus critique en pratique.
 \end{itemize}
 
@@ -99,7 +99,7 @@ Pour répondre à cette question, ce travail poursuit les objectifs suivants :
   l'architecture proposée ;
 \item \textbf{Analyser} les résultats au niveau de la classe, au-delà des
   métriques globales, pour évaluer l'apport réel de chaque composante sur
-  les émotions rares — l'enjeu applicatif central du sujet.
+  les émotions rares, enjeu applicatif central du sujet.
 \end{itemize}
 
 \section{Plan de travail}
@@ -124,8 +124,7 @@ détection multi-émotions, d'attention hiérarchique et d'intégration de
 connaissances externes (chapitre~2), identification du positionnement de
 HAKE-MER. \\[4pt]
 Compréhension et préparation des données &
-Analyse du jeu de données GoEmotions (distribution des étiquettes,
-déséquilibre, proportion de textes multi-phrases), choix du
+Exploitation des statistiques GoEmotions (chapitre~2), choix du
 prétraitement et de la longueur de séquence. \\[4pt]
 Conception et modélisation &
 Formulation du problème, conception de l'architecture HAKE-MER et de ses

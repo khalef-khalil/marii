@@ -31,15 +31,15 @@ Une étiquette est prédite si $\hat{y}_k > 0{,}5$.
 Trois limites des approches standards motivent la conception :
 
 \begin{itemize}
-\item \textbf{L1 — Indépendance des étiquettes.} La tête
+\item \textbf{L1 : Indépendance des étiquettes.} La tête
   « pertinence binaire » sur un vecteur global partagé ignore les
   co-occurrences d'émotions, pourtant systématiques dans les données
   (chapitre 2) ;
-\item \textbf{L2 — Cécité à la structure du texte.} Une
+\item \textbf{L2 : Cécité à la structure du texte.} Une
   représentation plate (le seul vecteur \texttt{[CLS]}) mélange les
-  signaux portés par des phrases différentes — or 42{,}2\,\% des
-  exemples de GoEmotions sont multi-phrases ;
-\item \textbf{L3 — Pauvreté du signal pour les émotions rares.} Avec
+  signaux portés par des phrases différentes ; les commentaires Reddit
+  de GoEmotions comportent souvent plusieurs phrases \cite{demszky2020} ;
+\item \textbf{L3 : Pauvreté du signal pour les émotions rares.} Avec
   moins de cent exemples d'entraînement pour les classes de la longue
   traîne, l'apprentissage purement supervisé ne suffit pas.
 \end{itemize}
@@ -100,7 +100,7 @@ au-dessus d'un backbone partagé.}
 \label{sec:conception-m1}
 
 Le texte est segmenté en phrases ($M{=}4$ au plus, 32 tokens par
-phrase — bornes fixées au chapitre~\ref{chap:experimentation}), encodées par
+phrase, bornes fixées au chapitre~\ref{chap:experimentation}), encodées par
 le backbone en un seul appel vectorisé. Pour une phrase de
 représentations de tokens $H=(h_1,\dots,h_T)$ et de masque $m$,
 l'agrégation par \emph{attention additive} calcule :
@@ -139,7 +139,7 @@ vecteur de poids, $z_k = w_k^\top r_k + b_k$.
 
 Un vecteur affectif de document $c \in \mathbb{R}^{d_c}$ est extrait
 d'une ressource externe : le NRC Emotion Lexicon 
-($d_c{=}10$, catégories binaires) ou SenticNet
+($d_c{=}8$, huit émotions de base \cite{mohammad2013}) ou SenticNet
  ($d_c{=}5$, dimensions continues du
 modèle Hourglass). Il est projeté, borné, puis ajouté aux requêtes
 d'émotions, pondéré par une \emph{porte apprise} $g$ initialisée à
@@ -152,7 +152,7 @@ zéro :
 À l'initialisation ($g{=}0$), le module 3 est strictement équivalent
 au module 2 : le modèle apprend la quantité de connaissance à
 injecter, et la valeur finale $|g|$ mesure directement l'utilisation
-de la ressource — une sonde d'interprétabilité intégrée.
+de la ressource, une sonde d'interprétabilité intégrée.
 
 \section{Module 4 : Pondération Dynamique}
 \label{sec:conception-m4}
@@ -186,7 +186,7 @@ tester quatre hypothèses :
   sur la taxonomie cible (NRC) est plus efficace qu'une ressource
   \emph{dimensionnelle} abstraite (SenticNet) ;
 \item[\textbf{H4.}] Chaque module doit justifier son ajout par
-  ablation contrôlée — la plausibilité architecturale ne suffit pas.
+  ablation contrôlée : la plausibilité architecturale ne suffit pas.
 \end{itemize}
 
 \section*{Conclusion}
