@@ -63,3 +63,5 @@ Integrity and confidence **coexist**: never invent results; never bury the contr
 Never mention Cursor rules, AI workflow, or “local download policy” in `.tex` files.
 
 **No em dashes** in `.tex` prose: do not use `---` (LaTeX em dash) or the Unicode character `—`. Rephrase with commas, colons, parentheses, or split into two sentences. Keep `--` only where LaTeX requires en-dashes (e.g. page ranges `4040--4054`, hyphens in compound terms). When editing existing chapters, replace em dashes you touch; do not introduce new ones.
+
+**Table grid lines:** Every `tabular` in the report must use **vertical rules between all columns** (`|...|` column spec, including outer borders) and **horizontal `\hline` between every row** (header, body, footer). No `booktabs`-style borderless tables (`\toprule`, `\midrule` without vertical bars) in chapter content. Prefer `\hline` after each data row, not only at top/bottom.
