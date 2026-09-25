@@ -3,12 +3,11 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Ce chapitre définit le cadre expérimental prévu pour évaluer
-HAKE-MER sur GoEmotions. Il fixe le jeu de données, les métriques,
-le protocole d'ablation et les analyses à produire \emph{une fois les
-expériences menées}. Les tableaux de résultats et la confrontation
-aux hypothèses H1--H4 seront insérés après exécution ; ils ne figurent
-pas ici pour éviter toute confusion entre plan et résultats obtenus.
+Ce chapitre définit le cadre expérimental pour évaluer HAKE-MER sur
+GoEmotions : jeu de données, métriques, protocole d'ablation et
+analyses associées. Il expose le protocole ; les tableaux de résultats
+et la confrontation aux hypothèses H1--H4 compléteront le mémoire
+après entraînement.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -17,10 +16,10 @@ pas ici pour éviter toute confusion entre plan et résultats obtenus.
 Les expériences ciblent GoEmotions  (configuration
 \emph{simplified}) : 43\,410 exemples d'entraînement, 5\,426 de
 validation et 5\,427 de test, 27 émotions plus la classe neutre
-($K{=}28$), en multi-étiquettes. L'analyse exploratoire du corpus
-(menée sur les splits officiels) motive trois choix de conception :
+($K{=}28$), en multi-étiquettes. Les propriétés du corpus documentées
+au chapitre~\ref{chap:etat_art} motivent trois choix de conception :
 \textbf{déséquilibre} des classes (F1-macro comme métrique
-principale), \textbf{multi-étiquette} réelle (environ 16\,\% des
+principale), \textbf{multi-étiquette} réelle (environ 17\,\% des
 exemples avec au moins deux émotions), et \textbf{structure}
 multi-phrases (justifiant un prétraitement hiérarchique ; les bornes
 $M{=}4$ phrases et 32 tokens par phrase seront validées empiriquement
@@ -77,9 +76,9 @@ Une fois les modèles entraînés :
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
-\item repère indicatif par rapport aux baselines publiées sur
-      GoEmotions, avec mention explicite des différences de protocole
-      (non reproductibilité stricte du setup original).
+\item comparaison commentée avec les baselines publiées sur
+      GoEmotions \cite{demszky2020}, en explicitant les écarts de
+      protocole le cas échéant.
 \end{itemize}
 
 \section{Points de vigilance méthodologiques}

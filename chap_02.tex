@@ -5,11 +5,9 @@
 \addcontentsline{toc}{section}{Introduction}
 
 Ce chapitre situe le travail dans la littérature sur la
-\textbf{détection multi-étiquettes des émotions dans le texte}. Il
-ne prétend pas couvrir l'ensemble du traitement automatique des
-langues affectif : il sélectionne les fils directement liés à
-\textbf{HAKE-MER} et au protocole d'évaluation prévu au
-chapitre~\ref{chap:experimentation}.
+\textbf{détection multi-étiquettes des émotions dans le texte}, en
+retenant les fils directement liés à \textbf{HAKE-MER} et au
+protocole d'évaluation du chapitre~\ref{chap:experimentation}.
 
 La démarche est organisée en cinq blocs : (1)~formulation de la
 tâche, jeux de données et métriques ; (2)~approches neuronales
@@ -46,7 +44,7 @@ chapitre~\ref{chap:conception}.
 
 \subsection{Corpus de référence : GoEmotions}
 
-L'évaluation prévue de ce mémoire cible le jeu \textbf{GoEmotions}
+L'évaluation de ce mémoire cible le jeu \textbf{GoEmotions}
 \cite{demszky2020} : commentaires Reddit annotés en
 \textbf{27 émotions fines} plus une classe \emph{neutral}, en
 configuration multi-étiquettes. Il s'agit, à notre connaissance, du
@@ -91,8 +89,8 @@ Accord $\geq$1 étiquette (3+ annotateurs) & 17\,763 (31\,\%) \\
 \end{tabular}
 \end{table}
 
-D'autres benchmarks (SemEval, etc.) pourront être mentionnés comme
-prolongements une fois une validation externe réellement menée.
+D'autres benchmarks (SemEval, etc.) pourront compléter une validation
+externe dans des travaux ultérieurs.
 
 \subsection{Annotation, bruit et déséquilibre}
 
@@ -155,16 +153,15 @@ base} la plus répandue sur GoEmotions \cite{demszky2020}. Cette configuration -
 binaire par émotion --- sert de point de comparaison obligatoire dans
 notre protocole d'ablation : toute contribution architecturale (M1,
 M2, M3) doit être mesurée \emph{à budget et backbone constants} par
-rapport à ce affinage standard.
+rapport à cet affinage standard.
 
 Sur la taxonomie complète (28 classes), les auteurs rapportent pour
 BERT-base \cite{devlin2019} un \textbf{F1-macro de 0{,}46} sur leur
 jeu de test (précision macro 0{,}40, rappel macro 0{,}63)
-\cite{demszky2020}, avec de fortes disparités par émotion. Ce chiffre
-sert de \textbf{repère externe indicatif} : il dépend de leur
-filtrage, de leur split 80/10/10 et de leur réglage d'entraînement ;
-il ne remplacera pas nos comparaisons internes à backbone et budget
-constants au chapitre~\ref{chap:experimentation}.
+\cite{demszky2020}, avec de fortes disparités par émotion --- ordre de
+grandeur bibliographique obtenu avec leur filtrage, split 80/10/10 et
+hyperparamètres. Nos comparaisons principales restent les ablations
+internes au protocole du chapitre~\ref{chap:experimentation}.
 
 \subsection{Dépendances entre émotions (motivation du module M2)}
 
@@ -229,13 +226,13 @@ Le protocole prévoit de comparer deux types de ressources à
 architecture fixée (M1+M2+M3) :
 \begin{itemize}
 \item le \textbf{NRC Emotion Lexicon} \cite{mohammad2013} : lexique
-      d'associations mot--émotion obtenu par crowdsourcing, avec des
-      catégories d'émotions discrètes comparables à la taxonomie
-      GoEmotions ;
+      d'associations mot--émotion obtenu par crowdsourcing, fondé sur
+      huit émotions de base (cadre Plutchik) et projeté vers les 28
+      étiquettes GoEmotions ;
 \item \textbf{SenticNet} \cite{cambria2018senticnet} : ressource de
       sentiment à base de \emph{primitives conceptuelles} et
       d'embeddings contextuels, produisant des scores affectifs
-      continus exigeant une mise en correspondance avec les 28 classes.
+      continus, également projetés vers les 28 classes.
 \end{itemize}
 L'hypothèse H3 (chapitre~\ref{chap:conception}) est que
 l'\textbf{alignement taxonomique} entre lexique et labels cible
@@ -279,7 +276,7 @@ M1 : encodage hiérarchique phrase$\to$doc \\
 \hline
 L3 — Classes rares &
 Peu d'exemples supervisés &
-M3 : prior lexical (NRC / SenticNet) ; M4 : pondération dynamique (à valider) \\
+M3 : prior lexical (NRC / SenticNet) ; M4 : pondération dynamique \\
 \hline
 \end{tabular}
 \end{table}
@@ -316,19 +313,19 @@ structure, connaissances externes).
         Signal pour mots affectifs &
         Souvent combiné sans hiérarchie ni interaction entre labels \\
         \hline
-        \textbf{HAKE-MER (prévu)} &
+        \textbf{HAKE-MER} &
         Modules M1--M4 ablatables &
-        Coût et gains \emph{à démontrer} expérimentalement \\
+        Coût computationnel ; évaluation par ablation \\
         \hline
     \end{tabular}
 \end{table}
 
-HAKE-MER vise une architecture \textbf{unifiée et ablatable} :
-hiérarchie (M1), interactions inter-émotions (M2), enrichissement
-lexical comparé NRC/SenticNet (M3), pondération dynamique des
-intensités (M4, dont l'utilité reste une hypothèse à tester). Aucun
-gain de performance ne sera assumé dans ce chapitre : l'état de
-l'art fixe le \emph{cadre conceptuel} ; la preuve relève du
+HAKE-MER réunit ces axes dans une architecture \textbf{unifiée et
+ablatable} : hiérarchie (M1), interactions inter-émotions (M2),
+enrichissement lexical comparé NRC/SenticNet (M3), pondération
+dynamique des intensités (M4). Ce chapitre établit le \emph{cadre
+conceptuel} et les arguments de littérature qui motivent chaque module ;
+l'évaluation quantitative est développée au
 chapitre~\ref{chap:experimentation}.
 
 \section*{Conclusion}
@@ -338,7 +335,5 @@ Cet état de l'art a resserré la littérature autour de cinq axes
 directement utiles au mémoire : tâche et métriques sur GoEmotions,
 baselines par modèles pré-entraînés, modélisation des dépendances
 entre émotions, encodage hiérarchique, et enrichissement lexical
-externe. Les références citées dans ce chapitre disposent d'une copie locale
-vérifiée (voir bibliographie). Le chapitre suivant formalise
-l'architecture HAKE-MER et
-les hypothèses H1--H4 qui en découlent.
+externe. Le chapitre suivant formalise l'architecture HAKE-MER et les
+hypothèses H1--H4 qui en découlent.
