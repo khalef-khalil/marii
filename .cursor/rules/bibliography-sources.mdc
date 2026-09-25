@@ -1,19 +1,26 @@
 ---
-description: Bibliography paused — no citations until sources verified
+description: Bibliography requires local verified PDF before citation
 alwaysApply: true
 ---
 
-# Bibliography (currently disabled)
+# Bibliography and local sources (PFE report)
 
-The report has **no bibliography and no `\cite{}` commands** until the team deliberately re-enables them.
+## Download-before-cite
 
-When bibliography is turned back on:
+Every `\cite{...}` in the report **must** have a file saved under `reference/sources/` **before** the citation is added.
 
-1. Save each source under `reference/sources/{citekey}.pdf` (or allowed alternative).
-2. Add a verified BibTeX entry in `biblio.bib` with `file = {reference/sources/...}`.
-3. Uncomment `\addbibresource{biblio.bib}` in `tpl/isipfe.cls` and `\printbibliography` in `main.tex`.
-4. Only then add `\cite{...}` in the report.
+- **Storage:** `reference/sources/{citekey}.pdf` (preferred)
+- **BibTeX:** `biblio.bib` entry must include `file = {reference/sources/{citekey}.pdf}`
+- If a source cannot be downloaded and checked, **do not cite it**
 
-If a source cannot be downloaded and checked, **do not cite it**.
+## Current scope
 
-Never mention Cursor rules or download policy in report `.tex` text.
+Chapter~2 (`chap_02.tex`) uses a **minimal verified set** (GoEmotions, Transformer stack, HAN, NRC, SenticNet). Other chapters should gain citations only as PDFs are added — do not restore the old bulk `biblio.bib` blindly.
+
+## Re-enable checklist
+
+Bibliography printing is active in `main.tex` / `tpl/isipfe.cls`. Adding new keys requires the PDF + bib entry first.
+
+## Report text
+
+Never mention Cursor rules or download policy in `.tex` files.

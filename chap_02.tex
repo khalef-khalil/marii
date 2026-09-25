@@ -47,7 +47,7 @@ chapitre~\ref{chap:conception}.
 \subsection{Corpus de référence : GoEmotions}
 
 L'évaluation prévue de ce mémoire cible le jeu \textbf{GoEmotions}
-(Demszky et al., 2020) : commentaires Reddit annotés en
+\cite{demszky2020} : commentaires Reddit annotés en
 \textbf{27 émotions fines} plus une classe \emph{neutral}, en
 configuration multi-étiquettes. Ce corpus est devenu une référence
 courante pour la granularité affective au-delà de la polarité,
@@ -55,10 +55,11 @@ notamment parce qu'une part non négligeable des exemples comporte
 plusieurs étiquettes et que la distribution des classes est très
 déséquilibrée.
 
-Les statistiques officielles du jeu (splits train/validation/test,
-fréquences par émotion, proportion de textes multi-étiquettes,
-longueur moyenne) doivent être reprises \emph{depuis la publication
-source} avant toute affirmation chiffrée dans le rapport final ; elles
+Les statistiques officielles du jeu \cite{demszky2020} (splits
+train/validation/test, fréquences par émotion, proportion de textes
+multi-étiquettes, longueur moyenne) doivent être reprises \emph{depuis
+la publication source} avant toute affirmation chiffrée dans le
+rapport final ; elles
 motivent le choix du F1-macro et le prétraitement hiérarchique au
 chapitre~\ref{chap:experimentation}. D'autres benchmarks (SemEval,
 etc.) pourront être mentionnés comme prolongements une fois une
@@ -107,7 +108,7 @@ implicites.
 
 Les architectures convolutionnelles et récurrentes (CNN, LSTM,
 BiLSTM) ont ensuite permis l'apprentissage de représentations à
-partir du texte brut. Les mécanismes d'\textbf{attention} permettent
+partir du texte brut. Les mécanismes d'\textbf{attention} \cite{bahdanau2015,vaswani2017} permettent
 de pondérer les tokens selon leur pertinence pour la prédiction ---
 point de départ des encodeurs modernes et des extensions
 \emph{label-specific} où chaque émotion dispose de sa propre
@@ -115,17 +116,18 @@ lecture du texte.
 
 \subsection{Modèles pré-entraînés et ligne de base}
 
-L'affinement de \textbf{modèles de langue pré-entraînés} (BERT,
-RoBERTa, DistilBERT, etc.) avec une tête multi-étiquettes sigmoïde
-constitue aujourd'hui la \textbf{ligne de base} la plus répandue sur
-GoEmotions. Cette configuration --- encodeur contextuel + classifieur
+L'affinement de \textbf{modèles de langue pré-entraînés}
+\cite{devlin2019,liu2019roberta,sanh2019distilbert} avec une tête
+multi-étiquettes sigmoïde constitue aujourd'hui la \textbf{ligne de
+base} la plus répandue sur GoEmotions \cite{demszky2020}. Cette configuration --- encodeur contextuel + classifieur
 binaire par émotion --- sert de point de comparaison obligatoire dans
 notre protocole d'ablation : toute contribution architecturale (M1,
 M2, M3) doit être mesurée \emph{à budget et backbone constants} par
 rapport à ce affinage standard.
 
-Les chiffres publiés par les auteurs de GoEmotions pour un BERT-base
-affiné sur la taxonomie complète pourront servir de \textbf{repère
+Les chiffres publiés par les auteurs de GoEmotions \cite{demszky2020}
+pour un BERT-base \cite{devlin2019} affiné sur la taxonomie complète
+pourront servir de \textbf{repère
 indicatif} uniquement si le protocole (époques, longueur de
 séquence, recherche d'hyperparamètres) est explicitement comparé ;
 ils ne remplaceront pas nos comparaisons internes contrôlées.
@@ -158,10 +160,11 @@ segments), puis à agréger au niveau document avec des poids appris.
 
 \subsection{Travaux fondateurs et extensions Transformer}
 
-Le réseau d'attention hiérarchique (HAN) pour la classification de
-documents illustre le schéma mot$\to$phrase$\to$document avec
-attention aux deux niveaux. Des variantes récentes combinent
-Transformers, attention multi-têtes et pooling par segment pour les
+Le réseau d'attention hiérarchique (HAN) \cite{yang2016} pour la
+classification de documents illustre le schéma
+mot$\to$phrase$\to$document avec attention aux deux niveaux. Des
+variantes récentes combinent Transformers \cite{vaswani2017},
+attention multi-têtes et pooling par segment pour les
 textes longs ou multi-phrases. Pour la détection d'émotions
 multi-étiquettes, l'enjeu n'est pas seulement la longueur du
 document mais la \textbf{séparation des signaux affectifs} portés
@@ -191,12 +194,12 @@ apprise sur les requêtes d'attention par émotion.
 Le protocole prévoit de comparer deux types de ressources à
 architecture fixée (M1+M2+M3) :
 \begin{itemize}
-\item le \textbf{NRC Emotion Lexicon} (Mohammad et Turney, 2013) :
+\item le \textbf{NRC Emotion Lexicon} \cite{mohammad2013} :
       catégories d'émotions alignées sur une taxonomie discrete,
       proche des étiquettes GoEmotions ;
-\item \textbf{SenticNet} : représentations affectives plus
-      \emph{dimensionnelles} (continues), exigeant une mise en
-      correspondance implicite avec les 28 classes.
+\item \textbf{SenticNet} \cite{cambria2018senticnet} : représentations
+      affectives plus \emph{dimensionnelles} (continues), exigeant
+      une mise en correspondance implicite avec les 28 classes.
 \end{itemize}
 L'hypothèse H3 (chapitre~\ref{chap:conception}) est que
 l'\textbf{alignement taxonomique} entre lexique et labels cible
@@ -299,7 +302,7 @@ Cet état de l'art a resserré la littérature autour de cinq axes
 directement utiles au mémoire : tâche et métriques sur GoEmotions,
 baselines par modèles pré-entraînés, modélisation des dépendances
 entre émotions, encodage hiérarchique, et enrichissement lexical
-externe. Les références bibliographiques détaillées seront
-réintroduites progressivement, chaque source étant vérifiée avant
-citation. Le chapitre suivant formalise l'architecture HAKE-MER et
+externe. Les références citées dans ce chapitre disposent d'une copie locale
+vérifiée (voir bibliographie). Le chapitre suivant formalise
+l'architecture HAKE-MER et
 les hypothèses H1--H4 qui en découlent.
