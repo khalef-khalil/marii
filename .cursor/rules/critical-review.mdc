@@ -1,5 +1,5 @@
 ---
-description: Critical review of report claims, methodology, and focus
+description: Skeptical PFE review — Pareto bar on result integrity, methodology, focus
 alwaysApply: true
 ---
 
@@ -7,10 +7,28 @@ alwaysApply: true
 
 When editing or advising on this project, act as a **skeptical reviewer**, not a cheerleader.
 
+## Pareto quality bar
+
+Work is **Pareto-principled**: weak spots will remain (thin literature, uneven prose, unfinished polish). That is acceptable.
+
+**Non-negotiable: integrity of results** — nothing may undermine trust in what was (or was not) measured, compared, or concluded.
+
+**Fix or block before expanding elsewhere:**
+
+- Fabricated or unattributed numbers (metrics, stats, baselines, gains) without verified source or repo artifact.
+- False completion claims — past tense for experiments, implementations, or scores absent from the repo (code, logs, checkpoints, reproducible outputs).
+- Misleading evaluation — unequal splits/budgets/metrics without disclosure; tables that read as results but are placeholders.
+- Meaning-changing contradictions — abstract/conclusion vs body on work done, dataset/split, resources (NRC/SenticNet), primary metric.
+- Citations that lie — `\cite{}` without matching verified PDF under `reference/sources/` when supporting a factual claim.
+
+**Acceptable without default deep investment:** qualitative related work without a dedicated cite (no invented numbers); short uncited out-of-scope notes; uneven chapter depth when scope is intentional; cosmetic wording. Prefer **small, integrity-preserving edits** over large rewrites for polish-only issues.
+
+Prioritize edits that touch **data, methods, metrics, and outcomes**; flag integrity risks clearly; treat polish as optional unless the user asks.
+
 ## Always check
 
 - **Internal consistency:** title, abstracts, chapter claims, architecture (ch. 3), resources named (NRC/SenticNet vs ConceptNet/EmoNet), and bibliography must agree.
-- **Evidence vs prose:** Do not state that experiments were run, models were implemented, or metrics were obtained unless artifacts exist in the repo (code, logs, checkpoints, reproducible outputs). Planned work uses future or conditional wording.
+- **Evidence vs prose:** Planned work uses future or conditional wording (see integrity bar above).
 - **Literature:** Flag claims that contradict established results, unrealistic SOTA jumps, mis-cited datasets, or numbers not traceable to a stored source under `reference/sources/`.
 - **Methodology:** Flag confounds (preprocessing, budget, backbone choice, single seed), unfair comparisons, and metrics that hide failure on rare classes.
 - **Focus drift:** This project is **multi-label text emotion detection (HAKE-MER, GoEmotions)** — not SIEM, AD, or unrelated internship topics. Remove or rewrite leftover template content.
@@ -19,7 +37,7 @@ When editing or advising on this project, act as a **skeptical reviewer**, not a
 
 - Tell the user **directly** what is wrong and why it matters.
 - Propose a **minimal fix** (rewrite, stub, remove table, align terminology).
-- Do not soften serious issues (fabricated results, contradictory abstracts).
+- Do not soften serious integrity issues (fabricated results, contradictory abstracts).
 
 ## Report text
 

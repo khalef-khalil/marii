@@ -49,33 +49,65 @@ chapitre~\ref{chap:conception}.
 L'évaluation prévue de ce mémoire cible le jeu \textbf{GoEmotions}
 \cite{demszky2020} : commentaires Reddit annotés en
 \textbf{27 émotions fines} plus une classe \emph{neutral}, en
-configuration multi-étiquettes. Ce corpus est devenu une référence
-courante pour la granularité affective au-delà de la polarité,
-notamment parce qu'une part non négligeable des exemples comporte
-plusieurs étiquettes et que la distribution des classes est très
-déséquilibrée.
+configuration multi-étiquettes. Il s'agit, à notre connaissance, du
+plus grand corpus manuel publié dans cette granularité (58\,009
+exemples après curation) \cite{demszky2020}. La construction combine
+filtrage (profanité, biais de sentiment), équilibrage et
+sous-échantillonnage par longueur (commentaires initialement retenus
+entre 3 et 30 tokens ; plafond au volume correspondant à la médiane de
+12 tokens) \cite{demszky2020}.
 
-Les statistiques officielles du jeu \cite{demszky2020} (splits
-train/validation/test, fréquences par émotion, proportion de textes
-multi-étiquettes, longueur moyenne) doivent être reprises \emph{depuis
-la publication source} avant toute affirmation chiffrée dans le
-rapport final ; elles
-motivent le choix du F1-macro et le prétraitement hiérarchique au
-chapitre~\ref{chap:experimentation}. D'autres benchmarks (SemEval,
-etc.) pourront être mentionnés comme prolongements une fois une
-validation externe réellement menée.
+Le tableau~\ref{tab:goemotions-stats} reprend les statistiques
+d'annotation reportées par les auteurs \cite{demszky2020}. Environ
+\textbf{17\,\%} des exemples portent au moins deux étiquettes
+(83\,\% une seule, 15\,\% deux, 2\,\% trois, 0{,}2\,\% quatre ou
+plus). La catégorie \emph{neutral} représente à elle seule 26\,\% de
+toutes les étiquettes émotionnelles assignées, ce qui accentue le
+déséquilibre inter-classes. Pour les expériences de référence du
+papier, les auteurs conservent 93\,\% des exemples après filtrage
+supplémentaire et appliquent un partage aléatoire
+80\,\%/10\,\%/10\,\% train/validation/test \cite{demszky2020}. Des
+exports publics (p.\,ex.\ sur Hugging Face) peuvent différer légèrement
+des effectifs de ce protocole ; le split retenu pour HAKE-MER est
+précisé au chapitre~\ref{chap:experimentation}.
+
+\begin{table}[H]
+\centering
+\caption{GoEmotions : statistiques d'annotation \cite{demszky2020}}
+\label{tab:goemotions-stats}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Grandeur} & \textbf{Valeur} \\
+\hline
+Exemples annotés & 58\,009 \\
+Émotions & 27 + \emph{neutral} \\
+Annotateurs uniques & 82 \\
+Annotateurs / exemple & 3 ou 5 \\
+Marqués «~peu clairs~» & 1{,}6\,\% \\
+Accord $\geq$1 étiquette (2+ annotateurs) & 54\,263 (94\,\%) \\
+Accord $\geq$1 étiquette (3+ annotateurs) & 17\,763 (31\,\%) \\
+\hline
+\end{tabular}
+\end{table}
+
+D'autres benchmarks (SemEval, etc.) pourront être mentionnés comme
+prolongements une fois une validation externe réellement menée.
 
 \subsection{Annotation, bruit et déséquilibre}
 
 La construction de jeux multi-émotions souffre de \textbf{labels
 partiels} (émotions faibles non annotées) et de \textbf{subjectivité
-inter-annotateurs}. Ces biais compliquent l'apprentissage et
-l'interprétation des erreurs. Sur GoEmotions, le \textbf{déséquilibre
-extrême} --- quelques classes très fréquentes, dont \emph{neutral},
-face à des émotions rares --- fait que les métriques globales
-favorisant les classes majoritaires peuvent masquer un échec sur
-les classes minoritaires, pourtant centrales pour la problématique
-de ce mémoire.
+inter-annotateurs}. Sur GoEmotions, seulement 31\,\% des exemples
+obtiennent un accord d'au moins une étiquette entre trois annotateurs
+ou plus \cite{demszky2020} ; 1{,}6\,\% sont explicitement jugés difficiles
+à étiqueter. Ces biais compliquent l'apprentissage et
+l'interprétation des erreurs. Le \textbf{déséquilibre extrême} ---
+quelques classes très fréquentes, dont \emph{neutral}, face à des
+émotions rares (certaines avec un rappel quasi nul dans la ligne de
+base BERT des auteurs) --- fait que les métriques globales favorisant
+les classes majoritaires peuvent masquer un échec sur les classes
+minoritaires, pourtant centrales pour la problématique de ce mémoire.
 
 \subsection{Métriques d'évaluation}
 
@@ -125,12 +157,14 @@ notre protocole d'ablation : toute contribution architecturale (M1,
 M2, M3) doit être mesurée \emph{à budget et backbone constants} par
 rapport à ce affinage standard.
 
-Les chiffres publiés par les auteurs de GoEmotions \cite{demszky2020}
-pour un BERT-base \cite{devlin2019} affiné sur la taxonomie complète
-pourront servir de \textbf{repère
-indicatif} uniquement si le protocole (époques, longueur de
-séquence, recherche d'hyperparamètres) est explicitement comparé ;
-ils ne remplaceront pas nos comparaisons internes contrôlées.
+Sur la taxonomie complète (28 classes), les auteurs rapportent pour
+BERT-base \cite{devlin2019} un \textbf{F1-macro de 0{,}46} sur leur
+jeu de test (précision macro 0{,}40, rappel macro 0{,}63)
+\cite{demszky2020}, avec de fortes disparités par émotion. Ce chiffre
+sert de \textbf{repère externe indicatif} : il dépend de leur
+filtrage, de leur split 80/10/10 et de leur réglage d'entraînement ;
+il ne remplacera pas nos comparaisons internes à backbone et budget
+constants au chapitre~\ref{chap:experimentation}.
 
 \subsection{Dépendances entre émotions (motivation du module M2)}
 
@@ -194,12 +228,14 @@ apprise sur les requêtes d'attention par émotion.
 Le protocole prévoit de comparer deux types de ressources à
 architecture fixée (M1+M2+M3) :
 \begin{itemize}
-\item le \textbf{NRC Emotion Lexicon} \cite{mohammad2013} :
-      catégories d'émotions alignées sur une taxonomie discrete,
-      proche des étiquettes GoEmotions ;
-\item \textbf{SenticNet} \cite{cambria2018senticnet} : représentations
-      affectives plus \emph{dimensionnelles} (continues), exigeant
-      une mise en correspondance implicite avec les 28 classes.
+\item le \textbf{NRC Emotion Lexicon} \cite{mohammad2013} : lexique
+      d'associations mot--émotion obtenu par crowdsourcing, avec des
+      catégories d'émotions discrètes comparables à la taxonomie
+      GoEmotions ;
+\item \textbf{SenticNet} \cite{cambria2018senticnet} : ressource de
+      sentiment à base de \emph{primitives conceptuelles} et
+      d'embeddings contextuels, produisant des scores affectifs
+      continus exigeant une mise en correspondance avec les 28 classes.
 \end{itemize}
 L'hypothèse H3 (chapitre~\ref{chap:conception}) est que
 l'\textbf{alignement taxonomique} entre lexique et labels cible
