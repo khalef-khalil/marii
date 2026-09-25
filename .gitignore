@@ -7,3 +7,9 @@
 /main.{aux,log,out,toc,lof,lot,bbl,blg,run.xml,fls,fdb_latexmk,idx,ind,ilg,maf,synctex.gz}
 /main.mtc*
 /tpl/*.aux
+
+/runs/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
