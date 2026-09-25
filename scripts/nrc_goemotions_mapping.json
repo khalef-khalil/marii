@@ -1,0 +1,43 @@
+{
+  "_comment": "Many-to-one semantic links GoEmotions -> NRC Emotion Lexicon (8 Plutchik). Used for protocol documentation and lexicon analysis; M3 injects a shared 8-D document vector (ch. 3).",
+  "nrc_emotions": [
+    "anger",
+    "anticipation",
+    "disgust",
+    "fear",
+    "joy",
+    "sadness",
+    "surprise",
+    "trust"
+  ],
+  "goemotions_to_nrc": {
+    "admiration": ["trust", "joy"],
+    "amusement": ["joy", "surprise"],
+    "anger": ["anger"],
+    "annoyance": ["anger", "disgust"],
+    "approval": ["trust", "joy"],
+    "caring": ["trust", "joy"],
+    "confusion": ["surprise", "fear"],
+    "curiosity": ["anticipation", "surprise"],
+    "desire": ["anticipation", "joy"],
+    "disappointment": ["sadness", "surprise"],
+    "disapproval": ["anger", "disgust"],
+    "disgust": ["disgust"],
+    "embarrassment": ["fear", "sadness", "surprise"],
+    "excitement": ["joy", "anticipation", "surprise"],
+    "fear": ["fear"],
+    "gratitude": ["joy", "trust"],
+    "grief": ["sadness"],
+    "joy": ["joy"],
+    "love": ["joy", "trust"],
+    "nervousness": ["fear", "anticipation"],
+    "optimism": ["anticipation", "joy", "trust"],
+    "pride": ["joy", "trust"],
+    "realization": ["surprise", "anticipation"],
+    "relief": ["joy", "trust"],
+    "remorse": ["sadness", "fear", "disgust"],
+    "sadness": ["sadness"],
+    "surprise": ["surprise"],
+    "neutral": []
+  }
+}

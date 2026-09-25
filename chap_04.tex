@@ -3,11 +3,13 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Ce chapitre définit le cadre expérimental pour évaluer HAKE-MER sur
-GoEmotions : jeu de données, métriques, protocole d'ablation et
-analyses associées. Il expose le protocole ; les tableaux de résultats
-et la confrontation aux hypothèses H1 à H4 compléteront le mémoire
-après entraînement.
+Le chapitre~\ref{chap:conception} a fixé l'architecture HAKE-MER, les choix
+de segmentation et d'extraction lexicale, ainsi que les hypothèses H1 à
+H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
+hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
+statistiques de corpus \emph{mesurées} avant entraînement. Les tableaux
+de performances et la validation des hypothèses seront ajoutés après
+exécution des runs ; aucun score propre à HAKE-MER n'est reporté ici.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -17,100 +19,284 @@ encodeurs retenus pour que toutes les comparaisons ultérieures
 portent sur le même cadre.
 
 \subsection{Jeu de données}
-Les expériences ciblent GoEmotions  (configuration
-\emph{simplified}) : 43\,410 exemples d'entraînement, 5\,426 de
-validation et 5\,427 de test, 27 émotions plus la classe neutre
-($K{=}28$), en multi-étiquettes. Les propriétés du corpus documentées
-au chapitre~\ref{chap:etat_art} motivent trois choix de conception :
-\textbf{déséquilibre} des classes (F1-macro comme métrique
-principale), \textbf{multi-étiquette} réelle (environ 17\,\% des
-exemples avec au moins deux émotions), et \textbf{structure}
-multi-phrases (justifiant le prétraitement hiérarchique fixé au
-chapitre~\ref{sec:conception-choix} ; le taux de troncature sous ces
-bornes sera mesuré à l'implémentation).
 
-\subsection{Protocole prévu}
+Les expériences ciblent GoEmotions (configuration \emph{simplified})
+\cite{demszky2020} : 43\,410 exemples d'entraînement, 5\,426 de
+validation et 5\,427 de test, 27 émotions plus la classe \emph{neutral}
+($K{=}28$), en multi-étiquettes. Les propriétés du corpus documentées
+au chapitre~\ref{chap:etat_art} motivent le F1-macro, la prise en compte
+du multi-étiquette et le prétraitement hiérarchique
+(section~\ref{sec:conception-choix}).
+
+\subsection{Analyse de corpus sous le protocole de segmentation}
+\label{sec:expe-corpus-stats}
+
+Avant tout entraînement, nous avons mesuré l'impact du découpage retenu
+($M{=}4$ phrases, 32 tokens RoBERTa par phrase, segmentation NLTK
+Punkt) sur les trois splits. Le script
+\texttt{scripts/corpus\_protocol\_stats.py} produit les chiffres
+archivés dans \texttt{reference/artifacts/corpus\_protocol\_stats.json}.
+
+Sur l'ensemble d'entraînement (même ordre de grandeur sur validation et
+test) :
+\begin{itemize}
+\item environ \textbf{42\,\%} des commentaires comportent plus d'une
+      phrase, ce qui justifie M1 ;
+\item seulement \textbf{0{,}27\,\%} des exemples perdent plus de
+      $M{=}4$ phrases (queue tronquée) ;
+\item environ \textbf{0{,}74\,\%} des exemples requièrent une
+      troncature à 32 tokens sur au moins une phrase conservée ;
+\item environ \textbf{10{,}8\,\%} des tokens (alphabétiques) du texte
+      retenu apparaissent dans le NRC Emotion Lexicon (via le lexique
+      \emph{nrclex}) ;
+\item environ \textbf{73\,\%} des documents contiennent au moins un
+      token couvert par le NRC.
+\end{itemize}
+Ces ordres de grandeur indiquent que la troncature phrase n'est pas
+dominante à ces bornes, tandis que la couverture lexicale laisse une
+part non triviale d'exemples sans signal NRC au niveau token (d'où
+l'intérêt de M3 et de l'analyse de $|g|$).
+
+\subsection{Hyperparamètres communs}
+\label{sec:expe-hyperparams}
+
 Toutes les configurations comparées partageront le même budget
-d'entraînement (nombre d'époques fixé \emph{a priori}, une graine
-documentée au minimum, plusieurs graines si possible), la même
-métrique de validation, et les mêmes métriques de test : F1-micro,
-\textbf{F1-macro}, correspondance exacte et mAP. L'implémentation
-s'appuiera sur la bibliothèque \emph{Transformers}
-\cite{wolf2020}, avec un affinage des encodeurs calqué sur les
-pratiques usuelles pour la classification de texte
-\cite{sun2019,devlin2019}. Une classe unique activable par modules
-(M1 à M4) fera en sorte que seuls les composants architecturaux
-diffèrent entre runs.
+d'entraînement et la même métrique de validation (F1-macro sur le split
+de validation). L'implémentation s'appuiera sur \emph{Transformers}
+\cite{wolf2020}, avec un affinage calqué sur les pratiques usuelles
+\cite{sun2019,devlin2019}. Le tableau~\ref{tab:expe-hyperparams} fixe
+les valeurs \emph{a priori} (ajustables uniquement pour tous les runs à
+la fois).
+
+\begin{table}[H]
+\centering
+\caption{Hyperparamètres communs (toutes configurations)}
+\label{tab:expe-hyperparams}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{4.2cm}|p{8.8cm}|}
+\hline
+\textbf{Paramètre} & \textbf{Valeur retenue} \\
+\hline
+Encodeurs & RoBERTa-base, DistilBERT-base \cite{liu2019roberta,sanh2019distilbert} \\
+\hline
+Optimiseur & AdamW, $\varepsilon=10^{-8}$ \\
+\hline
+Taux d'apprentissage & $2\times 10^{-5}$ (RoBERTa), $3\times 10^{-5}$ (DistilBERT) \\
+\hline
+Poids de décroissance & $0{,}01$ \\
+\hline
+Taille de lot & $16$ (gradients accumulés si mémoire insuffisante, identique pour tous les runs) \\
+\hline
+Époques max & $3$ (aligné sur l'ordre de grandeur de la baseline BERT des auteurs \cite{demszky2020}) \\
+\hline
+Warmup & $10\,\%$ des pas d'optimisation \\
+\hline
+Sélection de modèle & Meilleur F1-macro validation ; patience $1$ époque \\
+\hline
+Graines & $42$, $123$, $456$ lorsque le budget le permet \\
+\hline
+Segmentation & $M{=}4$, $32$ tokens/phrase (section~\ref{sec:conception-choix}) \\
+\hline
+Seuil de décision & $0{,}5$ sur les sigmoïdes (sauf étude de seuil post hoc) \\
+\hline
+Métriques de test & F1-micro, F1-macro, exact match, mAP \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Implémentation modulaire et journalisation}
+\label{sec:expe-impl-flags}
+
+Une classe unique \texttt{HAKEMER} (nom provisoire) expose des drapeaux
+booléens \texttt{use\_m1} à \texttt{use\_m4} et un champ
+\texttt{lexicon\_source} $\in \{\texttt{none}, \texttt{nrc}, \texttt{senticnet}\}$.
+Seuls ces champs diffèrent entre runs d'ablation ; le reste du code
+(data loader, métriques, boucle d'entraînement) est partagé.
+
+Chaque run enregistrera au minimum : identifiant de configuration,
+backbone, graine, courbes train/validation, F1-macro et F1-micro
+validation, checkpoint retenu, valeur finale de la porte $|g|$ (M3) et
+statistiques par classe sur le test. Les comparaisons internes seront
+interprétées uniquement \emph{à budget identique}.
 
 \subsection{Backbones}
-Deux encodeurs prévus : RoBERTa-base  et
-DistilBERT-base . Un comparatif préliminaire
-sur le même protocole pourra inclure BERT-base et ALBERT si le budget
-le permet ; le choix final sera justifié par F1-macro, coût
-d'entraînement et stabilité, pas par un seul chiffre isolé.
 
-\section{Ablation cumulative (plan)}
+Deux encodeurs principaux : \textbf{RoBERTa-base} et
+\textbf{DistilBERT-base}. Un essai BERT-base reste optionnel et hors
+périmètre des comparaisons principales si le budget GPU est limité.
+
+\section{Ablation cumulative}
 \label{sec:expe-ablation}
 
-L'évaluation principale suivra une ablation cumulative sur les deux
-backbones :
-\begin{enumerate}[label=\arabic*.]
-\item Ligne de base : PLM affiné, représentation plate (sans M1 à M4).
-\item M1 : encodage hiérarchique seul.
-\item M1+M2 : ajout de l'attention croisée entre émotions.
-\item M1+M2+M3 : ajout de l'enrichissement (NRC vs SenticNet,
-      chapitre~\ref{sec:expe-ressources-plan}).
-\item M1+M2+M3+M4 : ajout de la pondération dynamique (test de H4).
-\end{enumerate}
-Seules les comparaisons \emph{à budget identique} seront interprétées
-comme preuve de l'apport d'un module.
+L'évaluation principale reprend la progression du
+tableau~\ref{tab:conception-ablation} sur chaque backbone. Le
+tableau~\ref{tab:expe-ablation-flags} explicite les drapeaux.
 
-\section{Comparaison des connaissances externes (plan)}
+\begin{table}[H]
+\centering
+\caption{Drapeaux d'ablation cumulative}
+\label{tab:expe-ablation-flags}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|c|c|c|c|c|c|p{3.6cm}|}
+\hline
+\textbf{Étape} & \textbf{M1} & \textbf{M2} & \textbf{M3} & \textbf{M4} & \textbf{Lexique} & \textbf{Hyp.} \\
+\hline
+0 Baseline PLM & 0 & 0 & 0 & 0 & none & (réf.) \\
+\hline
+1 +M1 & 1 & 0 & 0 & 0 & none & H1 \\
+\hline
+2 +M2 & 1 & 1 & 0 & 0 & none & H2 \\
+\hline
+3 +M3 (NRC) & 1 & 1 & 1 & 0 & nrc & H3 \\
+\hline
+3 +M3 (SenticNet) & 1 & 1 & 1 & 0 & senticnet & H3 \\
+\hline
+4 +M4 & 1 & 1 & 1 & 1 & nrc ou senticnet & H4 \\
+\hline
+\end{tabular}
+\end{table}
+
+Seules les comparaisons adjacentes ou cumulatives à hyperparamètres
+identiques seront interprétées comme preuve de l'apport d'un module.
+
+\section{Correspondance NRC et GoEmotions}
+\label{sec:expe-nrc-mapping}
+
+Le module M3 (NRC) produit un vecteur $c \in \mathbb{R}^8$ correspondant
+aux émotions Plutchik du lexique NRC \cite{mohammad2013}. Pour
+documenter l'alignement taxonomique avec GoEmotions (H3), le
+tableau~\ref{tab:nrc-goemotions-map} liste, pour chaque étiquette fine,
+les dimensions NRC associées sémantiquement (relation many-to-one).
+L'étiquette \emph{neutral} n'active aucune dimension NRC. Le fichier
+\texttt{scripts/nrc\_goemotions\_mapping.json} du dépôt du mémoire
+matérialise cette table pour l'implémentation ; le vecteur injecté reste
+\emph{partagé} entre émotions (section~\ref{sec:conception-m3}), la
+table servant à l'analyse et à la justification du protocole.
+
+\begin{table}[H]
+\centering
+\caption{Correspondance GoEmotions $\rightarrow$ émotions NRC (Plutchik)}
+\label{tab:nrc-goemotions-map}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\hline
+\textbf{Étiquette GoEmotions} & \textbf{Émotions NRC associées} \\
+\hline
+admiration & trust, joy \\
+\hline
+amusement & joy, surprise \\
+\hline
+anger & anger \\
+\hline
+annoyance & anger, disgust \\
+\hline
+approval & trust, joy \\
+\hline
+caring & trust, joy \\
+\hline
+confusion & surprise, fear \\
+\hline
+curiosity & anticipation, surprise \\
+\hline
+desire & anticipation, joy \\
+\hline
+disappointment & sadness, surprise \\
+\hline
+disapproval & anger, disgust \\
+\hline
+disgust & disgust \\
+\hline
+embarrassment & fear, sadness, surprise \\
+\hline
+excitement & joy, anticipation, surprise \\
+\hline
+fear & fear \\
+\hline
+gratitude & joy, trust \\
+\hline
+grief & sadness \\
+\hline
+joy & joy \\
+\hline
+love & joy, trust \\
+\hline
+nervousness & fear, anticipation \\
+\hline
+optimism & anticipation, joy, trust \\
+\hline
+pride & joy, trust \\
+\hline
+realization & surprise, anticipation \\
+\hline
+relief & joy, trust \\
+\hline
+remorse & sadness, fear, disgust \\
+\hline
+sadness & sadness \\
+\hline
+surprise & surprise \\
+\hline
+neutral & (aucune) \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Pipeline SenticNet (rappel protocolaire)}
+\label{sec:expe-senticnet}
+
+Pour H3, la branche SenticNet reprend exactement les cinq descripteurs
+documentaires fixés au chapitre~\ref{sec:conception-choix} : polarité
+moyenne, polarité max, polarité min, fraction de tokens couverts, nombre
+de concepts distincts. L'implémentation réutilisera SenticNet~5
+\cite{cambria2018senticnet} ; les détails de lookup (lemme vs surface)
+seront figés dans le code et reproduits pour les runs NRC et SenticNet.
+
+\section{Comparaison des ressources externes (H3)}
 \label{sec:expe-ressources-plan}
 
-Pour H3, à architecture M1+M2 fixée, deux ressources seront
-comparées : le NRC Emotion Lexicon (features catégorielles alignées
-sur les étiquettes) et SenticNet (features conceptuelles continues,
-cf. section~\ref{sec:conception-choix}). L'hypothèse à
-tester est l'\emph{alignement taxonomique}, non la supériorité
-a priori d'un type de ressource.
+À architecture M1+M2 fixée, M3 activé et M4 désactivé, deux runs
+diffèrent uniquement par
+\texttt{lexicon\_source} : \texttt{nrc} vs \texttt{senticnet}. L'hypothèse
+H3 teste l'alignement taxonomique (NRC) plutôt que la supériorité
+a priori d'un graphe conceptuel.
 
-\section{Analyses à produire après entraînement}
+\section{Résultats et analyses (à produire après entraînement)}
 \label{sec:expe-analyses-plan}
 
-Une fois les modèles entraînés :
+Une fois les modèles entraînés, les éléments suivants compléteront ce
+chapitre :
 \begin{itemize}
 \item tableaux d'ablation (F1-micro, F1-macro, exact match, mAP) ;
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
-\item comparaison commentée avec les baselines publiées sur
-      GoEmotions \cite{demszky2020}, en explicitant les écarts de
-      protocole le cas échéant.
+\item comparaison commentée avec les chiffres publiés sur GoEmotions
+      \cite{demszky2020}, avec écart de protocole explicité ;
+\item confrontation explicite aux hypothèses H1 à H4.
 \end{itemize}
 
 \section{Points de vigilance méthodologiques}
 \label{sec:expe-lecons}
 
-Avant de tirer des conclusions, les points suivants devront être
-contrôlés :
+Avant de tirer des conclusions, les points suivants seront contrôlés :
 \begin{itemize}
-\item \textbf{Troncature} : mesurer le taux de troncature selon la
-      longueur max par phrase ; un mauvais choix peut dominer
-      l'effet des modules.
-\item \textbf{Initialisation} : stabiliser les têtes d'attention et
-      les portes (éviter des échelles qui explosent la perte initiale).
-\item \textbf{Budget} : ne jamais comparer des configurations à
-      nombre d'époques ou tailles de lot différents sans le signaler.
-\item \textbf{Graine unique} : un run isolé ne suffit pas pour
-      conclure ; privilégier plusieurs graines ou intervalles de
-      confiance lorsque possible.
+\item \textbf{Troncature} : suivre le taux mesuré en
+      section~\ref{sec:expe-corpus-stats} ; toute modification de
+      $M$ ou de 32 tokens impose de refaire cette analyse.
+\item \textbf{Initialisation} : respecter $g{=}0$ et $b_2{=}+3$ pour
+      M3/M4 (chapitre~\ref{chap:conception}) ;
+\item \textbf{Budget} : ne jamais comparer des configurations à lot ou
+      époques différents sans le signaler ;
+\item \textbf{Graines} : privilégier plusieurs graines avant de conclure
+      sur H1 à H4.
 \end{itemize}
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Ce chapitre fixe le protocole d'évaluation de HAKE-MER. Les
-résultats quantitatifs et la validation des hypothèses H1 à H4
-seront reportés après implémentation et exécution des expériences ;
-jusque-là, toute mention de scores dans d'autres chapitres doit être
-traitée comme obsolète ou prospective.
+Le protocole expérimental est désormais spécifié : corpus GoEmotions,
+statistiques de segmentation et de couverture NRC, hyperparamètres
+communs, drapeaux d'ablation, correspondance NRC et rappel SenticNet.
+La prochaine étape est l'implémentation de \texttt{HAKEMER} et
+l'exécution des runs ; les scores et la validation de H1 à H4
+compléteront la section~\ref{sec:expe-analyses-plan}.

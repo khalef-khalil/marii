@@ -1,0 +1,4 @@
+datasets>=2.14.0
+nltk>=3.8
+nrclex>=4.0
+transformers>=4.30.0

@@ -1,0 +1,35 @@
+{
+  "config": {
+    "m_max_sentences": 4,
+    "tokens_per_phrase": 32,
+    "tokenizer": "roberta-base",
+    "sentence_splitter": "nltk punkt",
+    "nrc_lexicon": "nrclex bundled nrc_en.json"
+  },
+  "splits": {
+    "train": {
+      "examples": 43410,
+      "pct_multi_sentence": 42.31,
+      "pct_drop_extra_sentences": 0.27,
+      "pct_any_phrase_token_truncation": 0.74,
+      "pct_tokens_in_nrc_lexicon": 10.79,
+      "pct_docs_with_any_nrc_token": 72.97
+    },
+    "validation": {
+      "examples": 5426,
+      "pct_multi_sentence": 42.59,
+      "pct_drop_extra_sentences": 0.29,
+      "pct_any_phrase_token_truncation": 0.52,
+      "pct_tokens_in_nrc_lexicon": 10.59,
+      "pct_docs_with_any_nrc_token": 71.65
+    },
+    "test": {
+      "examples": 5427,
+      "pct_multi_sentence": 43.06,
+      "pct_drop_extra_sentences": 0.28,
+      "pct_any_phrase_token_truncation": 0.61,
+      "pct_tokens_in_nrc_lexicon": 10.72,
+      "pct_docs_with_any_nrc_token": 72.36
+    }
+  }
+}
