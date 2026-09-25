@@ -7,9 +7,10 @@
 Le chapitre~\ref{chap:contexte} a posé une question de recherche et
 trois limitations (L1 à L3) auxquelles HAKE-MER doit répondre. Nous
 montrons ici comment la littérature sur la \textbf{détection
-multi-étiquettes des émotions dans le texte} éclaire ces points et
-justifie les choix de corpus, de métriques et de familles de modèles
-retenus pour la suite.
+multi-étiquettes des émotions dans le texte}
+\cite{mohammad2020sentiment,pang2008} éclaire ces points et justifie
+les choix de corpus, de métriques et de familles de modèles retenus
+pour la suite.
 
 La progression suit le fil de la preuve : d'abord la tâche et
 GoEmotions, puis les approches neuronales et la baseline par modèles
@@ -38,7 +39,7 @@ $x$ et un inventaire d'émotions $\mathcal{E}=\{e_1,\dots,e_K\}$,
 apprendre une fonction qui associe à chaque $e_k$ une décision
 (binaire ou score), indépendamment des autres étiquettes au niveau
 de la fonction de perte, mais non indépendamment au niveau
-sémantique.
+sémantique \cite{zhang2014multilabel}.
 
 Formellement, on cherche $f : x \mapsto \{0,1\}^K$ (ou des
 probabilités $\hat{y}_k \in [0,1]$), ce qui diffère de la
@@ -117,11 +118,14 @@ l'interprétation des erreurs. Le \textbf{déséquilibre extrême}
 base BERT des auteurs) fait que les métriques globales favorisant
 les classes majoritaires peuvent masquer un échec sur les classes
 minoritaires, pourtant centrales pour la problématique de ce mémoire.
+Des variantes de perte pondérée (par exemple \emph{focal loss}
+\cite{lin2017focal}) existent pour le déséquilibre, mais restent hors
+du périmètre immédiat du protocole retenu.
 
 \subsection{Métriques d'évaluation}
 
 Pour la classification multi-étiquettes, les métriques usuelles
-incluent :
+\cite{zhang2014multilabel} incluent :
 \begin{itemize}
 \item le \textbf{F1-micro}, sensible aux classes fréquentes ;
 \item le \textbf{F1-macro}, moyenne non pondérée du F1 par émotion,
@@ -146,18 +150,20 @@ obligatoire du protocole.
 Les premières approches combinaient traits lexicaux (n-grammes,
 présence de termes affectifs), lexiques de sentiment ou d'émotions,
 et classifieurs multi-étiquettes (SVM, forêts, chaînes de
-classificateurs modélisant des dépendances entre labels). Elles
+classificateurs modélisant des dépendances entre labels
+\cite{read2009classifier,read2019classifier}). Elles
 restent utiles comme référence historique et pour l'interprétabilité,
 mais peinent sur le contexte long, l'ironie et les émotions
 implicites.
 
-Les architectures convolutionnelles et récurrentes (CNN, LSTM,
-BiLSTM) ont ensuite permis l'apprentissage de représentations à
-partir du texte brut. Les mécanismes d'\textbf{attention} \cite{bahdanau2015,vaswani2017} permettent
+Les architectures convolutionnelles et récurrentes (CNN
+\cite{kim2014}, LSTM/GRU \cite{cho2014,lipton2015sequencernn}, BiLSTM)
+ont ensuite permis l'apprentissage de représentations à partir du
+texte brut. Les mécanismes d'\textbf{attention} \cite{bahdanau2015,vaswani2017} permettent
 de pondérer les tokens selon leur pertinence pour la prédiction,
 point de départ des encodeurs modernes et des extensions
 \emph{label-specific} où chaque émotion dispose de sa propre
-lecture du texte.
+lecture du texte \cite{mullenbach2018}.
 
 \subsection{Modèles pré-entraînés et ligne de base}
 
@@ -185,9 +191,10 @@ Traiter chaque émotion comme une sortie indépendante sur un vecteur
 global partagé ignore les \textbf{cooccurrences} et
 \textbf{incompatibilités} entre labels (joie/surprise vs joie/tristesse).
 La littérature propose plusieurs réponses : chaînes de
-classificateurs, graphes de corrélation entre étiquettes, attention
-dédiée par émotion, encodeurs d'interactions entre représentations
-d'étiquettes. Ce fil justifie le \textbf{module~2} de HAKE-MER
+classificateurs \cite{read2009classifier,read2019classifier}, graphes
+de corrélation entre étiquettes, attention dédiée par émotion,
+encodeurs d'interactions entre représentations d'étiquettes. Ce fil
+justifie le \textbf{module~2} de HAKE-MER
 (attention croisée multi-émotions), qui vise à donner à chaque émotion
 une représentation contextuelle propre tout en modélisant les
 interactions entre émotions.
@@ -264,9 +271,9 @@ sémantique abstraite de la ressource.
 
 \subsection{Graphes de connaissances et bon sens (hors périmètre principal)}
 
-Des travaux intègrent ConceptNet, bases d'inférences causales (ATOMIC)
-ou modèles génératifs de bon sens (COMET) pour les émotions
-implicites. Ces approches sont \textbf{pertinentes pour des
+Des travaux intègrent ConceptNet \cite{speer2017}, bases d'inférences
+causales (ATOMIC) ou modèles génératifs de bon sens (COMET) pour les
+émotions implicites. Ces approches sont \textbf{pertinentes pour des
 perspectives} (chapitre~\ref{chap:perspectives}) mais hors du
 périmètre d'implémentation immédiat de HAKE-MER, qui se concentre
 sur l'injection lexicale NRC/SenticNet.

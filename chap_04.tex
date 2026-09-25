@@ -35,8 +35,12 @@ d'entraînement (nombre d'époques fixé \emph{a priori}, une graine
 documentée au minimum, plusieurs graines si possible), la même
 métrique de validation, et les mêmes métriques de test : F1-micro,
 \textbf{F1-macro}, correspondance exacte et mAP. L'implémentation
-sera une classe unique activable par modules (M1 à M4) afin que seuls
-les composants architecturaux diffèrent entre runs.
+s'appuiera sur la bibliothèque \emph{Transformers}
+\cite{wolf2020}, avec un affinage des encodeurs calqué sur les
+pratiques usuelles pour la classification de texte
+\cite{sun2019,devlin2019}. Une classe unique activable par modules
+(M1 à M4) fera en sorte que seuls les composants architecturaux
+diffèrent entre runs.
 
 \subsection{Backbones}
 Deux encodeurs prévus : RoBERTa-base  et

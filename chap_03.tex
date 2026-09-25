@@ -19,7 +19,9 @@ $\mathcal{E}=\{e_1,\dots,e_K\}$ ($K{=}28$ pour GoEmotions).
 La classification multi-étiquettes apprend une
 fonction $f : x \mapsto Y \subseteq \mathcal{E}$, réalisée par $K$
 sorties sigmoïdes $\hat{y}_k = \sigma(z_k)$ entraînées par entropie
-croisée binaire :
+croisée binaire, variante de la \emph{binary relevance}
+\cite{zhang2014multilabel} (une perte par étiquette, sans modèle
+explicite des co-occurrences) :
 \begin{equation}
 \mathcal{L}_{\mathrm{BCE}}
 = -\frac{1}{K}\sum_{k=1}^{K}
@@ -34,10 +36,11 @@ Trois limites des approches standards motivent la conception :
 \item \textbf{L1 : Indépendance des étiquettes.} La tête
   « pertinence binaire » sur un vecteur global partagé ignore les
   co-occurrences d'émotions, pourtant systématiques dans les données
-  (chapitre 2) ;
+  \cite{demszky2020} ;
 \item \textbf{L2 : Cécité à la structure du texte.} Une
-  représentation plate (le seul vecteur \texttt{[CLS]}) mélange les
-  signaux portés par des phrases différentes ; les commentaires Reddit
+  représentation plate (le seul vecteur \texttt{[CLS]} d'un encodeur
+  type BERT \cite{devlin2019}) mélange les signaux portés par des
+  phrases différentes ; les commentaires Reddit
   de GoEmotions comportent souvent plusieurs phrases \cite{demszky2020} ;
 \item \textbf{L3 : Pauvreté du signal pour les émotions rares.} Les
   fréquences d'émotions restent très inégales (par exemple l'admiration
@@ -51,7 +54,8 @@ Trois limites des approches standards motivent la conception :
 
 HAKE-MER répond à ces limites par quatre modules composables,
 construits au-dessus d'un backbone pré-entraîné partagé
-(figure~\ref{fig:hakemer-archi}) : le \textbf{Module 1 (Encodage
+(RoBERTa, DistilBERT ou BERT \cite{devlin2019,liu2019roberta,sanh2019distilbert},
+figure~\ref{fig:hakemer-archi}) : le \textbf{Module 1 (Encodage
 Hiérarchique)} préserve la structure du texte (L2) ; le
 \textbf{Module 2 (Attention Croisée Multi-Émotions)} modélise les
 interactions entre émotions (L1) ; le \textbf{Module 3
@@ -103,9 +107,11 @@ au-dessus d'un backbone partagé.}
 
 Le texte est segmenté en phrases ($M{=}4$ au plus, 32 tokens par
 phrase, bornes fixées au chapitre~\ref{chap:experimentation}), encodées par
-le backbone en un seul appel vectorisé. Pour une phrase de
-représentations de tokens $H=(h_1,\dots,h_T)$ et de masque $m$,
-l'agrégation par \emph{attention additive} calcule :
+le backbone en un seul appel vectorisé. Le module s'inspire de
+l'agrégation mot$\to$phrase des réseaux d'attention hiérarchiques
+\cite{yang2016}, avec une couche d'\emph{attention additive}
+\cite{bahdanau2015}. Pour une phrase de représentations de tokens
+$H=(h_1,\dots,h_T)$ et de masque $m$, cette couche calcule :
 \begin{equation}
 u_t = v^\top \tanh(W h_t), \qquad
 \alpha_t = \frac{\exp(u_t)}{\sum_{t'} \exp(u_{t'})}, \qquad
@@ -123,18 +129,20 @@ vecteurs de phrases qui alimentent le module 2.
 
 Chaque émotion $k$ possède une requête apprise $Q_k \in \mathbb{R}^d$
 (initialisée en $\mathcal{N}(0, 0{,}02^2)$). L'attention croisée
-multi-têtes (8 têtes) utilise les requêtes d'émotions comme
-\emph{queries} et les vecteurs de phrases comme \emph{keys/values} :
+multi-têtes (8 têtes, mécanisme Transformer \cite{vaswani2017}) utilise
+les requêtes d'émotions comme \emph{queries} et les vecteurs de
+phrases comme \emph{keys/values} :
 \begin{equation}
 r_k = \mathrm{MHA}\big(Q_k,\; [s_1,\dots,s_M],\; [s_1,\dots,s_M]\big),
 \label{eq:mha}
 \end{equation}
 produisant une représentation contextuelle \emph{par émotion} :
-chaque émotion « lit » le texte à sa manière. Une couche d'encodeur
-Transformer appliquée sur l'axe des émotions modélise ensuite leurs
-interactions (renforcement ou inhibition mutuels). La tête de
-classification est \emph{par étiquette} : chaque émotion a son propre
-vecteur de poids, $z_k = w_k^\top r_k + b_k$.
+chaque émotion « lit » le texte à sa manière. Une couche d'encodeur Transformer \cite{vaswani2017} appliquée sur
+l'axe des émotions modélise ensuite leurs interactions (renforcement
+ou inhibition mutuels), en complément des approches par chaînes de
+classificateurs \cite{read2009classifier}. La tête de classification
+est \emph{par étiquette} : chaque émotion a son propre vecteur de
+poids, $z_k = w_k^\top r_k + b_k$.
 
 \section{Module 3 : Enrichissement Sémantique}
 \label{sec:conception-m3}
@@ -146,8 +154,10 @@ cadre Plutchik \cite{mohammad2013}), puis on applique une table de
 correspondance vers les $K{=}28$ étiquettes GoEmotions (détail du
 mapping au chapitre~\ref{chap:experimentation}). Pour
 \textbf{SenticNet}, on agrège des scores conceptuels continus issus de
-SenticNet~5 \cite{cambria2018senticnet} ($d_c{=}5$ dans le pipeline
-prévu). Dans les deux cas, $c$ est projeté, borné, puis injecté dans
+SenticNet~5 \cite{cambria2018senticnet} (primitives et polarité
+conceptuelle), regroupés en un vecteur $c$ de dimension $d_c$ fixée au
+protocole (chapitre~\ref{chap:experimentation}). Dans les deux cas,
+$c$ est projeté, borné, puis injecté dans
 les requêtes d'émotions via une \emph{porte apprise} $g$ initialisée à
 zéro :
 \begin{equation}
