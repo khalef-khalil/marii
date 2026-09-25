@@ -8,6 +8,8 @@
 /main.mtc*
 /tpl/*.aux
 
+/baseline_plm_distilbert_results.zip
+
 /runs/
 __pycache__/
 *.py[cod]
