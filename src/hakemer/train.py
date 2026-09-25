@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 from hakemer.config import TrainConfig
 from hakemer.data import GoEmotionsTorchDataset, load_go_emotions_splits, make_dataloader
-from hakemer.metrics import logits_to_preds, multilabel_scores
+from hakemer.metrics import logits_to_preds, logits_to_probs, multilabel_scores
 from hakemer.model import HAKEMER
 
 
@@ -32,7 +32,13 @@ def resolve_device(name: str) -> torch.device:
 
 
 @torch.no_grad()
-def evaluate(model, loader, device) -> dict[str, float]:
+def evaluate(
+    model,
+    loader,
+    device,
+    *,
+    threshold: float = 0.5,
+) -> dict[str, float]:
     model.eval()
     all_logits: list[np.ndarray] = []
     all_labels: list[np.ndarray] = []
@@ -44,8 +50,10 @@ def evaluate(model, loader, device) -> dict[str, float]:
         all_logits.append(logits.cpu().numpy())
         all_labels.append(labels.cpu().numpy())
     y_true = np.vstack(all_labels)
-    y_pred = logits_to_preds(np.vstack(all_logits))
-    return multilabel_scores(y_true, y_pred)
+    logits = np.vstack(all_logits)
+    y_pred = logits_to_preds(logits, threshold=threshold)
+    y_score = logits_to_probs(logits)
+    return multilabel_scores(y_true, y_pred, y_score)
 
 
 def train_loop(config: TrainConfig) -> dict:
@@ -91,6 +99,7 @@ def train_loop(config: TrainConfig) -> dict:
     criterion = torch.nn.BCEWithLogitsLoss()
 
     best_val_f1 = -1.0
+    epochs_without_improve = 0
     history: list[dict] = []
 
     for epoch in range(1, config.epochs + 1):
@@ -108,7 +117,9 @@ def train_loop(config: TrainConfig) -> dict:
             scheduler.step()
             running_loss += loss.item()
 
-        val_metrics = evaluate(model, val_loader, device)
+        val_metrics = evaluate(
+            model, val_loader, device, threshold=config.decision_threshold
+        )
         row = {
             "epoch": epoch,
             "train_loss": running_loss / max(len(train_loader), 1),
@@ -117,14 +128,29 @@ def train_loop(config: TrainConfig) -> dict:
         history.append(row)
         print(
             f"Epoch {epoch}: loss={row['train_loss']:.4f} "
-            f"val_f1_macro={row['val_f1_macro']:.4f} val_f1_micro={row['val_f1_micro']:.4f}"
+            f"val_f1_macro={row['val_f1_macro']:.4f} val_f1_micro={row['val_f1_micro']:.4f} "
+            f"val_exact_match={row['val_exact_match']:.4f} val_map={row['val_map']:.4f}"
         )
         if val_metrics["f1_macro"] > best_val_f1:
             best_val_f1 = val_metrics["f1_macro"]
             torch.save(model.state_dict(), out_dir / "best_model.pt")
+            epochs_without_improve = 0
+        else:
+            epochs_without_improve += 1
+            if epochs_without_improve >= config.early_stopping_patience:
+                print(
+                    f"Early stopping: no val F1-macro improvement for "
+                    f"{config.early_stopping_patience} epoch(s)."
+                )
+                break
 
-    model.load_state_dict(torch.load(out_dir / "best_model.pt", map_location=device))
-    test_metrics = evaluate(model, test_loader, device)
+    best_path = out_dir / "best_model.pt"
+    if not best_path.is_file():
+        raise RuntimeError("No checkpoint saved; training did not improve validation F1-macro.")
+    model.load_state_dict(torch.load(best_path, map_location=device))
+    test_metrics = evaluate(
+        model, test_loader, device, threshold=config.decision_threshold
+    )
     summary = {
         "best_val_f1_macro": best_val_f1,
         "test": test_metrics,
@@ -134,7 +160,9 @@ def train_loop(config: TrainConfig) -> dict:
     (out_dir / "metrics.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(
         f"Test F1-macro={test_metrics['f1_macro']:.4f} "
-        f"F1-micro={test_metrics['f1_micro']:.4f}  -> {out_dir}"
+        f"F1-micro={test_metrics['f1_micro']:.4f} "
+        f"exact_match={test_metrics['exact_match']:.4f} "
+        f"mAP={test_metrics['map']:.4f}  -> {out_dir}"
     )
     return summary
 
@@ -152,6 +180,8 @@ def parse_args() -> TrainConfig:
     p.add_argument("--max-train-samples", type=int, default=None)
     p.add_argument("--max-eval-samples", type=int, default=None)
     p.add_argument("--device", default="auto")
+    p.add_argument("--decision-threshold", type=float, default=0.5)
+    p.add_argument("--early-stopping-patience", type=int, default=1)
     args = p.parse_args()
     return TrainConfig(
         backbone=args.backbone,
@@ -163,6 +193,8 @@ def parse_args() -> TrainConfig:
         max_train_samples=args.max_train_samples,
         max_eval_samples=args.max_eval_samples,
         device=args.device,
+        decision_threshold=args.decision_threshold,
+        early_stopping_patience=args.early_stopping_patience,
     )
 
 

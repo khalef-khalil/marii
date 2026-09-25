@@ -26,6 +26,8 @@ class TrainConfig:
     max_train_samples: int | None = None
     max_eval_samples: int | None = None
     device: str = "auto"
+    decision_threshold: float = 0.5
+    early_stopping_patience: int = 1
 
     def learning_rate(self) -> float:
         if self.backbone.startswith("roberta"):
