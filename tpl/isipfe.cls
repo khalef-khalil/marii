@@ -145,7 +145,8 @@
 \usepackage[backend=bibtex]{biblatex}
 %\renewcommand*{\bibfont}{\small\raggedright}
 %\DefineBibliographyExtras{french}{\renewcommand*\mkbibnamelast[1]{#1}}
-\addbibresource{biblio.bib}
+% Bibliography disabled until sources are verified.
+%\addbibresource{biblio.bib}
 %\DefineBibliographyStrings{french}{%
 %  bibliography = {Bibliographie},
 %}

@@ -14,7 +14,7 @@ pas ici pour éviter toute confusion entre plan et résultats obtenus.
 \label{sec:expe-cadre}
 
 \subsection{Jeu de données}
-Les expériences ciblent GoEmotions \cite{demszky2020} (configuration
+Les expériences ciblent GoEmotions  (configuration
 \emph{simplified}) : 43\,410 exemples d'entraînement, 5\,426 de
 validation et 5\,427 de test, 27 émotions plus la classe neutre
 ($K{=}28$), en multi-étiquettes. L'analyse exploratoire du corpus
@@ -36,8 +36,8 @@ sera une classe unique activable par modules (M1--M4) afin que seuls
 les composants architecturaux diffèrent entre runs.
 
 \subsection{Backbones}
-Deux encodeurs prévus : RoBERTa-base \cite{liu2019roberta} et
-DistilBERT-base \cite{sanh2019distilbert}. Un comparatif préliminaire
+Deux encodeurs prévus : RoBERTa-base  et
+DistilBERT-base . Un comparatif préliminaire
 sur le même protocole pourra inclure BERT-base et ALBERT si le budget
 le permet ; le choix final sera justifié par F1-macro, coût
 d'entraînement et stabilité, pas par un seul chiffre isolé.
@@ -62,9 +62,9 @@ comme preuve de l'apport d'un module.
 \label{sec:expe-ressources-plan}
 
 Pour H3, à architecture M1+M2 fixée, deux ressources seront
-comparées : le NRC Emotion Lexicon \cite{mohammad2013} (features
+comparées : le NRC Emotion Lexicon  (features
 catégorielles alignées sur les étiquettes) et SenticNet
-\cite{cambria2018senticnet} (features dimensionnelles). L'hypothèse à
+ (features dimensionnelles). L'hypothèse à
 tester est l'\emph{alignement taxonomique}, non la supériorité
 a priori d'un type de ressource.
 
@@ -77,9 +77,9 @@ Une fois les modèles entraînés :
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
-\item repère indicatif par rapport à \cite{demszky2020}, avec
-      mention explicite des différences de protocole (non
-      reproductibilité stricte du setup original).
+\item repère indicatif par rapport aux baselines publiées sur
+      GoEmotions, avec mention explicite des différences de protocole
+      (non reproductibilité stricte du setup original).
 \end{itemize}
 
 \section{Points de vigilance méthodologiques}

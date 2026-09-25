@@ -23,10 +23,9 @@ généralement, tout travail sur GoEmotions :
 \item \textbf{Métriques par classe.} Le F1-macro seul ne suffit pas :
       les classes rares et la frontière avec \emph{neutral} doivent
       être inspectées explicitement.
-\item \textbf{Comparaisons externes prudentes.} Se reporter à
-      \cite{demszky2020} ou à la littérature récente n'a de sens
-      qu'avec un protocole comparable ou une discussion honnête des
-      écarts.
+\item \textbf{Comparaisons externes prudentes.} Se reporter à la
+      littérature n'a de sens qu'avec un protocole comparable ou une
+      discussion honnête des écarts.
 \end{itemize}
 
 \section{Recommandations pratiques (après expériences)}
@@ -44,19 +43,17 @@ M1--M3 apportent un gain mesurable.
 
 \begin{itemize}
 \item \textbf{Traitement du déséquilibre.} Pertes focales ou
-      repondérées \cite{lin2017focal,wu2020distribution,huang2021balancing},
-      seuils par émotion ;
+      repondérées, seuils par émotion ;
 \item \textbf{Enrichissement sémantique.} Au-delà de NRC/SenticNet,
-      graphes de connaissances (ConceptNet \cite{speer2017}, ressources
-      affectives) et fusion adaptative par émotion ;
-\item \textbf{Validation externe.} SemEval-2018 Tâche~1
-      \cite{mohammad2018semeval}, plusieurs graines aléatoires ;
+      graphes de connaissances (ConceptNet, ressources affectives) et
+      fusion adaptative par émotion ;
+\item \textbf{Validation externe.} SemEval-2018 Tâche~1, plusieurs
+      graines aléatoires ;
 \item \textbf{Émotions implicites.} Ressources de bon sens (ATOMIC,
-      COMET \cite{sap2019,bosselut2019}) ;
+      COMET) ;
 \item \textbf{LLM.} Positionner HAKE-MER par rapport aux modèles
-      généralistes et aux LLM affectifs spécialisés
-      \cite{kocon2023chatgpt,liu2024emollms} lorsque des baselines
-      reproductibles sont disponibles.
+      généralistes et aux LLM affectifs spécialisés lorsque des
+      baselines reproductibles sont disponibles.
 \end{itemize}
 
 \section*{Conclusion}

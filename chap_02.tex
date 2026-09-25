@@ -2,181 +2,304 @@
 \label{chap:etat_art}
 
 \section*{Introduction}
-La compréhension automatique des émotions humaines dans le texte constitue l'un des défis centraux du Traitement Automatique du Langage Naturel (TALN). Longtemps abordée comme un problème de classification mono-étiquette visant à identifier l'émotion dominante d'un énoncé, la détection des émotions connaît aujourd'hui un tournant paradigmatique : la réalité du langage humain révèle que plusieurs émotions peuvent coexister simultanément dans un même texte, s'interpénétrer, se moduler et interagir à différentes granularités linguistiques.
+\addcontentsline{toc}{section}{Introduction}
 
-\noindent Le présent travail s'inscrit dans ce contexte en proposant l'architecture \textbf{HAKE-MER} (\textit{Hierarchical Attention with Knowledge Enhancement for Multi-Emotion Recognition}), une approche qui ambitionne de dépasser les limitations des méthodes existantes en combinant : \\
-(i) une modélisation hiérarchique multi-niveaux basée sur les transformers \cite{vaswani2017,devlin2019,yang2016}, \\
-(ii) un mécanisme d'attention croisée pour capturer les interactions inter-émotions,\\
-(iii) une intégration de connaissances sémantiques externes (lexiques et, dans la littérature, graphes tels que \textit{ConceptNet} \cite{speer2017}).
+Ce chapitre situe le travail dans la littérature sur la
+\textbf{détection multi-étiquettes des émotions dans le texte}. Il
+ne prétend pas couvrir l'ensemble du traitement automatique des
+langues affectif : il sélectionne les fils directement liés à
+\textbf{HAKE-MER} et au protocole d'évaluation prévu au
+chapitre~\ref{chap:experimentation}.
 
-\noindent Le présent état de l'art explore les cinq axes thématiques suivantes : les méthodes de détection d'émotions multiples, les architectures d'attention hiérarchique et les transformers, l'intégration de connaissances externes, les techniques de raisonnement par bon sens, et les approches d'apprentissage multi-niveaux et multi-granularités.
+La démarche est organisée en cinq blocs : (1)~formulation de la
+tâche, jeux de données et métriques ; (2)~approches neuronales
+multi-étiquettes et modélisation des dépendances entre émotions ;
+(3)~représentations hiérarchiques du texte ; (4)~enrichissement par
+ressources lexicales externes ; (5)~synthèse des lacunes et
+positionnement de notre architecture. Les trois limites identifiées
+au chapitre~\ref{chap:contexte} (indépendance des étiquettes,
+perte de structure textuelle, classes rares) structurent cette
+revue.
 
-\section{Méthodes de Détection d'Émotions Multiples (Multi-label Emotion Classification)}
+\section{Tâche, jeux de données et métriques}
+\label{sec:etat-tache-donnees}
 
-\subsection{Fondements et cadrage du problème}
-\noindent La détection des émotions dans le texte s'appuie historiquement sur deux théories fondatrices : la théorie des émotions de base d'Ekman (1992), qui postule l'existence de six émotions universelles (joie, tristesse, peur, colère, dégoût, surprise), et la théorie dimensionnelle de Russell (1980), fondée sur un espace bidimensionnel valence-arousal (V-A). Ces deux approches ont structuré les premiers systèmes de classification, mais leurs limitations sont manifestes dès lors que l'on confronte la richesse émotionnelle du langage naturel à ces catégories rigides.
+\subsection{Classification multi-étiquettes vs mono-étiquette}
 
-\noindent La classification multi-étiquettes (\textit{multi-label classification}, MLC) constitue le cadre formel adapté à la détection simultanée de plusieurs émotions. Formellement, étant donné un énoncé $x$ et un ensemble d'étiquettes émotionnelles $L = \{l_{1}, l_{2}, \dots, l_{n}\}$, la tâche consiste à apprendre une fonction
-\[
-f : x \rightarrow \{0,1\}^{n}
-\]
-assignant à chaque étiquette une valeur binaire ou un score de probabilité. Cette formulation diffère fondamentalement de la classification multi-classes, où une seule étiquette est attribuée.
+La détection d'émotions dans le texte est souvent réduite, dans les
+premiers travaux, à l'identification d'une \emph{émotion dominante}
+ou d'une polarité globale. Or, dans le langage naturel, plusieurs
+affects peuvent coexister dans un même énoncé. Le cadre adapté est
+la \textbf{classification multi-étiquettes} : étant donné un texte
+$x$ et un inventaire d'émotions $\mathcal{E}=\{e_1,\dots,e_K\}$,
+apprendre une fonction qui associe à chaque $e_k$ une décision
+(binaire ou score), indépendamment des autres étiquettes au niveau
+de la fonction de perte, mais non indépendamment au niveau
+sémantique.
 
-\subsection{Approches basées sur les features classiques}
-\noindent Les premières approches de classification émotionnelle multi-étiquettes reposaient sur l'extraction manuelle de traits linguistiques : n-grammes, présence de mots affectifs issus de lexiques (\textit{LIWC}, \textit{SentiWordNet}, \textit{NRC Emotion Lexicon}), structures syntaxiques et traits prosodiques. Ces représentations étaient ensuite classifiées par des algorithmes tels que les \textit{Support Vector Machines} (SVM) en configuration multi-label, les forêts aléatoires, ou les chaînes de classificateurs (\textit{Classifier Chains}) de Read et al. (2009), qui modélisent explicitement les dépendances entre étiquettes.
+Formellement, on cherche $f : x \mapsto \{0,1\}^K$ (ou des
+probabilités $\hat{y}_k \in [0,1]$), ce qui diffère de la
+classification multi-classe où une seule classe est choisie. Cette
+distinction conditionne le choix des architectures de sortie
+(couche sigmoïde par émotion, entropie croisée binaire) décrit au
+chapitre~\ref{chap:conception}.
 
-\noindent La limite majeure de ces méthodes réside dans leur incapacité à capturer la sémantique profonde et les dépendances contextuelles à longue portée, ainsi que leur fragilité face aux expressions figuratives, à l'ironie et aux émotions implicites.
+\subsection{Corpus de référence : GoEmotions}
 
-\subsection{Approches par apprentissage profond}
-\noindent L'avènement du deep learning a profondément reconfiguré le paysage de la détection émotionnelle multi-étiquettes. Les réseaux convolutionnels (CNN) de Kim (2014) ont démontré l'efficacité des filtres locaux pour la classification de textes courts. Les réseaux récurrents bidirectionnels (BiLSTM) ont ensuite permis de capturer les dépendances séquentielles dans les deux sens de lecture, surpassant les CNN sur des tâches nécessitant une compréhension contextuelle étendue.
+L'évaluation prévue de ce mémoire cible le jeu \textbf{GoEmotions}
+(Demszky et al., 2020) : commentaires Reddit annotés en
+\textbf{27 émotions fines} plus une classe \emph{neutral}, en
+configuration multi-étiquettes. Ce corpus est devenu une référence
+courante pour la granularité affective au-delà de la polarité,
+notamment parce qu'une part non négligeable des exemples comporte
+plusieurs étiquettes et que la distribution des classes est très
+déséquilibrée.
 
-\noindent Un apport méthodologique majeur dans le contexte multi-label est le mécanisme d'attention de Bahdanau et al. (2015) \cite{bahdanau2015}, qui permet au modèle de pondérer différemment les tokens selon leur pertinence pour chaque étiquette. Des extensions telles que l'attention spécifique à une étiquette (\textit{label-specific attention}) ont été proposées pour modéliser individuellement la contribution de chaque région textuelle à chaque émotion.
+Les statistiques officielles du jeu (splits train/validation/test,
+fréquences par émotion, proportion de textes multi-étiquettes,
+longueur moyenne) doivent être reprises \emph{depuis la publication
+source} avant toute affirmation chiffrée dans le rapport final ; elles
+motivent le choix du F1-macro et le prétraitement hiérarchique au
+chapitre~\ref{chap:experimentation}. D'autres benchmarks (SemEval,
+etc.) pourront être mentionnés comme prolongements une fois une
+validation externe réellement menée.
 
-\subsection{Défis spécifiques : labellisation incomplète et subjectivité}
-\noindent La construction de datasets pour la détection multi-émotions est confrontée à deux problèmes structurels majeurs. D'une part, la labellisation incomplète (\textit{partial label learning}) : les annotateurs tendent à ne marquer que les émotions saillantes, omettant les émotions de faible intensité ou secondaires. D'autre part, la subjectivité inhérente à la perception émotionnelle fait que différents annotateurs peuvent attribuer des étiquettes contradictoires au même énoncé.
+\subsection{Annotation, bruit et déséquilibre}
 
-\noindent Des approches de \textit{learning with noisy labels}, d'agrégation bayésienne des annotations (Dawid \& Skene, 1979 ; Rodrigues \& Pereira, 2018) et de \textit{curriculum learning} ont été proposées pour atténuer ces biais. La modélisation probabiliste des distributions d'étiquettes plutôt que des affectations binaires constitue une direction prometteuse explorée notamment par Demszky et al. (2020) dans la conception du dataset \textit{GoEmotions} \cite{demszky2020}.
+La construction de jeux multi-émotions souffre de \textbf{labels
+partiels} (émotions faibles non annotées) et de \textbf{subjectivité
+inter-annotateurs}. Ces biais compliquent l'apprentissage et
+l'interprétation des erreurs. Sur GoEmotions, le \textbf{déséquilibre
+extrême} --- quelques classes très fréquentes, dont \emph{neutral},
+face à des émotions rares --- fait que les métriques globales
+favorisant les classes majoritaires peuvent masquer un échec sur
+les classes minoritaires, pourtant centrales pour la problématique
+de ce mémoire.
 
-\section{Architectures d'Attention Hiérarchique et Transformers}
+\subsection{Métriques d'évaluation}
 
-\subsection{Le mécanisme d'attention : fondements théoriques}
-\noindent Le mécanisme d'attention, introduit formellement par Bahdanau et al. (2015) \cite{bahdanau2015} dans le cadre des modèles séquence-à-séquence, puis généralisé sous la forme d'une attention multi-têtes (\textit{multi-head attention}) par Vaswani et al. (2017) \cite{vaswani2017} dans l'architecture \textit{Transformer}, constitue le socle théorique des approches modernes de TALN. L'attention permet à un modèle de calculer, pour chaque position d'une séquence, une pondération sur l'ensemble des autres positions, capturant ainsi des dépendances arbitrairement longues sans les limitations des architectures récurrentes.
+Pour la classification multi-étiquettes, les métriques usuelles
+incluent :
+\begin{itemize}
+\item le \textbf{F1-micro}, sensible aux classes fréquentes ;
+\item le \textbf{F1-macro}, moyenne non pondérée du F1 par émotion,
+      retenu ici comme métrique principale ;
+\item la \textbf{correspondance exacte} (ensemble d'étiquettes
+      prédit identique à la vérité) ;
+\item la \textbf{mAP} (moyenne des précisions moyennes par classe).
+\end{itemize}
+Une analyse \textbf{par classe} (F1, confusion avec \emph{neutral},
+classes quasi absentes du train) complétera obligatoirement les
+moyennes globales dans le chapitre de résultats.
 
-Formellement, l'attention est calculée comme :
-\[
-\text{Attention}(Q,K,V)=\text{softmax}\left(\frac{QK^{T}}{\sqrt{d_k}}\right)V
-\]
-où $Q$, $K$, $V$ désignent respectivement les matrices \textit{query}, \textit{key} et \textit{value}, et $d_k$ est la dimension des clés. Cette formulation est au cœur de l'architecture \textit{Transformer} et de tous ses descendants \cite{vaswani2017}.
+\section{Approches neuronales multi-étiquettes}
+\label{sec:etat-neural-multilabel}
 
-\subsection{L'architecture Transformer et ses variants pré-entraînés}
-\noindent L'architecture \textit{Transformer} \cite{vaswani2017} a engendré une famille de modèles pré-entraînés sur de larges corpus textuels, qui ont révolutionné pratiquement toutes les tâches de TALN. BERT \cite{devlin2019} introduit un pré-entraînement bidirectionnel par masquage de tokens (\textit{Masked Language Modeling}) et prédiction de phrase suivante, produisant des représentations contextuelles riches. RoBERTa (Liu et al., 2019) améliore BERT par un entraînement plus long sur un corpus plus large et la suppression de la tâche NSP. XLNet (Yang et al., 2019) adopte un schéma autorégressif permutationnel contournant les limitations du masquage.
+\subsection{De l'ingénierie de traits au deep learning}
 
-\noindent Pour le domaine affectif, des variantes spécialisées ont été développées : RoBERTa-base fine-tuné sur des datasets émotionnels \cite{demszky2020}, SentiBERT (Yin et al., 2020) enrichi de structures syntaxiques, et EmotionBERT. Ces modèles constituent les encodeurs de base des approches \textit{state-of-the-art} pour la classification émotionnelle multi-étiquettes.
+Les premières approches combinaient traits lexicaux (n-grammes,
+présence de termes affectifs), lexiques de sentiment ou d'émotions,
+et classifieurs multi-étiquettes (SVM, forêts, chaînes de
+classificateurs modélisant des dépendances entre labels). Elles
+restent utiles comme référence historique et pour l'interprétabilité,
+mais peinent sur le contexte long, l'ironie et les émotions
+implicites.
 
-\subsection{Architectures d'attention hiérarchique}
-\noindent La modélisation hiérarchique du texte vise à capturer les structures à différentes granularités : mot, phrase (ou clause), et document. Le \textit{Hierarchical Attention Network} (HAN) proposé par Yang et al. (2016) \cite{yang2016} pour la classification de documents constitue le modèle fondateur de cette famille d'approches. HAN empile deux niveaux d'encodeurs BiGRU avec attention : un au niveau des mots au sein de chaque phrase, et un au niveau des phrases au sein du document, permettant de capturer la structure rhétorique du texte.
+Les architectures convolutionnelles et récurrentes (CNN, LSTM,
+BiLSTM) ont ensuite permis l'apprentissage de représentations à
+partir du texte brut. Les mécanismes d'\textbf{attention} permettent
+de pondérer les tokens selon leur pertinence pour la prédiction ---
+point de départ des encodeurs modernes et des extensions
+\emph{label-specific} où chaque émotion dispose de sa propre
+lecture du texte.
 
-\noindent Des extensions hiérarchiques des transformers ont ensuite été proposées pour traiter des textes longs. Le modèle HIBERT (Zhang et al., 2019) applique des encodeurs transformer à deux niveaux. Des architectures récentes comme HAT (\textit{Hierarchical Attention Transformer}) utilisent des self-attentions locales au niveau des segments et une attention globale au niveau du document, réduisant la complexité computationnelle tout en maintenant une modélisation multi-échelle.
+\subsection{Modèles pré-entraînés et ligne de base}
 
-\noindent Dans le contexte émotionnel spécifique, Luo et al. (2025) proposent un mécanisme d'attention à trois dimensions pour la classification multi-étiquettes des émotions : une couche d'attention distincte par émotion, chacune traitée comme un plan bidimensionnel, reliées entre elles par une attention multi-têtes, avec un paramètre de polarité/intensité (\textit{Commander}) modulant les poids d'attention. Évaluée sur \textit{GoEmotions} et \textit{SemEval-2018}, cette approche porte le F1-macro de 0,46 à 0,56 sur GoEmotions \cite{luo2025attention}. Dans un cadre plus général de classification multi-étiquettes, Li et al. (2022) proposent une architecture Transformer-CNN hiérarchique combinant une attention multi-têtes au niveau des mots et un CNN au niveau des phrases pour capturer l'information sémantique à plusieurs échelles \cite{li2022hierarchical} ; bien que non spécifique aux émotions, ce principe de traitement hiérarchique multi-échelle rejoint directement la motivation du module d'encodage hiérarchique de HAKE-MER.
+L'affinement de \textbf{modèles de langue pré-entraînés} (BERT,
+RoBERTa, DistilBERT, etc.) avec une tête multi-étiquettes sigmoïde
+constitue aujourd'hui la \textbf{ligne de base} la plus répandue sur
+GoEmotions. Cette configuration --- encodeur contextuel + classifieur
+binaire par émotion --- sert de point de comparaison obligatoire dans
+notre protocole d'ablation : toute contribution architecturale (M1,
+M2, M3) doit être mesurée \emph{à budget et backbone constants} par
+rapport à ce affinage standard.
 
-\subsection{Attention croisée pour les interactions entre émotions}
-\noindent La modélisation des interactions entre émotions constitue un verrou scientifique central. Les émotions ne sont pas indépendantes : la joie et la surprise sont fréquemment co-occurrentes, tandis que la joie et la tristesse s'excluent plus souvent. Des mécanismes d'attention croisée (\textit{cross-attention}) ou d'attention inter-étiquettes permettent de capturer ces corrélations. Des approches comme le \textit{Label-Correlation Attention} de Chen et al. (2023) construisent un graphe d'émotions et appliquent des réseaux d'attention sur ce graphe pour propager les signaux entre étiquettes corrélées.
+Les chiffres publiés par les auteurs de GoEmotions pour un BERT-base
+affiné sur la taxonomie complète pourront servir de \textbf{repère
+indicatif} uniquement si le protocole (époques, longueur de
+séquence, recherche d'hyperparamètres) est explicitement comparé ;
+ils ne remplaceront pas nos comparaisons internes contrôlées.
 
-\section{Intégration de Connaissances Externes}
+\subsection{Dépendances entre émotions (motivation du module M2)}
 
-\subsection{Motivation et cadre général}
-\noindent L'intégration de connaissances externes dans les modèles de TALN répond à une limitation fondamentale des approches purement statistiques : la difficulté à inférer les émotions implicites, à comprendre les références culturelles ou à désambiguïser les expressions indirectes. Les connaissances structurées permettent d'ancrer les représentations dans une sémantique explicite et d'effectuer des inférences au-delà de la co-occurrence statistique.
+Traiter chaque émotion comme une sortie indépendante sur un vecteur
+global partagé ignore les \textbf{cooccurrences} et
+\textbf{incompatibilités} entre labels (joie/surprise vs joie/tristesse).
+La littérature propose plusieurs réponses : chaînes de
+classificateurs, graphes de corrélation entre étiquettes, attention
+dédiée par émotion, encodeurs d'interactions entre représentations
+d'étiquettes. Ce fil justifie le \textbf{module~2} de HAKE-MER
+(attention croisée multi-émotions), qui vise à donner à chaque émotion
+une représentation contextuelle propre tout en modélisant les
+interactions entre émotions.
 
-\subsection{Bases de connaissances affectives}
-\noindent Plusieurs ressources sémantiques ont été développées pour le domaine affectif. NRC Emotion Lexicon (Mohammad \& Turney, 2013) associe plus de 14\,000 mots à huit catégories d'émotions et deux polarités (positif/négatif) \cite{mohammad2013}. SentiWordNet étend WordNet par des scores de sentiment. EmoLex et EmoNet (Yang et al., 2007) fournissent des associations mots-émotions acquises par apprentissage sur de larges corpus.
+\section{Modélisation hiérarchique du texte}
+\label{sec:etat-hierarchie}
 
-\noindent Ces lexiques constituent une première source de connaissances utilisables par injection directe dans les représentations (\textit{feature concatenation}), par initialisation des embeddings ou par contraintes de régularisation sur les prédictions \cite{mohammad2013}.
+\subsection{Motivation}
 
-\subsection{ConceptNet et le raisonnement sémantique}
-\noindent ConceptNet (Speer et al., 2017) est un réseau sémantique multilingue à grande échelle, structurant des connaissances de bon sens sous forme de triplets (concept, relation, concept) avec des relations typées telles que \textit{IsA}, \textit{HasProperty}, \textit{Causes}, \textit{MotivatedByGoal}, ou \textit{CausesDesire} \cite{speer2017}. ConceptNet5 contient plus de 34 millions de triplets en plus de 300 langues \cite{speer2017}.
+De nombreux textes portent des signaux affectifs \textbf{localisés}
+à l'échelle de la phrase : une phrase peut exprimer la gratitude,
+une autre la surprise. Aplatir le document en un unique vecteur
+(\texttt{[CLS]} ou pooling global) mélange ces signaux --- limitation
+\textbf{L2} du chapitre~\ref{chap:conception}. Les architectures
+\textbf{hiérarchiques} visent à encoder d'abord les phrases (ou
+segments), puis à agréger au niveau document avec des poids appris.
 
-\noindent Son intégration dans les modèles de TALN s'effectue principalement via des \textit{Knowledge Graph Embeddings} (KGE) --- \textit{TransE}, \textit{RotatE}, \textit{ComplEx} --- qui projettent entités et relations dans un espace vectoriel continu tout en préservant les propriétés structurelles du graphe. Des approches récentes comme ATOMIC \cite{sap2019} enrichissent ConceptNet par des inférences causales et des chaînes de raisonnement événementiel, particulièrement pertinentes pour inférer les états mentaux implicites.
+\subsection{Travaux fondateurs et extensions Transformer}
 
-\subsection{Méthodes d'enrichissement des représentations par connaissances}
-\noindent Plusieurs paradigmes d'intégration ont été proposés dans la littérature. La fusion par concatenation enrichit les embeddings contextuels des tokens par les embeddings de leurs voisins dans le graphe de connaissances. Les approches à base de graphes convolutionnels (GCN, GAT) propagent l'information sur le graphe de connaissances pour enrichir la représentation de chaque concept. ERNIE \cite{zhang2019ernie} réalise une fusion explicite entre les représentations BERT et les embeddings d'entités Wikidata via un mécanisme d'\textit{information fusion layer}.
+Le réseau d'attention hiérarchique (HAN) pour la classification de
+documents illustre le schéma mot$\to$phrase$\to$document avec
+attention aux deux niveaux. Des variantes récentes combinent
+Transformers, attention multi-têtes et pooling par segment pour les
+textes longs ou multi-phrases. Pour la détection d'émotions
+multi-étiquettes, l'enjeu n'est pas seulement la longueur du
+document mais la \textbf{séparation des signaux affectifs} portés
+par des unités discursives distinctes.
 
-\noindent Dans le contexte émotionnel, KnowBERT (Peters et al., 2019) et des approches comme KGNN (\textit{Knowledge Graph Neural Network for Emotion}) enrichissent les représentations des tokens ayant une valence affective en les ancrant dans leurs voisinages conceptuels dans \textit{ConceptNet} et \textit{EmoNet}, permettant ainsi d'inférer les émotions de tokens ambigus ou d'expressions idiomatiques.
+Le \textbf{module~1} de HAKE-MER s'inscrit dans cette lignée :
+segmentation en phrases, encodage par le backbone partagé, agrégation
+phrase$\to$document par attention additive, avec des bornes de
+longueur fixées au chapitre~\ref{chap:experimentation}.
 
-\section{Techniques de Raisonnement par Bon Sens (Commonsense Reasoning)}
+\section{Enrichissement par ressources lexicales externes}
+\label{sec:etat-lexiques}
 
-\subsection{Définition et importance pour la compréhension émotionnelle}
-\noindent Le raisonnement par bon sens désigne la capacité d'un système à mobiliser des connaissances implicites sur le monde pour comprendre et inférer des informations non explicitement mentionnées dans un texte. Dans le contexte de la détection émotionnelle, cette capacité est cruciale : une phrase comme «~Il a raté son avion~» n'exprime pas directement une émotion, mais un système doté de connaissances de bon sens peut inférer la frustration ou l'inquiétude associées à cette situation.
+\subsection{Intérêt pour les émotions rares}
 
-\subsection{Ressources pour le raisonnement commun}
-\noindent ATOMIC \cite{sap2019} est une base de connaissances d'inférences causales et sociales structurée autour de neuf dimensions relationnelles couvrant les causes (\textit{xNeed}, \textit{xWant}), les effets (\textit{xEffect}, \textit{xReact}, \textit{oReact}), et les réactions mentales. ATOMIC20 \cite{hwang2021} étend cette ressource à 1,33 million de tuples d'inférence et 23 relations.
+Les classes rares offrent peu d'exemples supervisés ; les
+\textbf{lexiques affectifs} (association mot$\to$catégories
+d'émotions ou dimensions de sentiment) peuvent fournir un signal
+auxiliaire, en particulier lorsque les mots du texte sont couverts
+par le lexique. L'intégration se fait typiquement par
+concaténation, features document-level, initialisation d'embeddings
+ou --- comme dans HAKE-MER --- injection contrôlée via une porte
+apprise sur les requêtes d'attention par émotion.
 
-\noindent COMET \cite{bosselut2019} est un modèle génératif entraîné sur ATOMIC capable de produire des inférences commonsense pour des phrases en entrée arbitraires, constituant ainsi un \textit{commonsense knowledge model} à la volée. COMET-ATOMIC 2020 combine les connaissances d'ATOMIC et de ConceptNet dans un modèle génératif unifié basé sur BART \cite{hwang2021}.
+\subsection{Ressources retenues dans ce mémoire : NRC et SenticNet}
 
-\subsection{Intégration du raisonnement commun dans les modèles émotionnels}
-\noindent Des travaux récents ont exploré l'intégration du raisonnement commun pour améliorer la détection émotionnelle. Ghosal et al. (2020) proposent le modèle COSMIC qui enrichit un réseau récurrent par des inférences COMET pour chaque tour de dialogue, modélisant les états mentaux des interlocuteurs \cite{ghosal2020}. Ce modèle obtient des améliorations significatives sur les benchmarks de reconnaissance des émotions en conversation (ERC).
+Le protocole prévoit de comparer deux types de ressources à
+architecture fixée (M1+M2+M3) :
+\begin{itemize}
+\item le \textbf{NRC Emotion Lexicon} (Mohammad et Turney, 2013) :
+      catégories d'émotions alignées sur une taxonomie discrete,
+      proche des étiquettes GoEmotions ;
+\item \textbf{SenticNet} : représentations affectives plus
+      \emph{dimensionnelles} (continues), exigeant une mise en
+      correspondance implicite avec les 28 classes.
+\end{itemize}
+L'hypothèse H3 (chapitre~\ref{chap:conception}) est que
+l'\textbf{alignement taxonomique} entre lexique et labels cible
+conditionne l'utilité de l'enrichissement, plus que la richesse
+sémantique abstraite de la ressource.
 
-\noindent Ma et al. (2023) proposent une approche \textit{chain-of-thought} émotionnelle adaptant le paradigme de raisonnement en chaîne (Wei et al., 2022) au domaine affectif. En invitant un LLM à articuler une chaîne de raisonnement émotionnel explicite avant de produire sa prédiction, ils obtiennent des gains notables sur les tâches de détection émotionnelle \textit{zero-shot}. L'intégration de telles capacités de raisonnement explicite dans des architectures discriminatives (non génératives) reste un chantier ouvert.
+\subsection{Graphes de connaissances et bon sens (hors périmètre principal)}
 
-\subsection{Inférence des émotions implicites}
-\noindent Un sous-problème majeur de la détection émotionnelle est la capacité à identifier les émotions implicites, c'est-à-dire les émotions qui ne sont pas directement exprimées par des mots affectifs mais sont véhiculées par des descriptions d'événements, de situations ou d'actions. Des approches basées sur des modèles de causalité émotionnelle (\textit{emotion cause extraction}) et des réseaux bayésiens causaux ont été explorées. Des travaux comme ceux de Xia \& Ding (2019) sur l'extraction jointe causes-émotions montrent l'intérêt de modéliser explicitement le lien causal entre événements et réactions émotionnelles.
+Des travaux intègrent ConceptNet, bases d'inférences causales (ATOMIC)
+ou modèles génératifs de bon sens (COMET) pour les émotions
+implicites. Ces approches sont \textbf{pertinentes pour des
+perspectives} (chapitre~\ref{chap:perspectives}) mais hors du
+périmètre d'implémentation immédiat de HAKE-MER, qui se concentre
+sur l'injection lexicale NRC/SenticNet.
 
-\section{Apprentissage Multi-Niveaux et Multi-Granularités}
+\section{Synthèse et positionnement de HAKE-MER}
+\label{sec:etat-synthese}
 
-\subsection{Granularités textuelles et représentations multi-échelles}
-\noindent La modélisation des émotions à différentes granularités textuelles --- token, span, phrase, paragraphe, document --- constitue un axe de recherche actif. Les émotions peuvent être signalées par un mot isolé («~merveilleux~»), une expression figée («~avoir le cafard~»), une clause entière ou la tonalité globale d'un texte. Les approches à granularité unique, qu'elles opèrent au niveau du token ou du document, manquent nécessairement une partie de l'information émotionnelle.
+\subsection{Limites récurrentes et modules proposés}
 
-\noindent Les architectures multi-résolution, inspirées des modèles de vision par ordinateur (\textit{Feature Pyramid Networks}), adaptent ce principe au texte en maintenant des représentations à plusieurs niveaux de granularité et en permettant des échanges d'information entre ces niveaux via des connexions latérales ou des mécanismes de fusion adaptative.
+Le tableau~\ref{tab:limites-modules} relie les limitations
+structurales identifiées au chapitre~\ref{chap:contexte} aux
+composantes de HAKE-MER.
 
-\subsection{Architectures multi-tâches pour l'apprentissage multi-niveaux}
-\noindent L'apprentissage multi-tâches (\textit{Multi-Task Learning}, MTL) constitue un cadre naturel pour l'apprentissage multi-niveaux : différentes têtes de classification sont entraînées conjointement sur des tâches opérant à différentes granularités --- détection de spans affectifs au niveau token, classification émotionnelle au niveau phrase, et inférence du ton général au niveau document. Ruder (2017) et Liu et al. (2019) (MT-DNN) démontrent les bénéfices de la régularisation implicite apportée par le MTL pour les tâches de TALN \cite{liu2019mtdnn}.
+\begin{table}[H]
+\centering
+\caption{Limites des approches dominantes et réponse architecturale}
+\label{tab:limites-modules}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|p{4.5cm}|p{4.5cm}|p{5.2cm}|}
+\hline
+\textbf{Limite} & \textbf{Manifestation} & \textbf{Module HAKE-MER} \\
+\hline
+L1 — Indépendance des étiquettes &
+Sorties sigmoïdes sur un contexte global unique &
+M2 : attention croisée par émotion \\
+\hline
+L2 — Structure du texte &
+Un seul vecteur document &
+M1 : encodage hiérarchique phrase$\to$doc \\
+\hline
+L3 — Classes rares &
+Peu d'exemples supervisés &
+M3 : prior lexical (NRC / SenticNet) ; M4 : pondération dynamique (à valider) \\
+\hline
+\end{tabular}
+\end{table}
 
-\noindent Des architectures récentes comme ELECTRA fine-tuné en MTL sur des tâches émotionnelles, ou des modèles à encodeurs partagés avec des décodeurs spécialisés par granularité, illustrent cette tendance. La propagation de gradients à travers plusieurs niveaux d'abstraction favorise l'apprentissage de représentations plus généralisables.
+\subsection{Comparaison des familles d'approches}
 
-\subsection{Pooling adaptatif et agrégation inter-niveaux}
-\noindent La question de l'agrégation des représentations entre niveaux est cruciale. Des mécanismes de pooling appris (\textit{attention pooling}, \textit{gated pooling}) remplacent avantageusement le simple \textit{mean pooling} ou \textit{max pooling} pour agréger les représentations de tokens en représentations de phrases. De même, la représentation de document peut être construite par une attention hiérarchique sur les représentations de phrases, pondérant davantage les phrases émotionnellement saillantes.
-
-\noindent Le modèle HAKE-MER du présent travail s'inscrit dans cette lignée en proposant des mécanismes de pondération dynamique adaptatifs permettant de gérer des émotions multiples d'intensités variables, surmontant ainsi la limitation des approches à seuil fixe qui traitent toutes les émotions de manière équivalente indépendamment de leur intensité.
-
-\subsection{Évaluation multi-granulaire}
-\noindent L'évaluation des modèles multi-étiquettes requiert des métriques spécifiques. Le F1-micro agrège les contributions de chaque instance uniformément, favorisant les étiquettes fréquentes. Le F1-macro calcule la moyenne non pondérée du F1 par étiquette, traitant équitablement toutes les émotions. L'\textit{Exact Match Accuracy} (ou \textit{Subset Accuracy}) mesure la proportion d'instances pour lesquelles l'ensemble exact d'étiquettes prédites coïncide avec l'ensemble de référence. Pour les applications sensibles à l'intensité, le \textit{Mean Average Precision} (mAP) et la corrélation de Pearson sur l'intensité émotionnelle (\textit{Emotional Intensity Correlation}) complètent ce tableau de bord.
-
-\section{Synthèse et Positionnement de HAKE-MER}
-
-\noindent Le tableau \ref{tab:synthese_hake_mer} suivant résume les forces et limitations des approches existantes au regard des objectifs du présent travail :
+Le tableau~\ref{tab:synthese_hake_mer} compare des familles de
+méthodes au regard des objectifs de ce mémoire (multi-étiquettes,
+structure, connaissances externes).
 
 \begin{table}[H]
     \centering
-    \caption{Synthèse des approches existantes et positionnement de HAKE-MER}
+    \caption{Synthèse des approches et positionnement de HAKE-MER}
     \label{tab:synthese_hake_mer}
-    \renewcommand{\arraystretch}{1.4}
-    \setlength{\tabcolsep}{6pt}
-    \begin{tabular}{|p{4.2cm}|p{4.2cm}|p{6.2cm}|}
+    \renewcommand{\arraystretch}{1.35}
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{|p{3.8cm}|p{4.5cm}|p{5.5cm}|}
         \hline
-        \textbf{Approche} & \textbf{Forces} & \textbf{Limites} \\
+        \textbf{Approche} & \textbf{Forces} & \textbf{Limites (pour notre sujet)} \\
         \hline
-        
-        \textbf{Méthodes classiques} \newline (SVM multi-label, Classifier Chains)
-        & 
-        Robustesse sur petits datasets, bonne interprétabilité
-        & 
-        Incapacité à capturer les dépendances contextuelles à longue portée et les émotions implicites
-        \\
+        Traits + classifieurs classiques &
+        Interprétabilité, faible coût &
+        Contexte limité, émotions implicites \\
         \hline
-        
-        \textbf{Modèles BiLSTM avec attention}
-        & 
-        Modélisation séquentielle correcte, meilleure prise en compte du contexte que les approches classiques
-        & 
-        Sensibilité à la longueur des textes et absence de raisonnement sémantique
-        \\
+        CNN / BiLSTM + attention &
+        Séquences locales, base historique &
+        Peu de structure document, pas de PLM \\
         \hline
-        
-        \textbf{BERT/RoBERTa fine-tuné}
-        & 
-        Représentations contextuelles riches et bonnes performances globales
-        & 
-        Traitement du texte à une granularité unique et absence d’intégration explicite de connaissances externes
-        \\
+        PLM affiné + tête multi-label &
+        Représentations contextuelles fortes &
+        Contexte global unique, pas de prior lexical \\
         \hline
-        
-        \textbf{Approches avec connaissances externes} \newline (ERNIE, KnowBERT)
-        & 
-        Enrichissement sémantique et meilleure prise en compte des connaissances du monde
-        & 
-        Généralement mono-granulaire et sans mécanisme explicite d’interaction inter-émotions
-        \\
+        Enrichissement lexical seul &
+        Signal pour mots affectifs &
+        Souvent combiné sans hiérarchie ni interaction entre labels \\
+        \hline
+        \textbf{HAKE-MER (prévu)} &
+        Modules M1--M4 ablatables &
+        Coût et gains \emph{à démontrer} expérimentalement \\
         \hline
     \end{tabular}
 \end{table}
-\newpage 
-\noindent HAKE-MER se distingue en combinant, dans une architecture unifiée et ablatable : l'encodage hiérarchique multi-niveaux (tokens $\rightarrow$ phrases $\rightarrow$ document), l'attention croisée inter-émotions, l'enrichissement par ressources externes — en priorité le NRC Emotion Lexicon et SenticNet pour le module~3, les graphes tels que \textit{ConceptNet} \cite{speer2017} restant une piste pour travaux ultérieurs — et la pondération dynamique des intensités. L'apport de chaque composante sur \textit{GoEmotions} (et, le cas échéant, \textit{SemEval-2018}) doit être \emph{mesuré} par ablation, sans présupposer un gain en pourcentage fixe.
 
-
-
+HAKE-MER vise une architecture \textbf{unifiée et ablatable} :
+hiérarchie (M1), interactions inter-émotions (M2), enrichissement
+lexical comparé NRC/SenticNet (M3), pondération dynamique des
+intensités (M4, dont l'utilité reste une hypothèse à tester). Aucun
+gain de performance ne sera assumé dans ce chapitre : l'état de
+l'art fixe le \emph{cadre conceptuel} ; la preuve relève du
+chapitre~\ref{chap:experimentation}.
 
 \section*{Conclusion}
-\noindent Cet état de l'art a permis de baliser les grands axes de recherche constituant le socle théorique et méthodologique du présent PFE. La détection des émotions multiples dans les textes se trouve à la confluence de plusieurs champs : la classification multi-étiquettes, les architectures profondes à attention hiérarchique, l'ingénierie des connaissances et le raisonnement commun. L'architecture HAKE-MER s'appuie sur les avancées récentes de chacun de ces domaines pour proposer une approche intégrée, dont le plan expérimental --- basé principalement sur le dataset \textit{GoEmotions} avec validation croisée sur \textit{SemEval-2018} et \textit{EmoInt} --- permettra d'évaluer rigoureusement les contributions individuelles de chaque composante (étude d'ablation) et la robustesse de la généralisation inter-datasets.
+\addcontentsline{toc}{section}{Conclusion}
 
-
-
+Cet état de l'art a resserré la littérature autour de cinq axes
+directement utiles au mémoire : tâche et métriques sur GoEmotions,
+baselines par modèles pré-entraînés, modélisation des dépendances
+entre émotions, encodage hiérarchique, et enrichissement lexical
+externe. Les références bibliographiques détaillées seront
+réintroduites progressivement, chaque source étant vérifiée avant
+citation. Le chapitre suivant formalise l'architecture HAKE-MER et
+les hypothèses H1--H4 qui en découlent.

@@ -15,8 +15,8 @@ recherche qu'elle permet de tester.
 \label{sec:conception-formulation}
 
 Soit un texte $x$ et un inventaire d'émotions
-$\mathcal{E}=\{e_1,\dots,e_K\}$ ($K{=}28$ pour GoEmotions
-\cite{demszky2020}). La classification multi-étiquettes apprend une
+$\mathcal{E}=\{e_1,\dots,e_K\}$ ($K{=}28$ pour GoEmotions).
+La classification multi-étiquettes apprend une
 fonction $f : x \mapsto Y \subseteq \mathcal{E}$, réalisée par $K$
 sorties sigmoïdes $\hat{y}_k = \sigma(z_k)$ entraînées par entropie
 croisée binaire :
@@ -100,11 +100,10 @@ au-dessus d'un backbone partagé.}
 \label{sec:conception-m1}
 
 Le texte est segmenté en phrases ($M{=}4$ au plus, 32 tokens par
-phrase — bornes calibrées empiriquement, section 4.1), encodées par
+phrase — bornes fixées au chapitre~\ref{chap:experimentation}), encodées par
 le backbone en un seul appel vectorisé. Pour une phrase de
 représentations de tokens $H=(h_1,\dots,h_T)$ et de masque $m$,
-l'agrégation par \emph{attention additive}
-\cite{bahdanau2015,yang2016} calcule :
+l'agrégation par \emph{attention additive} calcule :
 \begin{equation}
 u_t = v^\top \tanh(W h_t), \qquad
 \alpha_t = \frac{\exp(u_t)}{\sum_{t'} \exp(u_{t'})}, \qquad
@@ -121,10 +120,8 @@ vecteurs de phrases qui alimentent le module 2.
 \label{sec:conception-m2}
 
 Chaque émotion $k$ possède une requête apprise $Q_k \in \mathbb{R}^d$
-(initialisée en $\mathcal{N}(0, 0{,}02^2)$ — une échelle
-d'initialisation standard s'est avérée indispensable à la
-convergence, section 4.7). L'attention croisée multi-têtes
-\cite{vaswani2017} (8 têtes) utilise les requêtes d'émotions comme
+(initialisée en $\mathcal{N}(0, 0{,}02^2)$). L'attention croisée
+multi-têtes (8 têtes) utilise les requêtes d'émotions comme
 \emph{queries} et les vecteurs de phrases comme \emph{keys/values} :
 \begin{equation}
 r_k = \mathrm{MHA}\big(Q_k,\; [s_1,\dots,s_M],\; [s_1,\dots,s_M]\big),
@@ -141,9 +138,9 @@ vecteur de poids, $z_k = w_k^\top r_k + b_k$.
 \label{sec:conception-m3}
 
 Un vecteur affectif de document $c \in \mathbb{R}^{d_c}$ est extrait
-d'une ressource externe : le NRC Emotion Lexicon \cite{mohammad2013}
+d'une ressource externe : le NRC Emotion Lexicon 
 ($d_c{=}10$, catégories binaires) ou SenticNet
-\cite{cambria2018senticnet} ($d_c{=}5$, dimensions continues du
+ ($d_c{=}5$, dimensions continues du
 modèle Hourglass). Il est projeté, borné, puis ajouté aux requêtes
 d'émotions, pondéré par une \emph{porte apprise} $g$ initialisée à
 zéro :

@@ -1,37 +1,19 @@
 ---
-description: Bibliography sources must be downloaded locally before citation
+description: Bibliography paused — no citations until sources verified
 alwaysApply: true
 ---
 
-# Bibliography and local sources (PFE report)
+# Bibliography (currently disabled)
 
-## Download-before-cite
+The report has **no bibliography and no `\cite{}` commands** until the team deliberately re-enables them.
 
-Every reference that appears in the report body or in `biblio.bib` / `\printbibliography` **must** have a corresponding file saved in the workspace **before** you add the `\cite{...}` or the BibTeX entry.
+When bibliography is turned back on:
 
-- **Storage:** `reference/sources/`
-- **Naming:** `{citekey}.pdf` when the source is a PDF (preferred). Use `{citekey}.html` or `{citekey}.txt` only when no PDF exists but an official full-text page was saved. One primary file per cite key.
-- **BibTeX:** Each entry should include a `file = {reference/sources/{citekey}.pdf}` field (or appropriate extension) once the file exists.
+1. Save each source under `reference/sources/{citekey}.pdf` (or allowed alternative).
+2. Add a verified BibTeX entry in `biblio.bib` with `file = {reference/sources/...}`.
+3. Uncomment `\addbibresource{biblio.bib}` in `tpl/isipfe.cls` and `\printbibliography` in `main.tex`.
+4. Only then add `\cite{...}` in the report.
 
-## Not usable without a local file
+If a source cannot be downloaded and checked, **do not cite it**.
 
-If a paper, report, or page cannot be downloaded and stored under `reference/sources/`, **do not cite it** and **do not add it** to `biblio.bib`. Find an alternative source that can be downloaded, or omit the claim.
-
-Allowed downloads: publisher open access, arXiv, ACL Anthology, institutional repositories, author copies, etc. Do not cite based on metadata alone.
-
-## Workflow
-
-1. Obtain and save the file to `reference/sources/{citekey}.pdf` (or allowed alternative).
-2. Add or update the BibTeX entry in `biblio.bib`.
-3. Add `\cite{...}` in the LaTeX chapters.
-
-When editing existing cites, verify the matching file still exists under `reference/sources/`.
-
-## Report text (mandatory)
-
-**Never** mention in any report `.tex` content (chapters, introduction, conclusion, annexes, abstracts):
-
-- This download policy or any other Cursor / project workflow rules
-- That sources were “stored locally”, “verified offline”, or similar meta-process language
-
-The report must read as normal academic writing only.
+Never mention Cursor rules or download policy in report `.tex` text.
