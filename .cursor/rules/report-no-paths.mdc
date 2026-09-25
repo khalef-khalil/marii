@@ -1,0 +1,31 @@
+---
+description: PFE report — no paths, repos, or implementation file names in .tex
+globs: chap_*.tex,main.tex,annexes.tex,global_config.tex,abstract*.tex
+alwaysApply: false
+---
+
+# Report surface (no implementation paths)
+
+The mémoire is a **research document**, not a README. Prose, tables, captions, and lists in `.tex` must not expose the filesystem or version control.
+
+## Do not put in the report
+
+- File or directory paths (absolute or relative), URL paths to raw files, or extensions tied to the project (`.py`, `.json`, `.sh`, etc.).
+- Repository names, Git hosting links, « dépôt », « artifact », or « script » naming a concrete project file.
+- Code-level identifiers mirroring the implementation (`use_m1`, `lexicon_source`, class/module names as `\texttt{...}` unless they are **published model names**).
+
+## Prefer instead
+
+- **Methods in prose:** « analyse automatique du corpus », « implémentation modulaire », « journalisation des runs », « correspondance figée pour l’expérience ».
+- **Protocol vocabulary:** modules M1 à M4, NRC, SenticNet, GoEmotions, backbones (RoBERTa-base, DistilBERT-base).
+- **Standard ML notation** when cited in the literature: token `[CLS]`, NLTK Punkt, AdamW, F1-macro.
+
+## Allowed
+
+- System acronym **HAKE-MER** and architecture labels M1–M4 (design names, not file names).
+- `\cite{}`, dataset and paper names, hyperparameters in tables without path-like strings.
+
+## When editing
+
+- Scan changed `.tex` for `\texttt{`, slashes `/`, `_` path segments, and « dépôt » / « github ».
+- Keep reproducibility in the **codebase and annexes policy**; the main chapters stay path-free.

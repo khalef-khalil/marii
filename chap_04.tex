@@ -33,9 +33,9 @@ du multi-étiquette et le prétraitement hiérarchique
 
 Avant tout entraînement, nous avons mesuré l'impact du découpage retenu
 ($M{=}4$ phrases, 32 tokens RoBERTa par phrase, segmentation NLTK
-Punkt) sur les trois splits. Le script
-\texttt{scripts/corpus\_protocol\_stats.py} produit les chiffres
-archivés dans \texttt{reference/artifacts/corpus\_protocol\_stats.json}.
+Punkt) sur les trois splits. Une analyse automatique du corpus,
+menée avec exactement ces règles avant entraînement, fournit les
+ordres de grandeur suivants.
 
 Sur l'ensemble d'entraînement (même ordre de grandeur sur validation et
 test) :
@@ -47,8 +47,7 @@ test) :
 \item environ \textbf{0{,}74\,\%} des exemples requièrent une
       troncature à 32 tokens sur au moins une phrase conservée ;
 \item environ \textbf{10{,}8\,\%} des tokens (alphabétiques) du texte
-      retenu apparaissent dans le NRC Emotion Lexicon (via le lexique
-      \emph{nrclex}) ;
+      retenu apparaissent dans le NRC Emotion Lexicon ;
 \item environ \textbf{73\,\%} des documents contiennent au moins un
       token couvert par le NRC.
 \end{itemize}
@@ -107,11 +106,10 @@ Métriques de test & F1-micro, F1-macro, exact match, mAP \\
 \subsection{Implémentation modulaire et journalisation}
 \label{sec:expe-impl-flags}
 
-Une classe unique \texttt{HAKEMER} (nom provisoire) expose des drapeaux
-booléens \texttt{use\_m1} à \texttt{use\_m4} et un champ
-\texttt{lexicon\_source} $\in \{\texttt{none}, \texttt{nrc}, \texttt{senticnet}\}$.
-Seuls ces champs diffèrent entre runs d'ablation ; le reste du code
-(data loader, métriques, boucle d'entraînement) est partagé.
+Une implémentation unique de HAKE-MER active ou désactive les modules
+M1 à M4 et choisit la ressource lexicale (aucune, NRC, SenticNet).
+Seuls ces choix diffèrent entre runs d'ablation ; le chargement des
+données, les métriques et la boucle d'entraînement restent communs.
 
 Chaque run enregistrera au minimum : identifiant de configuration,
 backbone, graine, courbes train/validation, F1-macro et F1-micro
@@ -141,17 +139,17 @@ tableau~\ref{tab:expe-ablation-flags} explicite les drapeaux.
 \hline
 \textbf{Étape} & \textbf{M1} & \textbf{M2} & \textbf{M3} & \textbf{M4} & \textbf{Lexique} & \textbf{Hyp.} \\
 \hline
-0 Baseline PLM & 0 & 0 & 0 & 0 & none & (réf.) \\
+0 Baseline PLM & 0 & 0 & 0 & 0 & aucune & (réf.) \\
 \hline
-1 +M1 & 1 & 0 & 0 & 0 & none & H1 \\
+1 +M1 & 1 & 0 & 0 & 0 & aucune & H1 \\
 \hline
-2 +M2 & 1 & 1 & 0 & 0 & none & H2 \\
+2 +M2 & 1 & 1 & 0 & 0 & aucune & H2 \\
 \hline
-3 +M3 (NRC) & 1 & 1 & 1 & 0 & nrc & H3 \\
+3 +M3 (NRC) & 1 & 1 & 1 & 0 & NRC & H3 \\
 \hline
-3 +M3 (SenticNet) & 1 & 1 & 1 & 0 & senticnet & H3 \\
+3 +M3 (SenticNet) & 1 & 1 & 1 & 0 & SenticNet & H3 \\
 \hline
-4 +M4 & 1 & 1 & 1 & 1 & nrc ou senticnet & H4 \\
+4 +M4 & 1 & 1 & 1 & 1 & NRC ou SenticNet & H4 \\
 \hline
 \end{tabular}
 \end{table}
@@ -167,9 +165,9 @@ aux émotions Plutchik du lexique NRC \cite{mohammad2013}. Pour
 documenter l'alignement taxonomique avec GoEmotions (H3), le
 tableau~\ref{tab:nrc-goemotions-map} liste, pour chaque étiquette fine,
 les dimensions NRC associées sémantiquement (relation many-to-one).
-L'étiquette \emph{neutral} n'active aucune dimension NRC. Le fichier
-\texttt{scripts/nrc\_goemotions\_mapping.json} du dépôt du mémoire
-matérialise cette table pour l'implémentation ; le vecteur injecté reste
+L'étiquette \emph{neutral} n'active aucune dimension NRC. Cette
+correspondance est figée pour toute la campagne expérimentale ; le
+vecteur injecté reste
 \emph{partagé} entre émotions (section~\ref{sec:conception-m3}), la
 table servant à l'analyse et à la justification du protocole.
 
@@ -256,8 +254,8 @@ seront figés dans le code et reproduits pour les runs NRC et SenticNet.
 \label{sec:expe-ressources-plan}
 
 À architecture M1+M2 fixée, M3 activé et M4 désactivé, deux runs
-diffèrent uniquement par
-\texttt{lexicon\_source} : \texttt{nrc} vs \texttt{senticnet}. L'hypothèse
+diffèrent uniquement par la ressource lexicale (NRC vs SenticNet).
+L'hypothèse
 H3 teste l'alignement taxonomique (NRC) plutôt que la supériorité
 a priori d'un graphe conceptuel.
 
@@ -297,6 +295,6 @@ Avant de tirer des conclusions, les points suivants seront contrôlés :
 Le protocole expérimental est désormais spécifié : corpus GoEmotions,
 statistiques de segmentation et de couverture NRC, hyperparamètres
 communs, drapeaux d'ablation, correspondance NRC et rappel SenticNet.
-La prochaine étape est l'implémentation de \texttt{HAKEMER} et
+La prochaine étape est l'implémentation complète de l'architecture et
 l'exécution des runs ; les scores et la validation de H1 à H4
 compléteront la section~\ref{sec:expe-analyses-plan}.

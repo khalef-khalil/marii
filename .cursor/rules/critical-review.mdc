@@ -58,6 +58,7 @@ Never stack headings without prose between them: a `\section` must not be immedi
 
 ## Always check
 
+- **No paths in prose:** chapters must not name project files, directories, repositories, or code flags (see `report-no-paths.mdc`).
 - **Internal consistency:** title, abstracts, chapter claims, architecture (ch. 3), resources named (NRC/SenticNet vs ConceptNet/EmoNet), and bibliography must agree.
 - **Evidence vs prose:** Planned work uses future or conditional wording (see integrity bar above).
 - **Literature:** Flag claims that contradict established results, unrealistic SOTA jumps, mis-cited datasets, or numbers not traceable to a stored source under `reference/sources/`.
