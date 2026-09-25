@@ -1,5 +1,5 @@
 ---
-description: Bibliography requires local verified PDF before citation
+description: Verified PDF before cite; expand bibliography when claims need support
 alwaysApply: true
 ---
 
@@ -13,9 +13,15 @@ Every `\cite{...}` in the report **must** have a file saved under `reference/sou
 - **BibTeX:** `biblio.bib` entry must include `file = {reference/sources/{citekey}.pdf}`
 - If a source cannot be downloaded and checked, **do not cite it**
 
-## Current scope
+## Expand when the current set is not enough
 
-Chapter~2 (`chap_02.tex`) uses a **minimal verified set** (GoEmotions, Transformer stack, HAN, NRC, SenticNet). Other chapters should gain citations only as PDFs are added — do not restore the old bulk `biblio.bib` blindly.
+The verified set in `biblio.bib` is a **floor**, not a ceiling. If a chapter needs a number, a baseline, a method comparison, or a design choice and **existing references do not support it comfortably** to project standards (integrity, no hand-waving), **add more sources**: download PDF → `reference/sources/{citekey}.pdf` → `biblio.bib` entry with `file = {...}` → then cite in the text.
+
+Prefer **targeted** additions (one paper per missing claim) over restoring the old bulk bibliography blindly or citing without a local PDF.
+
+## Starting scope
+
+Chapter~2 was bootstrapped with a **minimal verified set** (GoEmotions, Transformer stack, HAN, NRC, SenticNet). Chapters~1, 3, 4, etc. should grow their cites **only** through the download-before-cite workflow above.
 
 ## Re-enable checklist
 
