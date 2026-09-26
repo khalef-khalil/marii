@@ -8,9 +8,9 @@ de segmentation et d'extraction lexicale, ainsi que les hypothèses H1 à
 H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 statistiques de corpus \emph{mesurées} avant entraînement. Le protocole d'affinage est fixé (tableau~\ref{tab:expe-hyperparams}) ;
-le Step~0 et les modules M1 à M4 seront évalués sous ce même contrat.
-Les scores HAKE-MER et la validation de H1 à H4 attendent les campagnes
-d'ablation.
+le Step~0 et les modules M1 à M4 sont évalués sous ce même contrat.
+Les baselines PLM et l'étape +M1 (H1) disposent de scores test ;
+M2 à M4 et la validation complète de H2 à H4 restent à mener.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -308,6 +308,45 @@ RoBERTa-base & $0{,}586 \pm 0{,}003$ & $0{,}487 \pm 0{,}005$ & $0{,}473 \pm 0{,}
 \end{tabular}
 \end{table}
 
+\subsection{Ablation M1 (encodage hiérarchique, H1)}
+\label{sec:expe-m1-h1}
+
+L'étape +M1 du tableau~\ref{tab:expe-ablation-flags} active la
+segmentation en $M{=}4$ phrases (NLTK), l'encodage DistilBERT à
+$32$ tokens par phrase et l'agrégation additive mot$\to$phrase puis
+phrase$\to$document (chapitre~\ref{sec:conception-m1}), sans M2 à M4.
+Le budget d'affinage reste celui du tableau~\ref{tab:expe-hyperparams}
+(quatre époques, trois graines, sélection au F1-macro validation).
+La comparaison porte sur la \textbf{même} baseline DistilBERT Step~0 :
+cap de $128$ sous-mots, mais répartition phrase par phrase plutôt que
+fenêtre document unique (voir section~\ref{sec:expe-corpus-stats}).
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : Step~0 vs +M1}
+\label{tab:expe-m1-distilbert}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
+Step~0 PLM (flat) & $0{,}582 \pm 0{,}001$ & $0{,}486 \pm 0{,}005$ & $0{,}472 \pm 0{,}002$ & $0{,}506 \pm 0{,}001$ \\
+\hline
++M1 (hiérarchique) & $0{,}564 \pm 0{,}002$ & $0{,}457 \pm 0{,}002$ & $0{,}450 \pm 0{,}005$ & $0{,}491 \pm 0{,}004$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Le F1-macro test moyen passe de $0{,}486$ à $0{,}457$ ($\approx 2{,}9$
+points absolus) ; les trois graines restent alignées (test macro
+$0{,}457$, $0{,}454$, $0{,}459$). \textbf{H1 n'est pas confirmée} sous ce
+protocole : l'encodage hiérarchique n'améliore pas la détection
+multi-étiquettes macro par rapport au PLM document à encodeur fixé.
+L'écart concerne aussi le F1-micro et l'exact match ; seule la lecture
+flat avec troncature globale et pooling [CLS] performe mieux ici.
+Cette observation motive la suite de l'ablation (M2 : attention
+émotion$\to$phrases) plutôt qu'un prolongement direct de M1 seul.
+
 \subsection{Runs exploratoires (hyperparamètres non finaux)}
 \label{sec:expe-baseline-pilot}
 
@@ -320,10 +359,11 @@ tableau~\ref{tab:expe-baseline-step0}.
 \label{sec:expe-analyses-suite}
 
 Les éléments suivants compléteront ce chapitre lorsque les étapes
-d'ablation M1 à M4 seront entraînées :
+M2 à M4 seront entraînées :
 \begin{itemize}
-\item ablation cumulatif M1 à M4 (mêmes métriques, encodeur principal
-      retenu après Step~0) ;
+\item ablation cumulatif M2 à M4 (mêmes métriques, encodeur DistilBERT,
+      ligne de base Step~0 et résultat M1 du
+      tableau~\ref{tab:expe-m1-distilbert}) ;
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
@@ -354,7 +394,7 @@ hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 rappel SenticNet. Le protocole d'affinage est ancré sur GoEmotions
 (tableau~\ref{tab:expe-hyperparams}) ; le Step~0 PLM du
 tableau~\ref{tab:expe-baseline-step0} est complet pour DistilBERT-base et
-RoBERTa-base (F1-macro test $0{,}486 \pm 0{,}005$ et $0{,}487 \pm 0{,}005$).
-Les ablations M1 à M4 sur DistilBERT-base et les runs associés
+RoBERTa-base ; l'étape +M1 (tableau~\ref{tab:expe-m1-distilbert}) fixe
+la réponse à H1 (pas de gain macro). Les étapes M2 à M4 sur DistilBERT-base
 permettront de compléter la section~\ref{sec:expe-analyses-suite} et de
-tester H1 à H4.
+tester H2 à H4.
