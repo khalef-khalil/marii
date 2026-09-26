@@ -1,0 +1,460 @@
+{
+  "label_names": [
+    "admiration",
+    "amusement",
+    "anger",
+    "annoyance",
+    "approval",
+    "caring",
+    "confusion",
+    "curiosity",
+    "desire",
+    "disappointment",
+    "disapproval",
+    "disgust",
+    "embarrassment",
+    "excitement",
+    "fear",
+    "gratitude",
+    "grief",
+    "joy",
+    "love",
+    "nervousness",
+    "optimism",
+    "pride",
+    "realization",
+    "relief",
+    "remorse",
+    "sadness",
+    "surprise",
+    "neutral"
+  ],
+  "splits": {
+    "train": [
+      {
+        "label": "admiration",
+        "count": 4130,
+        "n_examples": 43410
+      },
+      {
+        "label": "amusement",
+        "count": 2328,
+        "n_examples": 43410
+      },
+      {
+        "label": "anger",
+        "count": 1567,
+        "n_examples": 43410
+      },
+      {
+        "label": "annoyance",
+        "count": 2470,
+        "n_examples": 43410
+      },
+      {
+        "label": "approval",
+        "count": 2939,
+        "n_examples": 43410
+      },
+      {
+        "label": "caring",
+        "count": 1087,
+        "n_examples": 43410
+      },
+      {
+        "label": "confusion",
+        "count": 1368,
+        "n_examples": 43410
+      },
+      {
+        "label": "curiosity",
+        "count": 2191,
+        "n_examples": 43410
+      },
+      {
+        "label": "desire",
+        "count": 641,
+        "n_examples": 43410
+      },
+      {
+        "label": "disappointment",
+        "count": 1269,
+        "n_examples": 43410
+      },
+      {
+        "label": "disapproval",
+        "count": 2022,
+        "n_examples": 43410
+      },
+      {
+        "label": "disgust",
+        "count": 793,
+        "n_examples": 43410
+      },
+      {
+        "label": "embarrassment",
+        "count": 303,
+        "n_examples": 43410
+      },
+      {
+        "label": "excitement",
+        "count": 853,
+        "n_examples": 43410
+      },
+      {
+        "label": "fear",
+        "count": 596,
+        "n_examples": 43410
+      },
+      {
+        "label": "gratitude",
+        "count": 2662,
+        "n_examples": 43410
+      },
+      {
+        "label": "grief",
+        "count": 77,
+        "n_examples": 43410
+      },
+      {
+        "label": "joy",
+        "count": 1452,
+        "n_examples": 43410
+      },
+      {
+        "label": "love",
+        "count": 2086,
+        "n_examples": 43410
+      },
+      {
+        "label": "nervousness",
+        "count": 164,
+        "n_examples": 43410
+      },
+      {
+        "label": "optimism",
+        "count": 1581,
+        "n_examples": 43410
+      },
+      {
+        "label": "pride",
+        "count": 111,
+        "n_examples": 43410
+      },
+      {
+        "label": "realization",
+        "count": 1110,
+        "n_examples": 43410
+      },
+      {
+        "label": "relief",
+        "count": 153,
+        "n_examples": 43410
+      },
+      {
+        "label": "remorse",
+        "count": 545,
+        "n_examples": 43410
+      },
+      {
+        "label": "sadness",
+        "count": 1326,
+        "n_examples": 43410
+      },
+      {
+        "label": "surprise",
+        "count": 1060,
+        "n_examples": 43410
+      },
+      {
+        "label": "neutral",
+        "count": 14219,
+        "n_examples": 43410
+      }
+    ],
+    "validation": [
+      {
+        "label": "admiration",
+        "count": 488,
+        "n_examples": 5426
+      },
+      {
+        "label": "amusement",
+        "count": 303,
+        "n_examples": 5426
+      },
+      {
+        "label": "anger",
+        "count": 195,
+        "n_examples": 5426
+      },
+      {
+        "label": "annoyance",
+        "count": 303,
+        "n_examples": 5426
+      },
+      {
+        "label": "approval",
+        "count": 397,
+        "n_examples": 5426
+      },
+      {
+        "label": "caring",
+        "count": 153,
+        "n_examples": 5426
+      },
+      {
+        "label": "confusion",
+        "count": 152,
+        "n_examples": 5426
+      },
+      {
+        "label": "curiosity",
+        "count": 248,
+        "n_examples": 5426
+      },
+      {
+        "label": "desire",
+        "count": 77,
+        "n_examples": 5426
+      },
+      {
+        "label": "disappointment",
+        "count": 163,
+        "n_examples": 5426
+      },
+      {
+        "label": "disapproval",
+        "count": 292,
+        "n_examples": 5426
+      },
+      {
+        "label": "disgust",
+        "count": 97,
+        "n_examples": 5426
+      },
+      {
+        "label": "embarrassment",
+        "count": 35,
+        "n_examples": 5426
+      },
+      {
+        "label": "excitement",
+        "count": 96,
+        "n_examples": 5426
+      },
+      {
+        "label": "fear",
+        "count": 90,
+        "n_examples": 5426
+      },
+      {
+        "label": "gratitude",
+        "count": 358,
+        "n_examples": 5426
+      },
+      {
+        "label": "grief",
+        "count": 13,
+        "n_examples": 5426
+      },
+      {
+        "label": "joy",
+        "count": 172,
+        "n_examples": 5426
+      },
+      {
+        "label": "love",
+        "count": 252,
+        "n_examples": 5426
+      },
+      {
+        "label": "nervousness",
+        "count": 21,
+        "n_examples": 5426
+      },
+      {
+        "label": "optimism",
+        "count": 209,
+        "n_examples": 5426
+      },
+      {
+        "label": "pride",
+        "count": 15,
+        "n_examples": 5426
+      },
+      {
+        "label": "realization",
+        "count": 127,
+        "n_examples": 5426
+      },
+      {
+        "label": "relief",
+        "count": 18,
+        "n_examples": 5426
+      },
+      {
+        "label": "remorse",
+        "count": 68,
+        "n_examples": 5426
+      },
+      {
+        "label": "sadness",
+        "count": 143,
+        "n_examples": 5426
+      },
+      {
+        "label": "surprise",
+        "count": 129,
+        "n_examples": 5426
+      },
+      {
+        "label": "neutral",
+        "count": 1766,
+        "n_examples": 5426
+      }
+    ],
+    "test": [
+      {
+        "label": "admiration",
+        "count": 504,
+        "n_examples": 5427
+      },
+      {
+        "label": "amusement",
+        "count": 264,
+        "n_examples": 5427
+      },
+      {
+        "label": "anger",
+        "count": 198,
+        "n_examples": 5427
+      },
+      {
+        "label": "annoyance",
+        "count": 320,
+        "n_examples": 5427
+      },
+      {
+        "label": "approval",
+        "count": 351,
+        "n_examples": 5427
+      },
+      {
+        "label": "caring",
+        "count": 135,
+        "n_examples": 5427
+      },
+      {
+        "label": "confusion",
+        "count": 153,
+        "n_examples": 5427
+      },
+      {
+        "label": "curiosity",
+        "count": 284,
+        "n_examples": 5427
+      },
+      {
+        "label": "desire",
+        "count": 83,
+        "n_examples": 5427
+      },
+      {
+        "label": "disappointment",
+        "count": 151,
+        "n_examples": 5427
+      },
+      {
+        "label": "disapproval",
+        "count": 267,
+        "n_examples": 5427
+      },
+      {
+        "label": "disgust",
+        "count": 123,
+        "n_examples": 5427
+      },
+      {
+        "label": "embarrassment",
+        "count": 37,
+        "n_examples": 5427
+      },
+      {
+        "label": "excitement",
+        "count": 103,
+        "n_examples": 5427
+      },
+      {
+        "label": "fear",
+        "count": 78,
+        "n_examples": 5427
+      },
+      {
+        "label": "gratitude",
+        "count": 352,
+        "n_examples": 5427
+      },
+      {
+        "label": "grief",
+        "count": 6,
+        "n_examples": 5427
+      },
+      {
+        "label": "joy",
+        "count": 161,
+        "n_examples": 5427
+      },
+      {
+        "label": "love",
+        "count": 238,
+        "n_examples": 5427
+      },
+      {
+        "label": "nervousness",
+        "count": 23,
+        "n_examples": 5427
+      },
+      {
+        "label": "optimism",
+        "count": 186,
+        "n_examples": 5427
+      },
+      {
+        "label": "pride",
+        "count": 16,
+        "n_examples": 5427
+      },
+      {
+        "label": "realization",
+        "count": 145,
+        "n_examples": 5427
+      },
+      {
+        "label": "relief",
+        "count": 11,
+        "n_examples": 5427
+      },
+      {
+        "label": "remorse",
+        "count": 56,
+        "n_examples": 5427
+      },
+      {
+        "label": "sadness",
+        "count": 156,
+        "n_examples": 5427
+      },
+      {
+        "label": "surprise",
+        "count": 141,
+        "n_examples": 5427
+      },
+      {
+        "label": "neutral",
+        "count": 1787,
+        "n_examples": 5427
+      }
+    ]
+  }
+}

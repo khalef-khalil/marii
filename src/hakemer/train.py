@@ -13,7 +13,12 @@ from tqdm import tqdm
 
 from hakemer.config import TrainConfig
 from hakemer.data import GoEmotionsTorchDataset, load_go_emotions_splits, make_dataloader
-from hakemer.metrics import logits_to_preds, logits_to_probs, multilabel_scores
+from hakemer.metrics import (
+    logits_to_preds,
+    logits_to_probs,
+    multilabel_scores,
+    per_label_f1,
+)
 from hakemer.model import HAKEMER
 
 
@@ -55,7 +60,8 @@ def evaluate(
     device,
     *,
     threshold: float = 0.5,
-) -> dict[str, float]:
+    include_per_label: bool = False,
+) -> dict:
     model.eval()
     all_logits: list[np.ndarray] = []
     all_labels: list[np.ndarray] = []
@@ -68,7 +74,10 @@ def evaluate(
     logits = np.vstack(all_logits)
     y_pred = logits_to_preds(logits, threshold=threshold)
     y_score = logits_to_probs(logits)
-    return multilabel_scores(y_true, y_pred, y_score)
+    scores = multilabel_scores(y_true, y_pred, y_score)
+    if include_per_label:
+        scores["per_label"] = per_label_f1(y_true, y_pred)
+    return scores
 
 
 def train_loop(config: TrainConfig) -> dict:
@@ -172,7 +181,11 @@ def train_loop(config: TrainConfig) -> dict:
         raise RuntimeError("No checkpoint saved; training did not improve validation F1-macro.")
     model.load_state_dict(torch.load(best_path, map_location=device))
     test_metrics = evaluate(
-        model, test_loader, device, threshold=config.decision_threshold
+        model,
+        test_loader,
+        device,
+        threshold=config.decision_threshold,
+        include_per_label=True,
     )
     summary = {
         "best_val_f1_macro": best_val_f1,

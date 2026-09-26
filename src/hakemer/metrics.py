@@ -32,6 +32,35 @@ def multilabel_map(y_true: np.ndarray, y_score: np.ndarray) -> float:
     return float(np.mean(per_label))
 
 
+def go_emotions_label_names() -> list[str]:
+    from hakemer.data import load_go_emotions_splits
+
+    train, _, _ = load_go_emotions_splits()
+    names = train.features["labels"].feature.names
+    return list(names)
+
+
+def per_label_f1(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    label_names: list[str] | None = None,
+) -> list[dict[str, float | str | int]]:
+    """Binary F1 per emotion (column j); support = positive count in y_true."""
+    if label_names is None:
+        label_names = go_emotions_label_names()
+    k = y_true.shape[1]
+    if len(label_names) != k:
+        raise ValueError(f"Expected {k} label names, got {len(label_names)}")
+    rows: list[dict[str, float | str | int]] = []
+    for j, name in enumerate(label_names):
+        col_true = y_true[:, j]
+        col_pred = y_pred[:, j]
+        support = int(col_true.sum())
+        f1 = float(f1_score(col_true, col_pred, zero_division=0))
+        rows.append({"label": name, "f1": f1, "support": support})
+    return rows
+
+
 def multilabel_scores(
     y_true: np.ndarray,
     y_pred: np.ndarray,

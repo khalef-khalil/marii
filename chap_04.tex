@@ -539,15 +539,90 @@ non alignés sur \cite{demszky2020}) ont validé le pipeline Colab ;
 ils ne servent pas de référence pour H1 ni pour le
 tableau~\ref{tab:expe-baseline-step0}.
 
-\subsection{Analyses complémentaires (en cours)}
+\subsection{Fréquence des étiquettes et F1 par classe}
 \label{sec:expe-analyses-suite}
 
-Les éléments suivants compléteront ce chapitre en analyse fine :
-\begin{itemize}
-\item F1 par classe et matrices de confusion (frontière avec
-      \emph{neutral}, classes quasi vides) ;
-\item exemples qualitatifs sur émotions rares.
-\end{itemize}
+Le F1-macro masque des écarts forts entre émotions fréquentes et rares.
+Sur le split test ($n{=}5\,427$), les cooccurrences positives par
+étiquette suivent une loi longue traîne : huit labels comptent moins
+de $100$ exemples positifs (\emph{grief}, \emph{relief}, \emph{pride},
+etc.), tandis que \emph{neutral} domine ($1\,787$ mentions positives,
+tableau~\ref{tab:expe-test-label-support}). Cette asymétrie motive
+l'inspection du F1 \emph{par classe}, en particulier pour H1 (rappel
+sur rares) et la frontière avec \emph{neutral}.
+
+\begin{table}[H]
+\centering
+\caption{GoEmotions (test) : effectifs positifs par émotion (extrait)}
+\label{tab:expe-test-label-support}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Émotion} & \textbf{Exemples $y{=}1$} & \textbf{Part (\%)} \\
+\hline
+grief & 6 & 0,11 \\
+\hline
+relief & 11 & 0,20 \\
+\hline
+pride & 16 & 0,29 \\
+\hline
+nervousness & 23 & 0,42 \\
+\hline
+embarrassment & 37 & 0,68 \\
+\hline
+remorse & 56 & 1,03 \\
+\hline
+fear & 78 & 1,44 \\
+\hline
+desire & 83 & 1,53 \\
+\hline
+admiration & 504 & 9,29 \\
+\hline
+neutral & 1\,787 & 32,93 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Protocole.}
+Pour chaque configuration, le checkpoint retenu (meilleur F1-macro
+validation) est réévalué sur le test ; le F1 binaire par émotion est
+calculé avec seuil $0{,}5$, identique au macro global. Les campagnes
+Step~0, +M1 et +M1+M2 sont relancées sur trois graines avec export
+automatique des F1 par classe dans les journaux d'entraînement ; les
+moyennes inter-graines sont agrégées en un rapport JSON archivé avec
+les autres campagnes.
+
+\paragraph{Résultats par classe (Step~0 vs +M1 vs +M1+M2).}
+Le tableau~\ref{tab:expe-per-class-f1} sera complété dès que
+l'agrégation trois graines est archivée (notebook d'export dédié).
+L'attendu, au vu du macro global, est un gain net de +M1+M2 sur les
+émotions \emph{moyennement fréquentes} plutôt que sur \emph{grief} ou
+\emph{relief} (effectifs quasi nuls), et une dégradation relative de
++M1 seul sur la plupart des classes par rapport au flat Step~0.
+
+\begin{table}[H]
+\centering
+\caption{F1 test par émotion (moyenne 3 graines, DistilBERT) : à compléter après export}
+\label{tab:expe-per-class-f1}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Émotion} & \textbf{Support test} & \textbf{Step~0} & \textbf{+M1} & \textbf{+M1+M2} \\
+\hline
+\multicolumn{5}{|l|}{Valeurs numériques : export Colab (section ci-dessus)} \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Exemples qualitatifs.}
+Sans sélection manuelle sur prédictions archivées, on note que les
+erreurs typiques sur GoEmotions concernent la sur-prédiction de
+\emph{neutral} lorsque l'énoncé est ambigu, et la confusion entre
+\emph{annoyance} et \emph{anger} sur textes courts ; +M2 vise
+justement à lire des indices phrase par phrase pour ces cooccurrences
+fines. Une galerie annotée pourra être ajoutée après export des
+matrices de confusion.
+
 Les hypothèses H1 à H4 sont récapitulées au
 tableau~\ref{tab:expe-h1-h4-summary}.
 

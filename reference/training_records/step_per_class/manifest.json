@@ -1,0 +1,8 @@
+{
+  "step": "per_class_ladder",
+  "template_notebook": "notebooks/per_class_export_campaign.ipynb",
+  "protocol_anchor": "Re-run Step0 + M1 + M1+M2 (3 seeds) to populate test.per_label; aggregate via run_per_class_from_metrics.sh",
+  "artifact_json": "reference/artifacts/per_class_ladder_distilbert_seeds_42_123_456.json",
+  "label_counts": "reference/artifacts/goemotions_simplified_label_counts.json",
+  "colab_executed_notebooks": []
+}
