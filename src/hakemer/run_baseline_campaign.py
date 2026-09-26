@@ -65,6 +65,7 @@ def main() -> None:
             epochs=args.epochs,
             batch_size=args.batch_size,
             lr=args.lr,
+            early_stopping_patience=args.early_stopping_patience,
             max_length=args.max_length,
             output_dir=args.output_dir,
             max_train_samples=args.max_train_samples,
@@ -88,7 +89,7 @@ def main() -> None:
             "batch_size": args.batch_size,
             "lr": args.lr,
             "max_length": args.max_length,
-            "early_stopping_patience": 0,
+            "early_stopping_patience": args.early_stopping_patience,
         },
         **aggregate_runs(runs_clean),
     }

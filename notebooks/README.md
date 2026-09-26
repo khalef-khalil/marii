@@ -4,7 +4,7 @@
 
 **Two steps (same as before):**
 
-1. **Phase 1:** Run through **Download DistilBERT zip** → send `baseline_plm_distilbert_step0.zip`
-2. **Phase 2:** Uncomment RoBERTa cell, run it, run **Download RoBERTa zip** → send `baseline_plm_roberta_step0.zip`
+1. **Phase 1:** Run through **Download DistilBERT zip** → archive as `reference/artifacts/baseline_plm_distilbert_step0.zip` (and unpack JSON/metrics alongside).
+2. **Phase 2:** Uncomment RoBERTa cell, run it, run **Download RoBERTa zip** → archive as `reference/artifacts/baseline_plm_roberta_step0.zip` when ready.
 
 Protocol: batch 16, LR 5e-5, 4 epochs (GoEmotions/Demszky anchor).
