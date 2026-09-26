@@ -1,0 +1,9 @@
+{
+  "step": "m1_m2_m3_senticnet_m4",
+  "template_notebook": "notebooks/m1_m2_m3_m4_senticnet_campaign.ipynb",
+  "protocol_anchor": "M1+M2+M3 SenticNet + M4 dynamic scaling; compare to tab:expe-h3-lexicons SenticNet row",
+  "campaign_json": "reference/artifacts/m1_m2_m3_senticnet_m4_distilbert_base_uncased_campaign.json",
+  "artifact_zip": "reference/artifacts/m1_m2_m3_senticnet_m4_distilbert_step0.zip",
+  "m3_reference": "reference/artifacts/m1_m2_m3_senticnet_distilbert_base_uncased_campaign.json",
+  "colab_executed_notebooks": []
+}

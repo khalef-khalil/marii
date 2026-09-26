@@ -211,6 +211,7 @@ def parse_args() -> TrainConfig:
     p.add_argument("--use-m1", action="store_true", help="Module 1 hierarchical encoding")
     p.add_argument("--use-m2", action="store_true", help="Module 2 emotion phrase cross-attention (requires M1)")
     p.add_argument("--use-m3", action="store_true", help="Module 3 lexicon gate (requires M1+M2)")
+    p.add_argument("--use-m4", action="store_true", help="Module 4 dynamic emotion scaling (requires M1+M2+M3)")
     p.add_argument(
         "--lexicon-source",
         default="none",
@@ -219,8 +220,9 @@ def parse_args() -> TrainConfig:
     p.add_argument("--max-phrases", type=int, default=4)
     p.add_argument("--phrase-max-length", type=int, default=32)
     args = p.parse_args()
-    use_m1 = args.use_m1 or args.use_m2 or args.use_m3
-    use_m2 = args.use_m2 or args.use_m3
+    use_m1 = args.use_m1 or args.use_m2 or args.use_m3 or args.use_m4
+    use_m2 = args.use_m2 or args.use_m3 or args.use_m4
+    use_m3 = args.use_m3 or args.use_m4
     return TrainConfig(
         backbone=args.backbone,
         seed=args.seed,
@@ -236,7 +238,8 @@ def parse_args() -> TrainConfig:
         early_stopping_patience=args.early_stopping_patience,
         use_m1=use_m1,
         use_m2=use_m2,
-        use_m3=args.use_m3,
+        use_m3=use_m3,
+        use_m4=args.use_m4,
         lexicon_source=args.lexicon_source,
         max_phrases=args.max_phrases,
         phrase_max_length=args.phrase_max_length,

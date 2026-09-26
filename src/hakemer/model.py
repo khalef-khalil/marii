@@ -34,8 +34,24 @@ class AdditiveAttentionPool(nn.Module):
         return pooled
 
 
+class DynamicEmotionScaling(nn.Module):
+    """M4: per-emotion gates from (r_k, mean_k r_k) before classification (eq. dyngate)."""
+
+    def __init__(self, hidden: int) -> None:
+        super().__init__()
+        self.fc1 = nn.Linear(hidden * 2, hidden, bias=True)
+        self.fc2 = nn.Linear(hidden, 1, bias=True)
+        nn.init.constant_(self.fc2.bias, 3.0)
+
+    def forward(self, emotion_repr: torch.Tensor) -> torch.Tensor:
+        # emotion_repr [B, K, H]
+        r_bar = emotion_repr.mean(dim=1, keepdim=True).expand_as(emotion_repr)
+        gamma = torch.sigmoid(self.fc2(torch.relu(self.fc1(torch.cat([emotion_repr, r_bar], dim=-1)))))
+        return emotion_repr * gamma
+
+
 class EmotionPhraseCrossAttention(nn.Module):
-    """M2 (+ optional M3 lexicon gate) over phrase vectors."""
+    """M2 (+ optional M3 lexicon gate, M4 dynamic scaling) over phrase vectors."""
 
     def __init__(
         self,
@@ -44,6 +60,7 @@ class EmotionPhraseCrossAttention(nn.Module):
         *,
         num_heads: int = MHA_NUM_HEADS,
         use_m3: bool = False,
+        use_m4: bool = False,
         lexicon_dim: int = 0,
     ) -> None:
         super().__init__()
@@ -51,6 +68,7 @@ class EmotionPhraseCrossAttention(nn.Module):
             raise ValueError(f"hidden size {hidden} must divide num_heads {num_heads}")
         self.num_labels = num_labels
         self.use_m3 = use_m3
+        self.use_m4 = use_m4
         self.emotion_queries = nn.Parameter(torch.empty(num_labels, hidden))
         nn.init.normal_(self.emotion_queries, mean=0.0, std=0.02)
         if use_m3:
@@ -72,6 +90,7 @@ class EmotionPhraseCrossAttention(nn.Module):
         self.emotion_encoder = nn.TransformerEncoder(
             encoder_layer, num_layers=EMOTION_ENCODER_LAYERS
         )
+        self.dynamic_scale = DynamicEmotionScaling(hidden) if use_m4 else None
         self.label_weight = nn.Parameter(torch.empty(num_labels, hidden))
         self.label_bias = nn.Parameter(torch.zeros(num_labels))
         nn.init.xavier_uniform_(self.label_weight)
@@ -109,6 +128,8 @@ class EmotionPhraseCrossAttention(nn.Module):
         )
         emotion_repr = attended.squeeze(1).view(batch_size, num_labels, hidden)
         emotion_repr = self.emotion_encoder(emotion_repr)
+        if self.dynamic_scale is not None:
+            emotion_repr = self.dynamic_scale(emotion_repr)
         logits = (emotion_repr * self.label_weight.unsqueeze(0)).sum(dim=-1) + self.label_bias
         return logits
 
@@ -130,6 +151,7 @@ class HAKEMER(nn.Module):
         self.use_m1 = config.use_m1
         self.use_m2 = config.use_m2
         self.use_m3 = config.use_m3
+        self.use_m4 = config.use_m4
         if not self.use_m1:
             self.classifier = nn.Linear(hidden, config.num_labels)
         else:
@@ -139,6 +161,7 @@ class HAKEMER(nn.Module):
                     hidden,
                     config.num_labels,
                     use_m3=config.use_m3,
+                    use_m4=config.use_m4,
                     lexicon_dim=lexicon_dim(config.lexicon_source) if config.use_m3 else 0,
                 )
             else:

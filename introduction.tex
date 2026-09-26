@@ -18,11 +18,12 @@ la conception de \textbf{HAKE-MER} (\emph{Hierarchical Attention with
 Knowledge Enhancement for Multi-Emotion Recognition}), une architecture
 modulaire destinée à mieux exploiter la \textbf{structure} du texte
 (phrases, document), les \textbf{interactions entre émotions}, et des
-\textbf{ressources sémantiques externes} (lexiques affectifs). L'évaluation
-est planifiée sur le corpus GoEmotions \cite{demszky2020}, référence
-courante pour les émotions fines en anglais, avec un protocole d'ablation à
-budget d'entraînement constant et un accent sur le \textbf{F1-macro}, métrique
-sensible aux classes rares.
+\textbf{ressources sémantiques externes} (lexiques affectifs). L'évaluation s'appuie sur le corpus GoEmotions \cite{demszky2020},
+référence pour les émotions fines en anglais, avec un protocole d'ablation à
+budget d'entraînement constant et le \textbf{F1-macro} comme métrique
+principale. Les campagnes Step~0 à M3 (NRC et SenticNet) sont exécutées
+sur DistilBERT-base ; la pondération dynamique M4 complète la ladder
+expérimentale (chapitre~\ref{chap:experimentation}).
 
 \textbf{Contributions de ce mémoire} :
 \begin{itemize}[noitemsep]
@@ -34,9 +35,10 @@ sensible aux classes rares.
       moyennes globales.
 \end{itemize}
 
-Ce rapport documente la problématique, l'état de l'art, la conception
-et le protocole d'évaluation ; l'entraînement et les métriques
-quantitatives sont l'objet du chapitre~\ref{chap:experimentation}.
+Ce rapport enchaîne problématique, état de l'art, conception et
+résultats quantitatifs : le chapitre~\ref{chap:experimentation} reporte
+les métriques test et tranche H1 à H3 ; H4 (M4) suit le même contrat
+expérimental.
 
 \paragraph{Organisation du mémoire.}
 Le chapitre~\ref{chap:contexte} présente le contexte, la problématique et

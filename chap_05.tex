@@ -11,8 +11,8 @@ chapitre~\ref{chap:experimentation}.
 \section{Principes méthodologiques}
 \label{sec:persp-enseignements}
 
-Quatre principes guideront l'évaluation de HAKE-MER et, plus
-généralement, tout travail sur GoEmotions :
+Quatre principes ont guidé l'évaluation de HAKE-MER et restent
+pertinents pour tout travail sur GoEmotions :
 \begin{itemize}
 \item \textbf{Multi-backbone.} L'effet d'un module architectural peut
       dépendre de la capacité de l'encodeur ; conclure à partir d'un
@@ -31,11 +31,15 @@ généralement, tout travail sur GoEmotions :
 \section{Recommandations pratiques (après expériences)}
 \label{sec:persp-recommandations}
 
-Une fois les ablations menées, la configuration retenue devra être
-justifiée par les métriques \emph{et} par le coût (temps GPU,
-paramètres). Le plan prévoit de comparer M1+M2+M3
-avec NRC sur RoBERTa et DistilBERT, puis de tester M4 seulement si
-M1 à M3 apportent un gain mesurable.
+Les ablations DistilBERT-base indiquent que la configuration la plus
+efficace en F1-macro test est \textbf{M1+M2} ($0{,}505 \pm 0{,}004$) :
+la hiérarchie seule (M1) dégrade la macro ; NRC et SenticNet (M3)
+n'apportent pas de gain macro stable au-delà de M2. En pratique, un
+déploiement orienté macro peut donc privilégier M1+M2 et réserver M3
+au besoin d'un signal interprétable ($|g|$ appris). M4 (H4) teste si
+une modulation dynamique des représentations $r_k$ compense les limites
+observées de M3 ; RoBERTa n'a été ablaté qu'au Step~0 flat, ce qui
+limite la généralisation inter-encodeur des conclusions actuelles.
 
 \section{Perspectives de recherche}
 \label{sec:persp-recherche}

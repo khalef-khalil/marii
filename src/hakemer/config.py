@@ -41,8 +41,8 @@ class TrainConfig:
             raise ValueError("Module M3 requires M1 and M2.")
         if self.use_m3 and self.lexicon_source == "none":
             raise ValueError("Module M3 requires lexicon_source 'nrc' or 'senticnet'.")
-        if self.use_m4:
-            raise NotImplementedError("Module M4 is not implemented yet.")
+        if self.use_m4 and not (self.use_m1 and self.use_m2 and self.use_m3):
+            raise ValueError("Module M4 requires M1, M2, and M3.")
         if not self.use_m3 and self.lexicon_source != "none":
             raise ValueError("lexicon_source is only valid when use_m3 is enabled.")
         if self.use_m1 and self.max_phrases < 1:
@@ -51,7 +51,9 @@ class TrainConfig:
     @property
     def run_name(self) -> str:
         slug = self.backbone.split("/")[-1].replace("-", "_")
-        if self.use_m3:
+        if self.use_m4:
+            step = f"m1_m2_m3_{self.lexicon_source}_m4"
+        elif self.use_m3:
             step = f"m1_m2_m3_{self.lexicon_source}"
         elif self.use_m2:
             step = "m1_m2"

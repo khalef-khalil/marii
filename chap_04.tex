@@ -477,6 +477,19 @@ des trois piles, sans gain macro décisif. Le levier principal reste
 donc M2 ; M3 ajoute un prior appris modestement ($|g| \approx 0{,}03$
 à $0{,}04$) plutôt qu'un saut de performance macro sur GoEmotions.
 
+\subsection{Campagne H4 (M4, protocole)}
+\label{sec:expe-m4-protocol}
+
+Pour H4, la pile \textbf{M1+M2+M3 (SenticNet)} sert de référence
+(variance inter-graines plus faible que NRC, mAP légèrement supérieur).
+M4 active la porte $\gamma_k$ (équation~\ref{eq:dyngate},
+$b_2{=}+3$) sur les représentations $r_k$ avant les têtes sigmoïdes ;
+M3 reste inchangé ($g$ initialisé à $0$). Même protocole d'affinage
+(tableau~\ref{tab:expe-hyperparams}, trois graines). Les métriques test
+seront comparées à la ligne SenticNet du
+tableau~\ref{tab:expe-h3-lexicons} ; aucun score M4 n'est reporté tant
+que la campagne Colab n'est pas archivée.
+
 \subsection{Runs exploratoires (hyperparamètres non finaux)}
 \label{sec:expe-baseline-pilot}
 
