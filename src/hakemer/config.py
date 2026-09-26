@@ -10,7 +10,7 @@ BackboneName = Literal["roberta-base", "distilbert-base-uncased"]
 class TrainConfig:
     backbone: BackboneName = "distilbert-base-uncased"
     seed: int = 42
-    epochs: int = 3
+    epochs: int = 5
     batch_size: int = 16
     weight_decay: float = 0.01
     adam_epsilon: float = 1e-8

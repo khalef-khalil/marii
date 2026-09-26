@@ -87,7 +87,7 @@ Poids de décroissance & $0{,}01$ \\
 \hline
 Taille de lot & $16$ (gradients accumulés si mémoire insuffisante, identique pour tous les runs) \\
 \hline
-Époques max & $3$ (aligné sur l'ordre de grandeur de la baseline BERT des auteurs \cite{demszky2020}) \\
+Époques max & $5$ (budget commun ; arrêt anticipé si le F1-macro validation stagne une époque) \\
 \hline
 Warmup & $10\,\%$ des pas d'optimisation \\
 \hline
@@ -263,23 +263,35 @@ a priori d'un graphe conceptuel.
 \section{Résultats et analyses}
 \label{sec:expe-analyses-plan}
 
-\subsection{Baseline PLM (étape 0, DistilBERT-base)}
+\subsection{Baseline PLM (étape 0, budget définitif)}
 \label{sec:expe-baseline-distilbert}
 
 La configuration de référence du tableau~\ref{tab:expe-ablation-flags}
-(tous modules désactivés) a été entraînée sur DistilBERT-base
-\cite{sanh2019distilbert} avec encodage \emph{document} entier tronqué
-à 128 tokens, selon les hyperparamètres du
-tableau~\ref{tab:expe-hyperparams}. Trois graines ($42$, $123$, $456$)
-ont été lancées ; le checkpoint retenu sur chaque run est celui qui
-maximise le F1-macro sur la validation. Le
-tableau~\ref{tab:expe-baseline-distilbert} agrège les métriques de
-test (moyenne $\pm$ écart-type).
+(tous modules désactivés) est entraînée avec encodage \emph{document}
+entier tronqué à 128 tokens, selon le
+tableau~\ref{tab:expe-hyperparams} : \textbf{cinq époques max}, arrêt
+anticipé (patience une époque), checkpoint retenu sur le meilleur
+F1-macro validation, trois graines ($42$, $123$, $456$). Les scores
+\textbf{retenus pour H1} et le tableau d'ablation seront ceux de la
+campagne définitive sur \textbf{DistilBERT-base}
+\cite{sanh2019distilbert} et \textbf{RoBERTa-base}
+\cite{liu2019roberta}, exécutée après cette mise à jour du protocole
+(les métriques seront reportées au même format que la campagne pilote
+ci-dessous).
+
+\subsection{Campagne pilote (trois époques max, DistilBERT-base)}
+\label{sec:expe-baseline-pilot}
+
+Avant le relèvement du budget à cinq époques, une campagne pilote a
+validé le pipeline Colab et l'alignement des métriques avec le
+chapitre~4. Le tableau~\ref{tab:expe-baseline-distilbert-pilot} ne
+sert pas de référence définitive pour H1 ; il documente uniquement
+cette étape intermédiaire.
 
 \begin{table}[H]
 \centering
-\caption{Baseline PLM sur GoEmotions (test, $n{=}5\,427$, trois graines)}
-\label{tab:expe-baseline-distilbert}
+\caption{Campagne pilote Step~0 (DistilBERT, test, $n{=}5\,427$, 3 époques max, 3 graines)}
+\label{tab:expe-baseline-distilbert-pilot}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|l|c|c|c|c|}
 \hline
@@ -290,21 +302,17 @@ test (moyenne $\pm$ écart-type).
 \end{tabular}
 \end{table}
 
-Sur le même split de test, les F1-macro par graine valent
-$0{,}472$, $0{,}468$ et $0{,}471$ ; l'écart restreint confirme la
-stabilité du protocole sous ré-initialisation. Les trois époques ont
-été conservées pour chaque graine (amélioration monotone du F1-macro
-validation entre les époques 1 et 3).
+Sur ce pilote, les F1-macro par graine valaient $0{,}472$, $0{,}468$ et
+$0{,}471$ ; le F1-macro validation augmentait encore entre les
+époques 1 et 3, ce qui a motivé le budget à cinq époques pour la
+campagne définitive (RoBERTa-base y convergeait plus lentement que
+DistilBERT à trois époques).
 
-\paragraph{Lecture par rapport à la littérature.}
+\paragraph{Lecture par rapport à la littérature (pilote).}
 Sur GoEmotions, les auteurs de GoEmotions \cite{demszky2020} rapportent un F1-macro de
-$0{,}46$ avec BERT-base sous leur pipeline officiel. Notre baseline
-DistilBERT atteint $0{,}470 \pm 0{,}002$ en F1-macro : même ordre de
-grandeur, avec un backbone plus léger, une troncature document à 128
-tokens et un budget de trois époques fixé \emph{a priori} dans ce
-mémoire. Cette ligne sert de \textbf{référence interne} pour H1
-(M1 vs représentation \texttt{[CLS]} seule) ; elle ne préjuge pas des
-gains une fois M1 à M4 activés.
+$0{,}46$ avec BERT-base sous leur pipeline officiel. Le pilote
+DistilBERT ($0{,}470 \pm 0{,}002$ en F1-macro) se situe dans le même
+ordre de grandeur, sans préjuger des scores après cinq époques max.
 
 \subsection{Analyses complémentaires (en cours)}
 \label{sec:expe-analyses-suite}
@@ -312,8 +320,8 @@ gains une fois M1 à M4 activés.
 Les éléments suivants compléteront ce chapitre lorsque les étapes
 d'ablation M1 à M4 seront entraînées :
 \begin{itemize}
-\item tableau d'ablation cumulatif (mêmes métriques, RoBERTa-base en
-      parallèle de DistilBERT) ;
+\item tableau Step~0 définitif (5 époques max) et ablation cumulatif
+      (mêmes métriques, deux backbones) ;
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
@@ -341,8 +349,9 @@ Avant de tirer des conclusions, les points suivants seront contrôlés :
 Le protocole expérimental est spécifié et partiellement exécuté :
 corpus GoEmotions, statistiques de segmentation et de couverture NRC,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
-rappel SenticNet. La baseline PLM DistilBERT
-(section~\ref{sec:expe-baseline-distilbert}) fixe une référence
-quantitative sur le test. L'implémentation des modules M1 à M4 et les
+rappel SenticNet. La campagne pilote (section~\ref{sec:expe-baseline-pilot}) a validé
+le pipeline ; la baseline PLM définitive
+(section~\ref{sec:expe-baseline-distilbert}) fixera la référence
+quantitative sur le test à cinq époques max. L'implémentation des modules M1 à M4 et les
 runs d'ablation associés permettront de compléter la
 section~\ref{sec:expe-analyses-suite} et de tester H1 à H4.

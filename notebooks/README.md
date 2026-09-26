@@ -6,7 +6,7 @@
 
 1. Click **Open in Colab** above (or the same link from GitHub: `notebooks/baseline_plm_campaign.ipynb` → Open in Colab).
 2. **Runtime → Change runtime type → GPU** (T4 is fine).
-3. **Runtime → Run all** (first run ~30–90 minutes on a T4).
+3. **Runtime → Run all** (Step 0 DistilBERT + RoBERTa, **5 epochs max**, ~2–4 hours on a T4).
 4. Download the zip from the last cell.
 
 The notebook clones `main` from GitHub; push local changes before running if you need a specific commit.

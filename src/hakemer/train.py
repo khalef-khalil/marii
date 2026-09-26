@@ -173,7 +173,7 @@ def parse_args() -> TrainConfig:
         "distilbert-base-uncased", "roberta-base",
     ])
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--epochs", type=int, default=3)
+    p.add_argument("--epochs", type=int, default=5)
     p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--max-length", type=int, default=128)
     p.add_argument("--output-dir", default="runs")
