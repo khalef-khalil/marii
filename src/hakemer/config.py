@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Literal
 
 
@@ -8,10 +8,13 @@ BackboneName = Literal["roberta-base", "distilbert-base-uncased"]
 
 @dataclass
 class TrainConfig:
+    """Fine-tuning contract anchored on GoEmotions BERT setup (Demszky et al.)."""
+
     backbone: BackboneName = "distilbert-base-uncased"
     seed: int = 42
-    epochs: int = 5
+    epochs: int = 4
     batch_size: int = 16
+    lr: float = 5e-5
     weight_decay: float = 0.01
     adam_epsilon: float = 1e-8
     warmup_ratio: float = 0.1
@@ -27,12 +30,7 @@ class TrainConfig:
     max_eval_samples: int | None = None
     device: str = "auto"
     decision_threshold: float = 0.5
-    early_stopping_patience: int = 1
-
-    def learning_rate(self) -> float:
-        if self.backbone.startswith("roberta"):
-            return 2e-5
-        return 3e-5
+    early_stopping_patience: int = 0
 
     def validate_flags(self) -> None:
         if any((self.use_m1, self.use_m2, self.use_m3, self.use_m4)):

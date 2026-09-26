@@ -64,7 +64,7 @@ def train_loop(config: TrainConfig) -> dict:
     out_dir = Path(config.output_dir) / config.run_name
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "config.json").write_text(
-        json.dumps({**config.__dict__, "learning_rate": config.learning_rate()}, indent=2),
+        json.dumps({**config.__dict__}, indent=2),
         encoding="utf-8",
     )
 
@@ -87,7 +87,7 @@ def train_loop(config: TrainConfig) -> dict:
     model = HAKEMER(config).to(device)
     optimizer = AdamW(
         model.parameters(),
-        lr=config.learning_rate(),
+        lr=config.lr,
         weight_decay=config.weight_decay,
         eps=config.adam_epsilon,
     )
@@ -137,7 +137,10 @@ def train_loop(config: TrainConfig) -> dict:
             epochs_without_improve = 0
         else:
             epochs_without_improve += 1
-            if epochs_without_improve >= config.early_stopping_patience:
+            if (
+                config.early_stopping_patience > 0
+                and epochs_without_improve >= config.early_stopping_patience
+            ):
                 print(
                     f"Early stopping: no val F1-macro improvement for "
                     f"{config.early_stopping_patience} epoch(s)."
@@ -173,21 +176,23 @@ def parse_args() -> TrainConfig:
         "distilbert-base-uncased", "roberta-base",
     ])
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--epochs", type=int, default=5)
+    p.add_argument("--epochs", type=int, default=4)
     p.add_argument("--batch-size", type=int, default=16)
+    p.add_argument("--lr", type=float, default=5e-5)
     p.add_argument("--max-length", type=int, default=128)
     p.add_argument("--output-dir", default="runs")
     p.add_argument("--max-train-samples", type=int, default=None)
     p.add_argument("--max-eval-samples", type=int, default=None)
     p.add_argument("--device", default="auto")
     p.add_argument("--decision-threshold", type=float, default=0.5)
-    p.add_argument("--early-stopping-patience", type=int, default=1)
+    p.add_argument("--early-stopping-patience", type=int, default=0)
     args = p.parse_args()
     return TrainConfig(
         backbone=args.backbone,
         seed=args.seed,
         epochs=args.epochs,
         batch_size=args.batch_size,
+        lr=args.lr,
         max_length=args.max_length,
         output_dir=args.output_dir,
         max_train_samples=args.max_train_samples,

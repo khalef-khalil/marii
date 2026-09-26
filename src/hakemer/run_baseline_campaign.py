@@ -36,8 +36,9 @@ def parse_args() -> argparse.Namespace:
         "distilbert-base-uncased", "roberta-base",
     ])
     p.add_argument("--seeds", default=",".join(map(str, DEFAULT_SEEDS)))
-    p.add_argument("--epochs", type=int, default=5)
+    p.add_argument("--epochs", type=int, default=4)
     p.add_argument("--batch-size", type=int, default=16)
+    p.add_argument("--lr", type=float, default=5e-5)
     p.add_argument("--max-length", type=int, default=128)
     p.add_argument("--output-dir", default="runs")
     p.add_argument("--max-train-samples", type=int, default=None)
@@ -62,6 +63,7 @@ def main() -> None:
             seed=seed,
             epochs=args.epochs,
             batch_size=args.batch_size,
+            lr=args.lr,
             max_length=args.max_length,
             output_dir=args.output_dir,
             max_train_samples=args.max_train_samples,
