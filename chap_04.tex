@@ -284,10 +284,13 @@ tableau~\ref{tab:expe-baseline-step0} reporte les métriques test
 (moyenne $\pm$ écart-type sur les trois graines) : référence interne pour H1,
 comparaison externe prudente avec le F1-macro $0{,}46$ de BERT-base sur GoEmotions
 \cite{demszky2020} (encodeur et fenêtre de contexte différents).
-Pour DistilBERT-base, le F1-macro test moyen atteint $0{,}486 \pm 0{,}005$,
-légèrement au-dessus de cette référence littéraire malgré un encodeur plus compact ;
-l'écart-type reste faible sur F1-micro et exact match, signe d'une campagne stable
-entre graines. RoBERTa-base reste à compléter dans la même campagne.
+DistilBERT-base atteint un F1-macro test de $0{,}486 \pm 0{,}005$, RoBERTa-base
+$0{,}487 \pm 0{,}005$ : les deux dépassent la référence BERT-base de
+\cite{demszky2020} avec des écarts-types faibles entre graines. RoBERTa l'emporte
+légèrement en F1-micro et en mAP ; l'écart macro reste inférieur à l'écart-type
+inter-graines. Les ablations M1 à M4 seront donc menées sur \textbf{DistilBERT-base}
+(budget GPU et lisibilité des comparaisons), RoBERTa servant de deuxième baseline
+flat document dans le tableau~\ref{tab:expe-baseline-step0}.
 
 \begin{table}[H]
 \centering
@@ -300,7 +303,7 @@ entre graines. RoBERTa-base reste à compléter dans la même campagne.
 \hline
 DistilBERT-base & $0{,}582 \pm 0{,}001$ & $0{,}486 \pm 0{,}005$ & $0{,}472 \pm 0{,}002$ & $0{,}506 \pm 0{,}001$ \\
 \hline
-RoBERTa-base & \multicolumn{4}{c|}{à compléter après campagne} \\
+RoBERTa-base & $0{,}586 \pm 0{,}003$ & $0{,}487 \pm 0{,}005$ & $0{,}473 \pm 0{,}002$ & $0{,}513 \pm 0{,}002$ \\
 \hline
 \end{tabular}
 \end{table}
@@ -349,9 +352,9 @@ Le protocole expérimental est spécifié et partiellement exécuté :
 corpus GoEmotions, statistiques de segmentation et de couverture NRC,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 rappel SenticNet. Le protocole d'affinage est ancré sur GoEmotions
-(tableau~\ref{tab:expe-hyperparams}) ; le Step~0 DistilBERT-base du
-tableau~\ref{tab:expe-baseline-step0} fixe la première référence interne
-(F1-macro test $0{,}486 \pm 0{,}005$, trois graines), RoBERTa-base et les
-ablations M1 à M4 restant à mener. Les runs d'ablation associés
+(tableau~\ref{tab:expe-hyperparams}) ; le Step~0 PLM du
+tableau~\ref{tab:expe-baseline-step0} est complet pour DistilBERT-base et
+RoBERTa-base (F1-macro test $0{,}486 \pm 0{,}005$ et $0{,}487 \pm 0{,}005$).
+Les ablations M1 à M4 sur DistilBERT-base et les runs associés
 permettront de compléter la section~\ref{sec:expe-analyses-suite} et de
 tester H1 à H4.

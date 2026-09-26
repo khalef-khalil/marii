@@ -1,0 +1,80 @@
+{
+  "step": "step0_plm",
+  "template_notebook": "notebooks/baseline_plm_campaign.ipynb",
+  "protocol_anchor": "GoEmotions Demszky et al.: batch 16, LR 5e-5, 4 epochs",
+  "runs": [
+    {
+      "backbone": "distilbert-base-uncased",
+      "record_notebook": "reference/training_records/step0_plm/baseline_plm_step0_distilbert_record.ipynb",
+      "campaign_json": "reference/artifacts/baseline_plm_distilbert_base_uncased_campaign.json",
+      "artifact_zip": "reference/artifacts/baseline_plm_distilbert_step0.zip",
+      "protocol": {
+        "epochs": 4,
+        "batch_size": 16,
+        "lr": 5e-05,
+        "max_length": 128,
+        "early_stopping_patience": 0
+      },
+      "seeds": [
+        42,
+        123,
+        456
+      ],
+      "test_aggregate": {
+        "f1_micro": {
+          "mean": 0.5819493570759275,
+          "std": 0.0011748079074763295
+        },
+        "f1_macro": {
+          "mean": 0.4860446281637537,
+          "std": 0.004559175955692761
+        },
+        "exact_match": {
+          "mean": 0.4720226030342117,
+          "std": 0.0018931312582055613
+        },
+        "map": {
+          "mean": 0.5056831170582877,
+          "std": 0.00022264235073028184
+        }
+      }
+    },
+    {
+      "backbone": "roberta-base",
+      "record_notebook": "reference/training_records/step0_plm/baseline_plm_step0_roberta_record.ipynb",
+      "campaign_json": "reference/artifacts/baseline_plm_roberta_base_campaign.json",
+      "artifact_zip": "reference/artifacts/baseline_plm_roberta_step0.zip",
+      "protocol": {
+        "epochs": 4,
+        "batch_size": 16,
+        "lr": 5e-05,
+        "max_length": 128,
+        "early_stopping_patience": 0
+      },
+      "seeds": [
+        42,
+        123,
+        456
+      ],
+      "test_aggregate": {
+        "f1_micro": {
+          "mean": 0.5858654335476736,
+          "std": 0.0027014567000864273
+        },
+        "f1_macro": {
+          "mean": 0.48713766844690076,
+          "std": 0.004761153697813151
+        },
+        "exact_match": {
+          "mean": 0.47288250107487256,
+          "std": 0.0018690650518644887
+        },
+        "map": {
+          "mean": 0.5125266780011658,
+          "std": 0.0017489296625961956
+        }
+      }
+    }
+  ],
+  "colab_executed_notebooks": []
+}
