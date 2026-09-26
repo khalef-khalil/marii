@@ -5,6 +5,7 @@ import torch.nn as nn
 from transformers import AutoConfig, AutoModel
 
 from hakemer.config import TrainConfig
+from hakemer.lexicon import lexicon_dim
 
 MHA_NUM_HEADS = 8
 EMOTION_ENCODER_LAYERS = 1
@@ -34,15 +35,29 @@ class AdditiveAttentionPool(nn.Module):
 
 
 class EmotionPhraseCrossAttention(nn.Module):
-    """M2: one MHA read per emotion over phrase vectors (eq. mha in conception)."""
+    """M2 (+ optional M3 lexicon gate) over phrase vectors."""
 
-    def __init__(self, hidden: int, num_labels: int, num_heads: int = MHA_NUM_HEADS) -> None:
+    def __init__(
+        self,
+        hidden: int,
+        num_labels: int,
+        *,
+        num_heads: int = MHA_NUM_HEADS,
+        use_m3: bool = False,
+        lexicon_dim: int = 0,
+    ) -> None:
         super().__init__()
         if hidden % num_heads != 0:
             raise ValueError(f"hidden size {hidden} must divide num_heads {num_heads}")
         self.num_labels = num_labels
+        self.use_m3 = use_m3
         self.emotion_queries = nn.Parameter(torch.empty(num_labels, hidden))
         nn.init.normal_(self.emotion_queries, mean=0.0, std=0.02)
+        if use_m3:
+            if lexicon_dim < 1:
+                raise ValueError("lexicon_dim required when use_m3 is True")
+            self.lexicon_proj = nn.Linear(lexicon_dim, hidden, bias=True)
+            self.lexicon_gate = nn.Parameter(torch.tensor(0.0))
         self.phrase_attention = nn.MultiheadAttention(
             hidden, num_heads, dropout=0.1, batch_first=True
         )
@@ -61,11 +76,21 @@ class EmotionPhraseCrossAttention(nn.Module):
         self.label_bias = nn.Parameter(torch.zeros(num_labels))
         nn.init.xavier_uniform_(self.label_weight)
 
-    def forward(self, phrase_vecs: torch.Tensor, phrase_mask: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        phrase_vecs: torch.Tensor,
+        phrase_mask: torch.Tensor,
+        lexicon_features: torch.Tensor | None = None,
+    ) -> torch.Tensor:
         # phrase_vecs [B, M, H], phrase_mask [B, M] (1 = valid phrase)
         batch_size, num_phrases, hidden = phrase_vecs.shape
         num_labels = self.num_labels
         queries = self.emotion_queries.unsqueeze(0).expand(batch_size, num_labels, hidden)
+        if self.use_m3:
+            if lexicon_features is None:
+                raise ValueError("lexicon_features required when M3 is enabled")
+            prior = torch.tanh(self.lexicon_proj(lexicon_features))
+            queries = queries + self.lexicon_gate * prior.unsqueeze(1)
         queries = queries.reshape(batch_size * num_labels, 1, hidden)
         keys = (
             phrase_vecs.unsqueeze(1)
@@ -104,12 +129,18 @@ class HAKEMER(nn.Module):
         self.dropout = nn.Dropout(dropout_p)
         self.use_m1 = config.use_m1
         self.use_m2 = config.use_m2
+        self.use_m3 = config.use_m3
         if not self.use_m1:
             self.classifier = nn.Linear(hidden, config.num_labels)
         else:
             self.word_pool = AdditiveAttentionPool(hidden)
             if self.use_m2:
-                self.emotion_head = EmotionPhraseCrossAttention(hidden, config.num_labels)
+                self.emotion_head = EmotionPhraseCrossAttention(
+                    hidden,
+                    config.num_labels,
+                    use_m3=config.use_m3,
+                    lexicon_dim=lexicon_dim(config.lexicon_source) if config.use_m3 else 0,
+                )
             else:
                 self.phrase_pool = AdditiveAttentionPool(hidden)
                 self.classifier = nn.Linear(hidden, config.num_labels)
@@ -132,6 +163,7 @@ class HAKEMER(nn.Module):
         input_ids: torch.Tensor,
         attention_mask: torch.Tensor,
         phrase_mask: torch.Tensor | None = None,
+        lexicon_features: torch.Tensor | None = None,
     ) -> torch.Tensor:
         if not self.use_m1:
             outputs = self.backbone(input_ids=input_ids, attention_mask=attention_mask)
@@ -148,7 +180,7 @@ class HAKEMER(nn.Module):
         phrase_vecs = self.dropout(phrase_vecs)
 
         if self.use_m2:
-            return self.emotion_head(phrase_vecs, phrase_mask)
+            return self.emotion_head(phrase_vecs, phrase_mask, lexicon_features=lexicon_features)
 
         doc_vec = self.phrase_pool(phrase_vecs, phrase_mask)
         doc_vec = self.dropout(doc_vec)

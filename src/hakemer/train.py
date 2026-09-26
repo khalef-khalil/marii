@@ -37,7 +37,15 @@ def forward_batch(model, batch, device) -> torch.Tensor:
     phrase_mask = batch.get("phrase_mask")
     if phrase_mask is not None:
         phrase_mask = phrase_mask.to(device)
-    return model(input_ids, attention_mask, phrase_mask=phrase_mask)
+    lexicon_features = batch.get("lexicon_features")
+    if lexicon_features is not None:
+        lexicon_features = lexicon_features.to(device)
+    return model(
+        input_ids,
+        attention_mask,
+        phrase_mask=phrase_mask,
+        lexicon_features=lexicon_features,
+    )
 
 
 @torch.no_grad()
@@ -79,6 +87,8 @@ def train_loop(config: TrainConfig) -> dict:
     train_hf, val_hf, test_hf = load_go_emotions_splits()
     ds_kw = dict(
         use_m1=config.use_m1,
+        use_m3=config.use_m3,
+        lexicon_source=config.lexicon_source,
         max_phrases=config.max_phrases,
         phrase_max_length=config.phrase_max_length,
     )
@@ -170,6 +180,8 @@ def train_loop(config: TrainConfig) -> dict:
         "history": history,
         "output_dir": str(out_dir),
     }
+    if config.use_m3 and hasattr(model, "emotion_head") and hasattr(model.emotion_head, "lexicon_gate"):
+        summary["lexicon_gate_abs"] = float(abs(model.emotion_head.lexicon_gate.detach().cpu().item()))
     (out_dir / "metrics.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(
         f"Test F1-macro={test_metrics['f1_macro']:.4f} "
@@ -198,10 +210,17 @@ def parse_args() -> TrainConfig:
     p.add_argument("--early-stopping-patience", type=int, default=0)
     p.add_argument("--use-m1", action="store_true", help="Module 1 hierarchical encoding")
     p.add_argument("--use-m2", action="store_true", help="Module 2 emotion phrase cross-attention (requires M1)")
+    p.add_argument("--use-m3", action="store_true", help="Module 3 lexicon gate (requires M1+M2)")
+    p.add_argument(
+        "--lexicon-source",
+        default="none",
+        choices=["none", "nrc", "senticnet"],
+    )
     p.add_argument("--max-phrases", type=int, default=4)
     p.add_argument("--phrase-max-length", type=int, default=32)
     args = p.parse_args()
-    use_m1 = args.use_m1 or args.use_m2
+    use_m1 = args.use_m1 or args.use_m2 or args.use_m3
+    use_m2 = args.use_m2 or args.use_m3
     return TrainConfig(
         backbone=args.backbone,
         seed=args.seed,
@@ -216,7 +235,9 @@ def parse_args() -> TrainConfig:
         decision_threshold=args.decision_threshold,
         early_stopping_patience=args.early_stopping_patience,
         use_m1=use_m1,
-        use_m2=args.use_m2,
+        use_m2=use_m2,
+        use_m3=args.use_m3,
+        lexicon_source=args.lexicon_source,
         max_phrases=args.max_phrases,
         phrase_max_length=args.phrase_max_length,
     )

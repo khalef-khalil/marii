@@ -21,4 +21,10 @@ Run `m1_campaign.ipynb` → archive `m1_distilbert_step0.zip` and executed noteb
 
 Run `m1_m2_campaign.ipynb` → archive `m1_m2_distilbert_step0.zip` under `reference/training_records/step_m1_m2/`.
 
+## M1+M2+M3 NRC (H3 vs M1+M2)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_nrc_campaign.ipynb)
+
+Run `m1_m2_m3_nrc_campaign.ipynb` → archive `m1_m2_m3_nrc_distilbert_step0.zip`. SenticNet M3: `./run_m1_m2_m3_campaign.sh --lexicon senticnet` when implemented.
+
 **Training records:** archive executed Colab notebooks and manifests under [`reference/training_records/`](../reference/training_records/README.md). After updating artifacts, run `python scripts/build_step0_training_record.py` to refresh the Step 0 record notebooks from campaign JSON.

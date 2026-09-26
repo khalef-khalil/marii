@@ -5,6 +5,7 @@ from datasets import load_dataset
 from torch.utils.data import DataLoader, Dataset
 from transformers import PreTrainedTokenizerBase
 
+from hakemer.lexicon import document_lexicon_vector
 from hakemer.segmentation import split_phrases
 
 
@@ -23,6 +24,8 @@ class GoEmotionsTorchDataset(Dataset):
         max_samples: int | None = None,
         *,
         use_m1: bool = False,
+        use_m3: bool = False,
+        lexicon_source: str = "none",
         max_phrases: int = 4,
         phrase_max_length: int = 32,
     ):
@@ -30,6 +33,8 @@ class GoEmotionsTorchDataset(Dataset):
         self.max_length = max_length
         self.num_labels = num_labels
         self.use_m1 = use_m1
+        self.use_m3 = use_m3
+        self.lexicon_source = lexicon_source
         self.max_phrases = max_phrases
         self.phrase_max_length = phrase_max_length
         n = len(hf_split) if max_samples is None else min(max_samples, len(hf_split))
@@ -82,12 +87,16 @@ class GoEmotionsTorchDataset(Dataset):
             phrase_masks.append(mask)
             phrase_valid.append(1.0 if has_tokens else 0.0)
 
-        return {
+        item = {
             "input_ids": torch.stack(phrase_ids, dim=0),
             "attention_mask": torch.stack(phrase_masks, dim=0),
             "phrase_mask": torch.tensor(phrase_valid, dtype=torch.float32),
             "labels": self._labels_tensor(row),
         }
+        if self.use_m3:
+            vec = document_lexicon_vector(row["text"], self.lexicon_source)
+            item["lexicon_features"] = torch.tensor(vec, dtype=torch.float32)
+        return item
 
 
 def make_dataloader(dataset: Dataset, batch_size: int, shuffle: bool) -> DataLoader:
