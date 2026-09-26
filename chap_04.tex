@@ -60,9 +60,9 @@ l'intérêt de M3 et de l'analyse de $|g|$).
 \subsection{Hyperparamètres communs}
 \label{sec:expe-hyperparams}
 
-Toutes les configurations comparées partageront le même budget
+Toutes les configurations comparées ont partagé le même budget
 d'entraînement et la même métrique de validation (F1-macro sur le split
-de validation). Pour l'affinage des encodeurs, nous ancrons le cœur du
+de validation). Pour l'affinage des encodeurs, nous avons ancré le cœur du
 budget sur la recette GoEmotions \cite{demszky2020} : lot
 $16$, taux d'apprentissage $5\times 10^{-5}$, quatre époques d'entraînement
 (la configuration officielle du jeu et le code associé retiennent
@@ -71,7 +71,7 @@ AdamW et un planificateur linéaire avec warmup (\emph{Transformers}
 \cite{wolf2020}, pratique usuelle \cite{sun2019,devlin2019}) ; seuls
 l'encodeur (DistilBERT-base, RoBERTa-base) et les modules M1 à M4
 varient entre runs d'ablation. Le tableau~\ref{tab:expe-hyperparams}
-fixe ces valeurs \emph{a priori} pour toutes les étapes.
+a fixé ces valeurs \emph{a priori} pour toutes les étapes.
 
 \begin{table}[H]
 \centering
@@ -119,17 +119,27 @@ M1 à M4 et choisit la ressource lexicale (aucune, NRC, SenticNet).
 Seuls ces choix diffèrent entre runs d'ablation ; le chargement des
 données, les métriques et la boucle d'entraînement restent communs.
 
-Chaque run enregistrera au minimum : identifiant de configuration,
+Chaque run enregistre au minimum : identifiant de configuration,
 backbone, graine, courbes train/validation, F1-macro et F1-micro
-validation, checkpoint retenu, valeur finale de la porte $|g|$ (M3) et
-statistiques par classe sur le test. Les comparaisons internes seront
-interprétées uniquement \emph{à budget identique}.
+validation, checkpoint retenu, valeur finale de la porte $|g|$ (M3) et,
+lorsque l'export est activé, le F1 par émotion sur le test. Les
+comparaisons internes ont été interprétées uniquement \emph{à budget
+identique}.
 
 \subsection{Backbones}
 
 Deux encodeurs principaux : \textbf{RoBERTa-base} et
-\textbf{DistilBERT-base}. Un essai BERT-base reste optionnel et hors
-périmètre des comparaisons principales si le budget GPU est limité.
+\textbf{DistilBERT-base}. Les ablations M1 à M4 ont été menées sur
+\textbf{DistilBERT-base} ; RoBERTa sert de second point de repère au
+Step~0 flat uniquement (tableau~\ref{tab:expe-baseline-step0}).
+
+\subsection{Runs exploratoires (hors référence)}
+\label{sec:expe-baseline-pilot}
+
+Des entraînements préliminaires (budget en époques ou taux d'apprentissage
+non alignés sur \cite{demszky2020}) ont validé le pipeline Colab ;
+ils ne servent pas de référence pour H1 ni pour le
+tableau~\ref{tab:expe-baseline-step0}.
 
 \section{Ablation cumulative}
 \label{sec:expe-ablation}
@@ -163,7 +173,7 @@ tableau~\ref{tab:expe-ablation-flags} explicite les drapeaux.
 \end{table}
 
 Seules les comparaisons adjacentes ou cumulatives à hyperparamètres
-identiques seront interprétées comme preuve de l'apport d'un module.
+identiques ont été interprétées comme preuve de l'apport d'un module.
 
 \section{Correspondance NRC et GoEmotions}
 \label{sec:expe-nrc-mapping}
@@ -267,7 +277,12 @@ vs signal conceptuel) sans postuler a priori la supériorité de l'une
 sur l'autre ni sur la pile M1+M2 seule.
 
 \section{Résultats et analyses}
-\label{sec:expe-analyses-plan}
+\label{sec:expe-analyses-results}
+
+Cette section reporte les métriques test obtenues sous le contrat
+ci-dessus : baselines PLM, ladder d'ablation sur DistilBERT-base,
+synthèse H1 à H4 et analyse par classe sur les émotions rares et
+\emph{neutral}.
 
 \subsection{Baseline PLM (étape 0, protocole définitif)}
 \label{sec:expe-baseline-distilbert}
@@ -287,9 +302,9 @@ DistilBERT-base atteint un F1-macro test de $0{,}486 \pm 0{,}005$, RoBERTa-base
 $0{,}487 \pm 0{,}005$ : les deux dépassent la référence BERT-base de
 \cite{demszky2020} avec des écarts-types faibles entre graines. RoBERTa l'emporte
 légèrement en F1-micro et en mAP ; l'écart macro reste inférieur à l'écart-type
-inter-graines. Les ablations M1 à M4 seront donc menées sur \textbf{DistilBERT-base}
-(budget GPU et lisibilité des comparaisons), RoBERTa servant de deuxième baseline
-flat document dans le tableau~\ref{tab:expe-baseline-step0}.
+inter-graines. RoBERTa sert de deuxième baseline flat dans le
+tableau~\ref{tab:expe-baseline-step0} ; la ladder M1 à M4 suit sur
+DistilBERT-base (section~\ref{sec:expe-cadre}).
 
 \begin{table}[H]
 \centering
@@ -476,6 +491,11 @@ autres. SenticNet préserve le F1-micro de M1+M2 et le mAP le plus élevé
 des trois piles, sans gain macro décisif. Le levier principal reste
 donc M2 ; M3 ajoute un prior appris modestement ($|g| \approx 0{,}03$
 à $0{,}04$) plutôt qu'un saut de performance macro sur GoEmotions.
+Sur le volet « classes rares » de H3 (chapitre~\ref{sec:conception-hypotheses}),
+ni NRC ni SenticNet ne réduisent de façon nette l'écart F1 entre labels
+fréquents et très rares : le tableau~\ref{tab:expe-per-class-f1} montre
+que les gains lexicaux restent macro-neutres alors que M2 améliore surtout
+des émotions de fréquence intermédiaire.
 
 \subsection{Ablation M1+M2+M3+M4 (SenticNet, H4)}
 \label{sec:expe-m4-h4}
@@ -531,16 +551,8 @@ H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ (H4 n
 \end{tabular}
 \end{table}
 
-\subsection{Runs exploratoires (hyperparamètres non finaux)}
-\label{sec:expe-baseline-pilot}
-
-Des entraînements préliminaires (budget en époques ou taux d'apprentissage
-non alignés sur \cite{demszky2020}) ont validé le pipeline Colab ;
-ils ne servent pas de référence pour H1 ni pour le
-tableau~\ref{tab:expe-baseline-step0}.
-
 \subsection{Fréquence des étiquettes et F1 par classe}
-\label{sec:expe-analyses-suite}
+\label{sec:expe-per-class}
 
 Le F1-macro masque des écarts forts entre émotions fréquentes et rares.
 Sur le split test ($n{=}5\,427$), les cooccurrences positives par
@@ -650,21 +662,16 @@ soutenance.
 Les hypothèses H1 à H4 sont récapitulées au
 tableau~\ref{tab:expe-h1-h4-summary}.
 
-\section{Points de vigilance méthodologiques}
+\section{Retours méthodologiques}
 \label{sec:expe-lecons}
 
-Avant de tirer des conclusions, les points suivants seront contrôlés :
-\begin{itemize}
-\item \textbf{Troncature} : suivre le taux mesuré en
-      section~\ref{sec:expe-corpus-stats} ; toute modification de
-      $M$ ou de 32 tokens impose de refaire cette analyse.
-\item \textbf{Initialisation} : respecter $g{=}0$ et $b_2{=}+3$ pour
-      M3/M4 (chapitre~\ref{chap:conception}) ;
-\item \textbf{Budget} : ne jamais comparer des configurations à lot ou
-      époques différents sans le signaler ;
-\item \textbf{Graines} : privilégier plusieurs graines avant de conclure
-      sur H1 à H4.
-\end{itemize}
+La campagne confirme l'importance de trois garde-fous, déjà respectés
+ici et développés au chapitre~\ref{chap:perspectives} : (i) la
+troncature phrase reste faible aux bornes retenues
+(section~\ref{sec:expe-corpus-stats}) ; (ii) l'initialisation $g{=}0$
+et $b_2{=}+3$ pour M3/M4 évite de biaiser le départ des portes ;
+(iii) les trois graines et le budget unique rendent lisibles H1 à H4,
+au prix d'une généralisation limitée à DistilBERT pour la ladder complète.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
@@ -676,4 +683,6 @@ tableaux d'ablation et au tableau~\ref{tab:expe-h1-h4-summary}.
 La pile retenue pour la macro test est M1+M2 ; M3 et M4 n'apportent pas
 de gain robuste au-delà de M2. L'analyse par classe (Step~0, +M1,
 +M1+M2, trois graines) est reportée au
-tableau~\ref{tab:expe-per-class-f1}.
+tableau~\ref{tab:expe-per-class-f1}. Le chapitre~\ref{chap:perspectives}
+en tire les recommandations pratiques (configuration à déployer, limites
+RoBERTa, prolongements sur classes rares et autres corpus).
