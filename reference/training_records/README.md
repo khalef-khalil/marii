@@ -18,5 +18,6 @@ Template notebooks live in `notebooks/` (no execution outputs). Records live her
 | M1 hierarchical | `step_m1/` | `notebooks/m1_campaign.ipynb` |
 | M1+M2 cross-attention | `step_m1_m2/` | `notebooks/m1_m2_campaign.ipynb` |
 | M1+M2+M3 (NRC) | `step_m1_m2_m3_nrc/` | `notebooks/m1_m2_m3_nrc_campaign.ipynb` |
+| M1+M2+M3 (SenticNet) | `step_m1_m2_m3_senticnet/` | `notebooks/m1_m2_m3_senticnet_campaign.ipynb` |
 
-Future ablation steps (M3 SenticNet, M4) should add a folder and manifest the same way.
+Future ablation step M4 should add a folder and manifest the same way.
