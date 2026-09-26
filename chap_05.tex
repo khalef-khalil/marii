@@ -3,62 +3,121 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Ce chapitre recueille des recommandations méthodologiques pour la
-détection multi-étiquettes des émotions et ouvre des perspectives de
-prolongement, en lien avec le protocole du
-chapitre~\ref{chap:experimentation}.
+Le chapitre~\ref{chap:experimentation} a exécuté la ladder d'ablation
+sur GoEmotions et tranché H1 à H4. Ce chapitre en extrait des
+\textbf{enseignements opérationnels} pour la détection multi-étiquettes
+des émotions, formule des \textbf{recommandations de déploiement} à
+partir des métriques obtenues, puis ouvre des \textbf{perspectives}
+de recherche là où les résultats restent ouverts (encodeur, longue
+traîne, validation externe).
 
 \section{Principes méthodologiques}
 \label{sec:persp-enseignements}
 
-Quatre principes ont guidé l'évaluation de HAKE-MER et restent
-pertinents pour tout travail sur GoEmotions :
+Quatre principes ont structuré la campagne et restent pertinents au
+delà de HAKE-MER :
 \begin{itemize}
-\item \textbf{Multi-backbone.} L'effet d'un module architectural peut
-      dépendre de la capacité de l'encodeur ; conclure à partir d'un
-      seul PLM est risqué.
-\item \textbf{Contrôle du prétraitement.} Troncature, segmentation en
-      phrases et initialisation des têtes peuvent masquer ou imiter
-      un gain architectural.
-\item \textbf{Métriques par classe.} Le F1-macro seul ne suffit pas :
-      les classes rares et la frontière avec \emph{neutral} doivent
-      être inspectées explicitement.
-\item \textbf{Comparaisons externes prudentes.} Se reporter à la
-      littérature n'a de sens qu'avec un protocole comparable ou une
-      discussion honnête des écarts.
+\item \textbf{Multi-backbone.} Step~0 sur DistilBERT et RoBERTa a montré
+      des F1-macro test voisins ($0{,}486 \pm 0{,}005$ vs
+      $0{,}487 \pm 0{,}005$) ; les modules n'ont été ablatés que sur
+      DistilBERT. Toute généralisation « l'architecture X bat Y » doit
+      préciser l'encodeur ou reproduire la ladder sur un second PLM.
+\item \textbf{Contrôle du prétraitement.} M1 seul sous-performe le flat
+      à budget token comparable : une hiérarchie naïve peut \emph{perdre}
+      du contexte utile. Les gains viennent de M2 (lecture
+      label-specific), pas du seul découpage phrase.
+\item \textbf{Métriques par classe.} Le F1-macro masque des profils
+      hétérogènes (tableau~\ref{tab:expe-per-class-f1}) : M2 améliore
+      surtout des émotions de fréquence intermédiaire, pas la longue
+      traîne (\emph{grief}, \emph{relief}).
+\item \textbf{Comparaisons externes prudentes.} Le dépassement du
+      $0{,}46$ macro de BERT-base \cite{demszky2020} reste indicatif
+      (encodeur, fenêtre, budget) ; l'argument principal repose sur
+      les comparaisons internes à budget fixe.
 \end{itemize}
 
-\section{Recommandations pratiques (après expériences)}
+\section{Enseignements de la campagne HAKE-MER}
+\label{sec:persp-enseignements-campagne}
+
+Les hypothèses H1 à H4 (chapitre~\ref{sec:conception-hypotheses}) se
+traduisent en messages concrets pour un lecteur praticien :
+\begin{itemize}
+\item \textbf{H1 rejetée.} L'encodage hiérarchique sans M2 n'est pas
+      une alternative crédible au \texttt{[CLS]} flat sur GoEmotions
+      sous ce protocole ; ne pas déployer M1 seul pour le F1-macro.
+\item \textbf{H2 confirmée.} M2 restaure et dépasse le flat
+      ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$) : l'attention
+      croisée phrase$\times$émotion est le cœur utile de HAKE-MER.
+\item \textbf{H3 sans gain macro robuste.} NRC et SenticNet n'apportent
+      pas de surplus stable ; le prior lexique est appris faiblement
+      ($|g| \approx 0{,}03$--$0{,}04$) et n'affine pas la longue traîne.
+\item \textbf{H4 non confirmée.} M4 n'améliore pas la macro par rapport
+      à M3 SenticNet ni à M1+M2 ; la complexité supplémentaire n'est
+      pas justifiée par les scores test actuels.
+\end{itemize}
+
+\section{Recommandations pratiques}
 \label{sec:persp-recommandations}
 
-Les ablations DistilBERT-base indiquent que la configuration la plus
-efficace en F1-macro test est \textbf{M1+M2} ($0{,}505 \pm 0{,}004$) :
-la hiérarchie seule (M1) dégrade la macro ; NRC et SenticNet (M3)
-n'apportent pas de gain macro stable au-delà de M2. En pratique, un
-déploiement orienté macro peut donc privilégier M1+M2 et réserver M3
-au besoin d'un signal interprétable ($|g|$ appris). M4 (H4) n'a pas amélioré la F1-macro test ($0{,}499 \pm 0{,}006$) par
-rapport à M3 SenticNet ni à M1+M2. RoBERTa n'a été ablaté qu'au Step~0
-flat, ce qui limite la généralisation inter-encodeur des conclusions actuelles.
+\paragraph{Configuration retenue.}
+Pour maximiser le F1-macro test mesuré, la pile recommandée est
+\textbf{M1+M2} (DistilBERT-base, protocole du
+tableau~\ref{tab:expe-hyperparams}) : segmentation $M{=}4$, attention
+par émotion, pas de branche M3/M4 en production si la macro prime sur
+l'interprétabilité lexicale.
+
+\paragraph{Quand simplifier ou enrichir.}
+\begin{itemize}
+\item \textbf{Flat Step~0} : baseline légère si la latence ou la
+      maintenance prime sur $\approx 2$ points de macro ; performances
+      déjà solides ($0{,}486 \pm 0{,}005$).
+\item \textbf{M3 (NRC ou SenticNet)} : envisager seulement si l'on
+      expose $|g|$ ou les descripteurs documentaires à un utilisateur
+      (explication), pas pour gagner la macro dans ce cadre.
+\item \textbf{RoBERTa au Step~0} : utile comme contrôle de capacité
+      PLM ; répéter M1+M2 sur RoBERTa avant de généraliser les
+      conclusions inter-encodeur.
+\end{itemize}
+
+\paragraph{Coût et risques.}
+M1+M2 encode jusqu'à quatre phrases par commentaire : le surcoût
+reste modéré face à un forward document unique, mais la segmentation
+NLTK et les têtes multi-émotions augmentent la surface de bug et de
+réglage. Toute réduction de $M$ ou de 32 tokens impose de refaire
+l'analyse de troncature (section~\ref{sec:expe-corpus-stats}).
 
 \section{Perspectives de recherche}
 \label{sec:persp-recherche}
 
+Les prolongements suivants ciblent les limites observées au
+chapitre~\ref{chap:experimentation}, sans remettre en cause les
+résultats déjà archivés :
 \begin{itemize}
-\item \textbf{Traitement du déséquilibre.} Pertes focales ou
-      repondérées, seuils par émotion ;
-\item \textbf{Enrichissement sémantique.} Au-delà de NRC/SenticNet,
-      graphes de connaissances (ConceptNet, ressources affectives) et
-      fusion adaptative par émotion ;
-\item \textbf{Validation externe.} SemEval-2018 Tâche~1, plusieurs
-      graines aléatoires ;
-\item \textbf{Émotions implicites.} Ressources de bon sens (ATOMIC,
-      COMET) ;
-\item \textbf{LLM.} Positionner HAKE-MER par rapport aux modèles
-      généralistes et aux LLM affectifs spécialisés lorsque des
-      baselines reproductibles sont disponibles.
+\item \textbf{Déséquilibre et longue traîne.} Pertes repondérées,
+      seuils par émotion, ou entraînement ciblé sur les labels à
+      très faible support (\emph{grief}, \emph{relief}) où le F1
+      reste instable.
+\item \textbf{Lexique et connaissances.} Fusion par émotion (non
+      un vecteur document partagé), graphes type ConceptNet, ou
+      alignement fin entre Plutchik et GoEmotions au-delà du gate
+      global M3 testé ici.
+\item \textbf{Ladder multi-encodeur.} Répéter M1 à M4 sur RoBERTa-base
+      (ou un autre PLM) pour séparer effet de capacité et effet
+      architectural.
+\item \textbf{Validation externe.} SemEval-2018 Tâche~1 ou corpus
+      hors Reddit pour tester la robustesse du choix M1+M2.
+\item \textbf{Modèles généralistes.} Comparer M1+M2 à des LLM
+      instructs ou modèles affectifs lorsque des protocoles
+      reproductibles et comparables existent.
 \end{itemize}
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Les perspectives ci-dessus prolongent le sujet au-delà du protocole
-détaillé au chapitre~\ref{chap:experimentation}.
+La campagne GoEmotions montre que HAKE-MER apporte une valeur nette
+via \textbf{M2}, tandis que hiérarchie seule, lexiques externes et
+pondération M4 n'améliorent pas robustement la macro dans le protocole
+retenu. Les recommandations ci-dessus visent un déploiement réaliste
+(M1+M2, DistilBERT) et des prolongements ciblés (classes rares,
+second encodeur, autres corpus). La conclusion générale du mémoire
+reprend cette synthèse et situe la contribution dans le paysage
+multi-étiquettes des émotions.
