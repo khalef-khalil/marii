@@ -8,7 +8,7 @@ Le chapitre~\ref{chap:contexte} a posé une question de recherche et
 trois limitations (L1 à L3) auxquelles HAKE-MER doit répondre. Nous
 montrons ici comment la littérature sur la \textbf{détection
 multi-étiquettes des émotions dans le texte}
-\cite{mohammad2020sentiment,pang2008} éclaire ces points et justifie
+\cite{mohammad2020sentiment,pang2008,li2021survey,achen2020bertemotion} éclaire ces points et justifie
 les choix de corpus, de métriques et de familles de modèles retenus
 pour la suite.
 
@@ -39,7 +39,7 @@ $x$ et un inventaire d'émotions $\mathcal{E}=\{e_1,\dots,e_K\}$,
 apprendre une fonction qui associe à chaque $e_k$ une décision
 (binaire ou score), indépendamment des autres étiquettes au niveau
 de la fonction de perte, mais non indépendamment au niveau
-sémantique \cite{zhang2014multilabel}.
+sémantique \cite{zhang2014multilabel,tsoumakas2009multilabel,read2009classifier}.
 
 Formellement, on cherche $f : x \mapsto \{0,1\}^K$ (ou des
 probabilités $\hat{y}_k \in [0,1]$), ce qui diffère de la
@@ -101,8 +101,19 @@ Accord $\geq$1 étiquette (3+ annotateurs) & 17\,763 (31\,\%) \\
 \end{tabular}
 \end{table}
 
-D'autres benchmarks (SemEval, etc.) pourront compléter une validation
-externe dans des travaux ultérieurs.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\linewidth]{lit/lit_goemotions_multilabel.pdf}
+\caption{Répartition du nombre d'étiquettes par exemple sur GoEmotions
+(statistiques reportées par \cite{demszky2020}, figure reconstruite pour
+illustration).}
+\label{fig:goemotions-multilabel-stats}
+\end{figure}
+
+Des jeux comme SemEval-2018 Tâche~1 \cite{mohammad2018semeval} et des
+analyses du bruit d'annotation \cite{bostrom2020emotion} complètent le
+cadre ; une validation externe hors Reddit reste une perspective du
+chapitre~\ref{chap:perspectives}.
 
 \subsection{Annotation, bruit et déséquilibre}
 
@@ -118,9 +129,10 @@ l'interprétation des erreurs. Le \textbf{déséquilibre extrême}
 base BERT des auteurs) fait que les métriques globales favorisant
 les classes majoritaires peuvent masquer un échec sur les classes
 minoritaires, pourtant centrales pour la problématique de ce mémoire.
-Des variantes de perte pondérée (par exemple \emph{focal loss}
-\cite{lin2017focal}) existent pour le déséquilibre, mais restent hors
-du périmètre immédiat du protocole retenu.
+Le rééchantillonnage synthétique \cite{chawla2002smote} et des pertes
+pondérées (par exemple \emph{focal loss} \cite{lin2017focal}) existent
+pour le déséquilibre, mais restent hors du périmètre immédiat du
+protocole retenu.
 
 \subsection{Métriques d'évaluation}
 
@@ -159,11 +171,19 @@ implicites.
 Les architectures convolutionnelles et récurrentes (CNN
 \cite{kim2014}, LSTM/GRU \cite{cho2014,lipton2015sequencernn}, BiLSTM)
 ont ensuite permis l'apprentissage de représentations à partir du
-texte brut. Les mécanismes d'\textbf{attention} \cite{bahdanau2015,vaswani2017} permettent
-de pondérer les tokens selon leur pertinence pour la prédiction,
-point de départ des encodeurs modernes et des extensions
-\emph{label-specific} où chaque émotion dispose de sa propre
-lecture du texte \cite{mullenbach2018}.
+texte brut. Les mécanismes d'\textbf{attention} \cite{bahdanau2015,luong2015attention,vaswani2017}
+permettent de pondérer les tokens selon leur pertinence pour la
+prédiction, point de départ des encodeurs modernes et des extensions
+\emph{label-specific} où chaque émotion dispose de sa propre lecture
+du texte \cite{mullenbach2018,akhtar2018multilabel}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{lit/lit_transformer_encoder.pdf}
+\caption{Schéma simplifié d'un encodeur Transformer empilé (inspiré de
+\cite{vaswani2017,devlin2019}).}
+\label{fig:lit-transformer}
+\end{figure}
 
 \subsection{Modèles pré-entraînés et ligne de base}
 
@@ -231,6 +251,14 @@ Le \textbf{module~1} de HAKE-MER s'inscrit dans cette lignée :
 segmentation en phrases, encodage par le backbone partagé, agrégation
 phrase$\to$document par attention additive, avec des bornes de
 longueur fixées au chapitre~\ref{chap:experimentation}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\linewidth]{lit/lit_han_schematic.pdf}
+\caption{Principe d'attention hiérarchique mot, phrase et document
+(schéma pédagogique d'après \cite{yang2016}).}
+\label{fig:lit-han}
+\end{figure}
 
 \section{Enrichissement par ressources lexicales externes}
 \label{sec:etat-lexiques}

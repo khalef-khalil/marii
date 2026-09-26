@@ -59,6 +59,14 @@ dominante à ces bornes, tandis que la couverture lexicale laisse une
 part non triviale d'exemples sans signal NRC au niveau token (d'où
 l'intérêt de M3 et de l'analyse de $|g|$).
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\linewidth]{expe/expe_label_support.pdf}
+\caption{Effectifs positifs par émotion sur le split test (échelle
+logarithmique), mesurés lors de l'export F1 par classe.}
+\label{fig:expe-label-support}
+\end{figure}
+
 \subsection{Hyperparamètres communs}
 \label{sec:expe-hyperparams}
 
@@ -592,6 +600,30 @@ H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ (H4 n
 \end{tabular}
 \end{table}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{expe/expe_ablation_macro.pdf}
+\caption{F1-macro test le long de la ladder DistilBERT (moyenne $\pm$
+écart-type, trois graines), visualisation du tableau~\ref{tab:expe-h1-h4-summary}.}
+\label{fig:expe-ablation-macro}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\linewidth]{expe/expe_backbone_macro.pdf}
+\caption{Contrôle multi-backbone : F1-macro test Step~0, +M1 et +M1+M2
+(voir tableau~\ref{tab:expe-roberta-ablation}).}
+\label{fig:expe-backbone-macro}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\linewidth]{expe/expe_m1_m2_val_curves.pdf}
+\caption{Évolution du F1-macro validation pour +M1+M2 (DistilBERT, trois
+graines), campagne archivée.}
+\label{fig:expe-m1-m2-val-curves}
+\end{figure}
+
 \subsection{Fréquence des étiquettes et F1 par classe}
 \label{sec:expe-per-class}
 
@@ -635,6 +667,14 @@ neutral & 1\,787 & 32,93 \\
 \hline
 \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\linewidth]{expe/expe_per_class_selected.pdf}
+\caption{F1 test par émotion : Step~0 flat vs +M1+M2 (moyenne sur graines,
+sous-ensemble de labels rares et fréquents).}
+\label{fig:expe-per-class-selected}
+\end{figure}
 
 \paragraph{Protocole.}
 Pour chaque configuration, le checkpoint retenu (meilleur F1-macro
@@ -700,8 +740,8 @@ menée sur les checkpoints +M1+M2 (DistilBERT, trois graines) : inférence
 sur le test avec seuil $0{,}5$, comptage des cooccurrences où une
 étiquette gold est manquée (FN) ou prédite à tort (FP) alors qu'une
 autre étiquette est activée, et extraction d'exemples textuels pour
-\emph{grief}, \emph{relief} et \emph{neutral}. Le
-tableau~\ref{tab:expe-error-pairs} et les illustrations ci-dessous
+\emph{grief}, \emph{relief} et \emph{neutral}. La
+figure~\ref{fig:expe-error-pairs} et le tableau~\ref{tab:expe-error-pairs}
 complètent le tableau~\ref{tab:expe-per-class-f1}. Les motifs dominants
 opposent \emph{neutral} à \emph{approval}, \emph{disapproval} et
 \emph{annoyance} (FN/FP croisés), ce qui confirme le rôle « hub » de
@@ -709,6 +749,14 @@ opposent \emph{neutral} à \emph{approval}, \emph{disapproval} et
 \emph{anger}/\emph{annoyance} seules. Sur les labels rares, un vrai
 positif \emph{grief} est parfois détecté ; un FN typique omet toute
 étiquette sur un énoncé pourtant étiqueté \emph{grief}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\linewidth]{expe/expe_error_pairs.pdf}
+\caption{Motifs d'erreurs les plus fréquents (+M1+M2, DistilBERT,
+agrégat sur trois graines).}
+\label{fig:expe-error-pairs}
+\end{figure}
 
 \IfFileExists{error_analysis_snippet.tex}{\input{error_analysis_snippet}}{}
 
