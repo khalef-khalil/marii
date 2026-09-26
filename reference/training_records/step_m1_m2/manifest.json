@@ -1,0 +1,15 @@
+{
+  "step": "m1_m2_distilbert",
+  "template_notebook": "notebooks/m1_m2_campaign.ipynb",
+  "protocol_anchor": "Same as M1: batch 16, LR 5e-5, 4 epochs; M=4, 32 tokens/phrase",
+  "campaign_json": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
+  "artifact_zip": "reference/artifacts/m1_m2_distilbert_step0.zip",
+  "m1_reference": "reference/artifacts/m1_distilbert_base_uncased_campaign.json",
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.504973694593721, "std": 0.003956158362080552 },
+    "f1_micro": { "mean": 0.5815016623787961, "std": 0.0015468441094822483 },
+    "exact_match": { "mean": 0.45679012345679015, "std": 0.0043003675607676 },
+    "map": { "mean": 0.5035960210727322, "std": 0.0017027931408877984 }
+  },
+  "colab_executed_notebooks": []
+}

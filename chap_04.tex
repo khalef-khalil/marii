@@ -9,8 +9,8 @@ H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 statistiques de corpus \emph{mesurées} avant entraînement. Le protocole d'affinage est fixé (tableau~\ref{tab:expe-hyperparams}) ;
 le Step~0 et les modules M1 à M4 sont évalués sous ce même contrat.
-Les baselines PLM et l'étape +M1 (H1) disposent de scores test ;
-M2 à M4 et la validation complète de H2 à H4 restent à mener.
+Les baselines PLM, l'étape +M1 (H1) et l'étape +M2 (H2) disposent de scores test ;
+M3 à M4 et la validation de H3 à H4 restent à mener.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -347,6 +347,42 @@ flat avec troncature globale et pooling [CLS] performe mieux ici.
 Cette observation motive la suite de l'ablation (M2 : attention
 émotion$\to$phrases) plutôt qu'un prolongement direct de M1 seul.
 
+\subsection{Ablation M1+M2 (attention par émotion, H2)}
+\label{sec:expe-m1-m2-h2}
+
+L'étape +M2 (tableau~\ref{tab:expe-ablation-flags}) conserve M1 et
+remplace le pooling phrase$\to$document par une lecture croisée
+multi-têtes par émotion sur $s_1,\dots,s_M$, un encodeur sur l'axe
+des $K$ émotions et des têtes de classification par étiquette
+(chapitre~\ref{sec:conception-m2}). Protocole d'affinage identique à
+l'étape M1.
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : +M1 vs +M1+M2 (H2)}
+\label{tab:expe-m1-m2-distilbert}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
++M1 seul & $0{,}564 \pm 0{,}002$ & $0{,}457 \pm 0{,}002$ & $0{,}450 \pm 0{,}005$ & $0{,}491 \pm 0{,}004$ \\
+\hline
++M1+M2 & $0{,}582 \pm 0{,}002$ & $0{,}505 \pm 0{,}004$ & $0{,}457 \pm 0{,}004$ & $0{,}504 \pm 0{,}002$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Le F1-macro test passe de $0{,}457$ à $0{,}505$ ($\approx 4{,}8$ points
+absolus) ; les trois graines convergent ($0{,}499$, $0{,}508$, $0{,}508$).
+\textbf{H2 est confirmée} : l'attention croisée et les têtes par émotion
+améliorent nettement la détection macro par rapport à M1 seul, avec un
+F1-micro retrouvé au niveau du Step~0 flat ($0{,}582 \pm 0{,}002$).
+La hiérarchie seule (M1) reste insuffisante ; le gain provient de la
+lecture \emph{label-specific} sur les phrases. Les étapes M3 et M4
+testeront si un prior lexical et une pondération dynamique prolongent
+cette ligne.
+
 \subsection{Runs exploratoires (hyperparamètres non finaux)}
 \label{sec:expe-baseline-pilot}
 
@@ -359,11 +395,11 @@ tableau~\ref{tab:expe-baseline-step0}.
 \label{sec:expe-analyses-suite}
 
 Les éléments suivants compléteront ce chapitre lorsque les étapes
-M2 à M4 seront entraînées :
+M3 et M4 seront entraînées :
 \begin{itemize}
-\item ablation cumulatif M2 à M4 (mêmes métriques, encodeur DistilBERT,
-      ligne de base Step~0 et résultat M1 du
-      tableau~\ref{tab:expe-m1-distilbert}) ;
+\item ablation M3 (NRC, SenticNet) et M4 (mêmes métriques, encodeur DistilBERT,
+      ligne Step~0, M1 et M1+M2 des
+      tableaux~\ref{tab:expe-m1-distilbert} et~\ref{tab:expe-m1-m2-distilbert}) ;
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
@@ -394,7 +430,7 @@ hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 rappel SenticNet. Le protocole d'affinage est ancré sur GoEmotions
 (tableau~\ref{tab:expe-hyperparams}) ; le Step~0 PLM du
 tableau~\ref{tab:expe-baseline-step0} est complet pour DistilBERT-base et
-RoBERTa-base ; l'étape +M1 (tableau~\ref{tab:expe-m1-distilbert}) fixe
-la réponse à H1 (pas de gain macro). Les étapes M2 à M4 sur DistilBERT-base
-permettront de compléter la section~\ref{sec:expe-analyses-suite} et de
-tester H2 à H4.
+RoBERTa-base ; H1 (M1 seul) et H2 (M1+M2) sont tranchées aux
+tableaux~\ref{tab:expe-m1-distilbert} et~\ref{tab:expe-m1-m2-distilbert}.
+Les étapes M3 et M4 sur DistilBERT-base compléteront la
+section~\ref{sec:expe-analyses-suite} et testeront H3 à H4.
