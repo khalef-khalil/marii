@@ -9,8 +9,8 @@ H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 statistiques de corpus \emph{mesurées} avant entraînement. Le protocole d'affinage est fixé (tableau~\ref{tab:expe-hyperparams}) ;
 le Step~0 et les modules M1 à M4 sont évalués sous ce même contrat.
-Les baselines PLM et les ablations +M1 (H1), +M2 (H2) et +M3 (NRC et SenticNet, H3)
-disposent de scores test ; seul M4 reste à entraîner.
+Les baselines PLM et les ablations +M1 à +M4 (H1 à H4) disposent de scores
+test sur DistilBERT-base ; RoBERTa ne couvre que le Step~0 flat.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -477,18 +477,59 @@ des trois piles, sans gain macro décisif. Le levier principal reste
 donc M2 ; M3 ajoute un prior appris modestement ($|g| \approx 0{,}03$
 à $0{,}04$) plutôt qu'un saut de performance macro sur GoEmotions.
 
-\subsection{Campagne H4 (M4, protocole)}
-\label{sec:expe-m4-protocol}
+\subsection{Ablation M1+M2+M3+M4 (SenticNet, H4)}
+\label{sec:expe-m4-h4}
 
-Pour H4, la pile \textbf{M1+M2+M3 (SenticNet)} sert de référence
-(variance inter-graines plus faible que NRC, mAP légèrement supérieur).
-M4 active la porte $\gamma_k$ (équation~\ref{eq:dyngate},
-$b_2{=}+3$) sur les représentations $r_k$ avant les têtes sigmoïdes ;
-M3 reste inchangé ($g$ initialisé à $0$). Même protocole d'affinage
-(tableau~\ref{tab:expe-hyperparams}, trois graines). Les métriques test
-seront comparées à la ligne SenticNet du
-tableau~\ref{tab:expe-h3-lexicons} ; aucun score M4 n'est reporté tant
-que la campagne Colab n'est pas archivée.
+H4 compare la pile M1+M2+M3 (SenticNet) à l'ajout de M4 : portes
+$\gamma_k$ (équation~\ref{eq:dyngate}, $b_2{=}+3$) sur les $r_k$ avant
+les têtes sigmoïdes, M3 inchangé. Protocole d'affinage identique.
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : +M3 SenticNet vs +M4}
+\label{tab:expe-m4-distilbert}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
++M1+M2+M3 (SenticNet) & $0{,}582 \pm 0{,}002$ & $0{,}504 \pm 0{,}003$ & $0{,}458 \pm 0{,}006$ & $0{,}515 \pm 0{,}002$ \\
+\hline
++M1+M2+M3+M4 (SenticNet) & $0{,}577 \pm 0{,}002$ & $0{,}499 \pm 0{,}006$ & $0{,}452 \pm 0{,}003$ & $0{,}505 \pm 0{,}003$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Le F1-macro test moyen passe de $0{,}504$ à $0{,}499$ ($\pm 0{,}006$) :
+une graine atteint $0{,}507$ (seed $42$) mais les deux autres restent sous
+$0{,}496$, d'où une moyenne inférieure à M3 SenticNet et à M1+M2
+($0{,}505 \pm 0{,}004$). Le F1-micro et le mAP reculent légèrement.
+\textbf{H4 n'est pas confirmée} : la pondération dynamique n'améliore pas
+robustement la macro sur GoEmotions dans ce cadre. La configuration la
+plus efficace en F1-macro test reste \textbf{M1+M2} sans lexique ni M4.
+
+\subsection{Synthèse des hypothèses H1 à H4}
+\label{sec:expe-hypotheses-synthese}
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, F1-macro test (moyenne $\pm$ écart-type, 3 graines)}
+\label{tab:expe-h1-h4-summary}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Hypothèse} & \textbf{Comparaison} & \textbf{F1-macro test} \\
+\hline
+H1 & Step~0 flat vs +M1 & $0{,}486 \pm 0{,}005$ vs $0{,}457 \pm 0{,}002$ (H1 rejetée) \\
+\hline
+H2 & +M1 vs +M1+M2 & $0{,}457 \pm 0{,}002$ vs $0{,}505 \pm 0{,}004$ (H2 confirmée) \\
+\hline
+H3 & +M1+M2 vs M3 (NRC / SenticNet) & $0{,}505 \pm 0{,}004$ vs $0{,}504 \pm 0{,}008$ / $0{,}504 \pm 0{,}003$ (pas de gain macro robuste) \\
+\hline
+H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ (H4 non confirmée) \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Runs exploratoires (hyperparamètres non finaux)}
 \label{sec:expe-baseline-pilot}
@@ -501,15 +542,14 @@ tableau~\ref{tab:expe-baseline-step0}.
 \subsection{Analyses complémentaires (en cours)}
 \label{sec:expe-analyses-suite}
 
-Les éléments suivants compléteront ce chapitre lorsque M4 sera entraîné :
+Les éléments suivants compléteront ce chapitre en analyse fine :
 \begin{itemize}
-\item ablation M4 (mêmes métriques, encodeur DistilBERT, comparer au
-      tableau~\ref{tab:expe-h3-lexicons}) ;
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
-\item exemples qualitatifs sur émotions rares ;
-\item confrontation explicite aux hypothèses H1 à H4.
+\item exemples qualitatifs sur émotions rares.
 \end{itemize}
+Les hypothèses H1 à H4 sont récapitulées au
+tableau~\ref{tab:expe-h1-h4-summary}.
 
 \section{Points de vigilance méthodologiques}
 \label{sec:expe-lecons}
@@ -529,16 +569,11 @@ Avant de tirer des conclusions, les points suivants seront contrôlés :
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Le protocole expérimental est spécifié et partiellement exécuté :
-corpus GoEmotions, statistiques de segmentation et de couverture NRC,
-hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
-rappel SenticNet. Le protocole d'affinage est ancré sur GoEmotions
-(tableau~\ref{tab:expe-hyperparams}) ; le Step~0 PLM du
-tableau~\ref{tab:expe-baseline-step0} est complet pour DistilBERT-base et
-RoBERTa-base ; H1 et H2 sont tranchées aux
-tableaux~\ref{tab:expe-m1-distilbert} et~\ref{tab:expe-m1-m2-distilbert} ;
-H3 (NRC et SenticNet) est reportée aux
-tableaux~\ref{tab:expe-m3-nrc-distilbert},
-\ref{tab:expe-m3-senticnet-distilbert} et~\ref{tab:expe-h3-lexicons}.
-M4 et les analyses par classe compléteront la
-section~\ref{sec:expe-analyses-suite}.
+Le protocole expérimental est spécifié et exécuté sur DistilBERT-base :
+corpus GoEmotions, statistiques de segmentation, hyperparamètres communs
+et ladder M1 à M4. Le Step~0 PLM couvre DistilBERT et RoBERTa
+(tableau~\ref{tab:expe-baseline-step0}) ; H1 à H4 sont reportées aux
+tableaux d'ablation et au tableau~\ref{tab:expe-h1-h4-summary}.
+La pile retenue pour la macro test est M1+M2 ; M3 et M4 n'apportent pas
+de gain robuste au-delà de M2. Les analyses par classe restent à
+mener (section~\ref{sec:expe-analyses-suite}).

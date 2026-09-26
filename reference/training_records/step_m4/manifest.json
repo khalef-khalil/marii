@@ -1,9 +1,23 @@
 {
   "step": "m1_m2_m3_senticnet_m4",
   "template_notebook": "notebooks/m1_m2_m3_m4_senticnet_campaign.ipynb",
-  "protocol_anchor": "M1+M2+M3 SenticNet + M4 dynamic scaling; compare to tab:expe-h3-lexicons SenticNet row",
+  "protocol_anchor": "M1+M2+M3 SenticNet + M4 dynamic scaling (b2=+3); H4 vs SenticNet M3 row",
   "campaign_json": "reference/artifacts/m1_m2_m3_senticnet_m4_distilbert_base_uncased_campaign.json",
   "artifact_zip": "reference/artifacts/m1_m2_m3_senticnet_m4_distilbert_step0.zip",
   "m3_reference": "reference/artifacts/m1_m2_m3_senticnet_distilbert_base_uncased_campaign.json",
-  "colab_executed_notebooks": []
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.4987842861132986, "std": 0.006230009698446393 },
+    "f1_micro": { "mean": 0.5771327336044187, "std": 0.002257092133479535 },
+    "exact_match": { "mean": 0.4520606842331552, "std": 0.002559138462747935 },
+    "map": { "mean": 0.5052383320593165, "std": 0.00335651696691456 }
+  },
+  "lexicon_gate_abs": { "mean": 0.03013628659149011, "std": 0.000464117425233903 },
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m4/colab/20250926_m1_m2_m3_m4_senticnet_campaign_executed.ipynb",
+      "description": "Colab M1+M2+M3+M4 SenticNet campaign (H4)",
+      "runtime_gpu": "NVIDIA A100-SXM4-40GB",
+      "repo_commit_at_clone": "099ff00"
+    }
+  ]
 }

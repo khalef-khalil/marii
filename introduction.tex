@@ -21,9 +21,8 @@ modulaire destinée à mieux exploiter la \textbf{structure} du texte
 \textbf{ressources sémantiques externes} (lexiques affectifs). L'évaluation s'appuie sur le corpus GoEmotions \cite{demszky2020},
 référence pour les émotions fines en anglais, avec un protocole d'ablation à
 budget d'entraînement constant et le \textbf{F1-macro} comme métrique
-principale. Les campagnes Step~0 à M3 (NRC et SenticNet) sont exécutées
-sur DistilBERT-base ; la pondération dynamique M4 complète la ladder
-expérimentale (chapitre~\ref{chap:experimentation}).
+principale. Les campagnes Step~0 à M4 sont exécutées sur DistilBERT-base
+(chapitre~\ref{chap:experimentation}) ; RoBERTa ne couvre que le Step~0 flat.
 
 \textbf{Contributions de ce mémoire} :
 \begin{itemize}[noitemsep]
@@ -37,8 +36,7 @@ expérimentale (chapitre~\ref{chap:experimentation}).
 
 Ce rapport enchaîne problématique, état de l'art, conception et
 résultats quantitatifs : le chapitre~\ref{chap:experimentation} reporte
-les métriques test et tranche H1 à H3 ; H4 (M4) suit le même contrat
-expérimental.
+les métriques test et tranche H1 à H4.
 
 \paragraph{Organisation du mémoire.}
 Le chapitre~\ref{chap:contexte} présente le contexte, la problématique et

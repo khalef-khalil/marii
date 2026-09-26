@@ -36,10 +36,9 @@ efficace en F1-macro test est \textbf{M1+M2} ($0{,}505 \pm 0{,}004$) :
 la hiérarchie seule (M1) dégrade la macro ; NRC et SenticNet (M3)
 n'apportent pas de gain macro stable au-delà de M2. En pratique, un
 déploiement orienté macro peut donc privilégier M1+M2 et réserver M3
-au besoin d'un signal interprétable ($|g|$ appris). M4 (H4) teste si
-une modulation dynamique des représentations $r_k$ compense les limites
-observées de M3 ; RoBERTa n'a été ablaté qu'au Step~0 flat, ce qui
-limite la généralisation inter-encodeur des conclusions actuelles.
+au besoin d'un signal interprétable ($|g|$ appris). M4 (H4) n'a pas amélioré la F1-macro test ($0{,}499 \pm 0{,}006$) par
+rapport à M3 SenticNet ni à M1+M2. RoBERTa n'a été ablaté qu'au Step~0
+flat, ce qui limite la généralisation inter-encodeur des conclusions actuelles.
 
 \section{Perspectives de recherche}
 \label{sec:persp-recherche}
