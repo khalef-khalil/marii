@@ -1,8 +1,21 @@
 {
   "step": "per_class_ladder",
   "template_notebook": "notebooks/per_class_export_campaign.ipynb",
-  "protocol_anchor": "Re-run Step0 + M1 + M1+M2 (3 seeds) to populate test.per_label; aggregate via run_per_class_from_metrics.sh",
+  "protocol_anchor": "Re-run Step0 + M1 + M1+M2 (3 seeds); aggregate test.per_label",
   "artifact_json": "reference/artifacts/per_class_ladder_distilbert_seeds_42_123_456.json",
+  "artifact_zip": "reference/artifacts/per_class_ladder_distilbert_seeds_42_123_456.zip",
   "label_counts": "reference/artifacts/goemotions_simplified_label_counts.json",
-  "colab_executed_notebooks": []
+  "test_macro_means": {
+    "step0": 0.4876420492521124,
+    "m1": 0.4580813278805047,
+    "m1_m2": 0.504973694593721
+  },
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_per_class/colab/20250926_per_class_export_campaign_executed.ipynb",
+      "description": "Colab per-class export (Step0, M1, M1+M2 × 3 seeds)",
+      "runtime_gpu": "NVIDIA A100-SXM4-40GB",
+      "repo_commit_at_clone": "e5fa7e1"
+    }
+  ]
 }

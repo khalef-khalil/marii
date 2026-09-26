@@ -1,0 +1,633 @@
+{
+  "backbone": "distilbert-base-uncased",
+  "split": "test",
+  "source": "metrics.json test.per_label",
+  "seeds_requested": [
+    42,
+    123,
+    456
+  ],
+  "configurations": [
+    {
+      "configuration": "Step~0 PLM (flat)",
+      "seeds_evaluated": [
+        42,
+        123,
+        456
+      ],
+      "test_f1_macro_mean": 0.4876420492521124,
+      "per_label": [
+        {
+          "label": "admiration",
+          "support": 504,
+          "f1_mean": 0.6842655752923115,
+          "f1_std": 0.010197099513251068,
+          "n_seeds": 3
+        },
+        {
+          "label": "amusement",
+          "support": 264,
+          "f1_mean": 0.8198561376357555,
+          "f1_std": 0.006328876757318495,
+          "n_seeds": 3
+        },
+        {
+          "label": "anger",
+          "support": 198,
+          "f1_mean": 0.48530113621498205,
+          "f1_std": 0.011537298232228302,
+          "n_seeds": 3
+        },
+        {
+          "label": "annoyance",
+          "support": 320,
+          "f1_mean": 0.30869125679784865,
+          "f1_std": 0.01004831340665517,
+          "n_seeds": 3
+        },
+        {
+          "label": "approval",
+          "support": 351,
+          "f1_mean": 0.3844641265800872,
+          "f1_std": 0.0175302152707774,
+          "n_seeds": 3
+        },
+        {
+          "label": "caring",
+          "support": 135,
+          "f1_mean": 0.4155520724486242,
+          "f1_std": 0.011022286243366188,
+          "n_seeds": 3
+        },
+        {
+          "label": "confusion",
+          "support": 153,
+          "f1_mean": 0.44876746488883873,
+          "f1_std": 0.008099517870085888,
+          "n_seeds": 3
+        },
+        {
+          "label": "curiosity",
+          "support": 284,
+          "f1_mean": 0.4791164650012939,
+          "f1_std": 0.021105163316988806,
+          "n_seeds": 3
+        },
+        {
+          "label": "desire",
+          "support": 83,
+          "f1_mean": 0.44467276674937967,
+          "f1_std": 0.018229000593055898,
+          "n_seeds": 3
+        },
+        {
+          "label": "disappointment",
+          "support": 151,
+          "f1_mean": 0.2696499284549599,
+          "f1_std": 0.012679860387606441,
+          "n_seeds": 3
+        },
+        {
+          "label": "disapproval",
+          "support": 267,
+          "f1_mean": 0.38402865643962597,
+          "f1_std": 0.026183948955484513,
+          "n_seeds": 3
+        },
+        {
+          "label": "disgust",
+          "support": 123,
+          "f1_mean": 0.48927331206191776,
+          "f1_std": 0.004610178329484153,
+          "n_seeds": 3
+        },
+        {
+          "label": "embarrassment",
+          "support": 37,
+          "f1_mean": 0.4965588084232152,
+          "f1_std": 0.016851440496690188,
+          "n_seeds": 3
+        },
+        {
+          "label": "excitement",
+          "support": 103,
+          "f1_mean": 0.43021851723088406,
+          "f1_std": 0.019268755718966208,
+          "n_seeds": 3
+        },
+        {
+          "label": "fear",
+          "support": 78,
+          "f1_mean": 0.6507609741402689,
+          "f1_std": 0.0020226515742202797,
+          "n_seeds": 3
+        },
+        {
+          "label": "gratitude",
+          "support": 352,
+          "f1_mean": 0.9202874912148095,
+          "f1_std": 0.0026093295739522213,
+          "n_seeds": 3
+        },
+        {
+          "label": "grief",
+          "support": 6,
+          "f1_mean": 0.0,
+          "f1_std": 0.0,
+          "n_seeds": 3
+        },
+        {
+          "label": "joy",
+          "support": 161,
+          "f1_mean": 0.624304748254546,
+          "f1_std": 0.015020092111864294,
+          "n_seeds": 3
+        },
+        {
+          "label": "love",
+          "support": 238,
+          "f1_mean": 0.7983051436013109,
+          "f1_std": 0.00600798703135374,
+          "n_seeds": 3
+        },
+        {
+          "label": "nervousness",
+          "support": 23,
+          "f1_mean": 0.39180035650623884,
+          "f1_std": 0.020485929267106788,
+          "n_seeds": 3
+        },
+        {
+          "label": "optimism",
+          "support": 186,
+          "f1_mean": 0.5553922801629223,
+          "f1_std": 0.01828795141300317,
+          "n_seeds": 3
+        },
+        {
+          "label": "pride",
+          "support": 16,
+          "f1_mean": 0.40606060606060607,
+          "f1_std": 0.037360084866478634,
+          "n_seeds": 3
+        },
+        {
+          "label": "realization",
+          "support": 145,
+          "f1_mean": 0.22841516036519588,
+          "f1_std": 0.01488002522347739,
+          "n_seeds": 3
+        },
+        {
+          "label": "relief",
+          "support": 11,
+          "f1_mean": 0.1581196581196581,
+          "f1_std": 0.12576016213300995,
+          "n_seeds": 3
+        },
+        {
+          "label": "remorse",
+          "support": 56,
+          "f1_mean": 0.6279454104067221,
+          "f1_std": 0.001944890834355127,
+          "n_seeds": 3
+        },
+        {
+          "label": "sadness",
+          "support": 156,
+          "f1_mean": 0.5785064981106733,
+          "f1_std": 0.012805410764737192,
+          "n_seeds": 3
+        },
+        {
+          "label": "surprise",
+          "support": 141,
+          "f1_mean": 0.5461074807179932,
+          "f1_std": 0.007890878280922052,
+          "n_seeds": 3
+        },
+        {
+          "label": "neutral",
+          "support": 1787,
+          "f1_mean": 0.6275553471784779,
+          "f1_std": 0.0134029158052853,
+          "n_seeds": 3
+        }
+      ]
+    },
+    {
+      "configuration": "+M1",
+      "seeds_evaluated": [
+        42,
+        123,
+        456
+      ],
+      "test_f1_macro_mean": 0.4580813278805047,
+      "per_label": [
+        {
+          "label": "admiration",
+          "support": 504,
+          "f1_mean": 0.675119332791631,
+          "f1_std": 0.010385525660412755,
+          "n_seeds": 3
+        },
+        {
+          "label": "amusement",
+          "support": 264,
+          "f1_mean": 0.7922716200177853,
+          "f1_std": 0.022425511211608254,
+          "n_seeds": 3
+        },
+        {
+          "label": "anger",
+          "support": 198,
+          "f1_mean": 0.4491572524906669,
+          "f1_std": 0.01486991399929892,
+          "n_seeds": 3
+        },
+        {
+          "label": "annoyance",
+          "support": 320,
+          "f1_mean": 0.29450249502423603,
+          "f1_std": 0.02289285107269279,
+          "n_seeds": 3
+        },
+        {
+          "label": "approval",
+          "support": 351,
+          "f1_mean": 0.34170173500523443,
+          "f1_std": 0.017737166768828985,
+          "n_seeds": 3
+        },
+        {
+          "label": "caring",
+          "support": 135,
+          "f1_mean": 0.3487406029605518,
+          "f1_std": 0.003124064194156268,
+          "n_seeds": 3
+        },
+        {
+          "label": "confusion",
+          "support": 153,
+          "f1_mean": 0.40980525076099894,
+          "f1_std": 0.014119117619887048,
+          "n_seeds": 3
+        },
+        {
+          "label": "curiosity",
+          "support": 284,
+          "f1_mean": 0.49675858281226265,
+          "f1_std": 0.014902422082511807,
+          "n_seeds": 3
+        },
+        {
+          "label": "desire",
+          "support": 83,
+          "f1_mean": 0.4120232708468003,
+          "f1_std": 0.025090351531738532,
+          "n_seeds": 3
+        },
+        {
+          "label": "disappointment",
+          "support": 151,
+          "f1_mean": 0.23312708736520715,
+          "f1_std": 0.01270412264031984,
+          "n_seeds": 3
+        },
+        {
+          "label": "disapproval",
+          "support": 267,
+          "f1_mean": 0.3506510922905026,
+          "f1_std": 0.013079567325091374,
+          "n_seeds": 3
+        },
+        {
+          "label": "disgust",
+          "support": 123,
+          "f1_mean": 0.4745453737050376,
+          "f1_std": 0.026930974542672775,
+          "n_seeds": 3
+        },
+        {
+          "label": "embarrassment",
+          "support": 37,
+          "f1_mean": 0.4325510647544546,
+          "f1_std": 0.03117396965859861,
+          "n_seeds": 3
+        },
+        {
+          "label": "excitement",
+          "support": 103,
+          "f1_mean": 0.3920673908445009,
+          "f1_std": 0.0247632145062774,
+          "n_seeds": 3
+        },
+        {
+          "label": "fear",
+          "support": 78,
+          "f1_mean": 0.6593297156677438,
+          "f1_std": 0.007311939730698035,
+          "n_seeds": 3
+        },
+        {
+          "label": "gratitude",
+          "support": 352,
+          "f1_mean": 0.9054662656802639,
+          "f1_std": 0.003254446402505226,
+          "n_seeds": 3
+        },
+        {
+          "label": "grief",
+          "support": 6,
+          "f1_mean": 0.0,
+          "f1_std": 0.0,
+          "n_seeds": 3
+        },
+        {
+          "label": "joy",
+          "support": 161,
+          "f1_mean": 0.5767797771206121,
+          "f1_std": 0.011951622782045356,
+          "n_seeds": 3
+        },
+        {
+          "label": "love",
+          "support": 238,
+          "f1_mean": 0.7709997516622887,
+          "f1_std": 0.006135724442789335,
+          "n_seeds": 3
+        },
+        {
+          "label": "nervousness",
+          "support": 23,
+          "f1_mean": 0.3865382410274051,
+          "f1_std": 0.06604528178662812,
+          "n_seeds": 3
+        },
+        {
+          "label": "optimism",
+          "support": 186,
+          "f1_mean": 0.4814993903339768,
+          "f1_std": 0.017737370012785452,
+          "n_seeds": 3
+        },
+        {
+          "label": "pride",
+          "support": 16,
+          "f1_mean": 0.3434343434343434,
+          "f1_std": 0.041421933894393435,
+          "n_seeds": 3
+        },
+        {
+          "label": "realization",
+          "support": 145,
+          "f1_mean": 0.22220170760986235,
+          "f1_std": 0.006014744164591082,
+          "n_seeds": 3
+        },
+        {
+          "label": "relief",
+          "support": 11,
+          "f1_mean": 0.05128205128205129,
+          "f1_std": 0.0725237724293895,
+          "n_seeds": 3
+        },
+        {
+          "label": "remorse",
+          "support": 56,
+          "f1_mean": 0.6306608630226395,
+          "f1_std": 0.012926433489302457,
+          "n_seeds": 3
+        },
+        {
+          "label": "sadness",
+          "support": 156,
+          "f1_mean": 0.560126246991482,
+          "f1_std": 0.007993158340078074,
+          "n_seeds": 3
+        },
+        {
+          "label": "surprise",
+          "support": 141,
+          "f1_mean": 0.5150786865520408,
+          "f1_std": 0.018735847553275658,
+          "n_seeds": 3
+        },
+        {
+          "label": "neutral",
+          "support": 1787,
+          "f1_mean": 0.619857988599553,
+          "f1_std": 0.012104209620348057,
+          "n_seeds": 3
+        }
+      ]
+    },
+    {
+      "configuration": "+M1+M2",
+      "seeds_evaluated": [
+        42,
+        123,
+        456
+      ],
+      "test_f1_macro_mean": 0.504973694593721,
+      "per_label": [
+        {
+          "label": "admiration",
+          "support": 504,
+          "f1_mean": 0.6856968511335405,
+          "f1_std": 0.0034214187433184045,
+          "n_seeds": 3
+        },
+        {
+          "label": "amusement",
+          "support": 264,
+          "f1_mean": 0.8170400901634343,
+          "f1_std": 0.0009561380378624396,
+          "n_seeds": 3
+        },
+        {
+          "label": "anger",
+          "support": 198,
+          "f1_mean": 0.48580770935714046,
+          "f1_std": 0.016056670715405008,
+          "n_seeds": 3
+        },
+        {
+          "label": "annoyance",
+          "support": 320,
+          "f1_mean": 0.35779954999351804,
+          "f1_std": 0.012648571548333085,
+          "n_seeds": 3
+        },
+        {
+          "label": "approval",
+          "support": 351,
+          "f1_mean": 0.38723530494527386,
+          "f1_std": 0.008835245859345338,
+          "n_seeds": 3
+        },
+        {
+          "label": "caring",
+          "support": 135,
+          "f1_mean": 0.40000351462523426,
+          "f1_std": 0.013525084102987613,
+          "n_seeds": 3
+        },
+        {
+          "label": "confusion",
+          "support": 153,
+          "f1_mean": 0.4370061956030042,
+          "f1_std": 0.014847425258408264,
+          "n_seeds": 3
+        },
+        {
+          "label": "curiosity",
+          "support": 284,
+          "f1_mean": 0.5123648074903252,
+          "f1_std": 0.02145540908215854,
+          "n_seeds": 3
+        },
+        {
+          "label": "desire",
+          "support": 83,
+          "f1_mean": 0.5107520786092214,
+          "f1_std": 0.01598467457586965,
+          "n_seeds": 3
+        },
+        {
+          "label": "disappointment",
+          "support": 151,
+          "f1_mean": 0.28580614395372805,
+          "f1_std": 0.014148628996844576,
+          "n_seeds": 3
+        },
+        {
+          "label": "disapproval",
+          "support": 267,
+          "f1_mean": 0.38034872214794896,
+          "f1_std": 0.006590760532157399,
+          "n_seeds": 3
+        },
+        {
+          "label": "disgust",
+          "support": 123,
+          "f1_mean": 0.4622996383019227,
+          "f1_std": 0.006051358046270267,
+          "n_seeds": 3
+        },
+        {
+          "label": "embarrassment",
+          "support": 37,
+          "f1_mean": 0.40670886255185984,
+          "f1_std": 0.03978712989500708,
+          "n_seeds": 3
+        },
+        {
+          "label": "excitement",
+          "support": 103,
+          "f1_mean": 0.43418138546122437,
+          "f1_std": 0.007968309026903563,
+          "n_seeds": 3
+        },
+        {
+          "label": "fear",
+          "support": 78,
+          "f1_mean": 0.643557563587684,
+          "f1_std": 0.016945793192384456,
+          "n_seeds": 3
+        },
+        {
+          "label": "gratitude",
+          "support": 352,
+          "f1_mean": 0.920148995669706,
+          "f1_std": 0.00462749874805748,
+          "n_seeds": 3
+        },
+        {
+          "label": "grief",
+          "support": 6,
+          "f1_mean": 0.2571428571428571,
+          "f1_std": 0.040406101782088415,
+          "n_seeds": 3
+        },
+        {
+          "label": "joy",
+          "support": 161,
+          "f1_mean": 0.6165086970836924,
+          "f1_std": 0.01996555111038269,
+          "n_seeds": 3
+        },
+        {
+          "label": "love",
+          "support": 238,
+          "f1_mean": 0.7965231860927444,
+          "f1_std": 0.016881258004379156,
+          "n_seeds": 3
+        },
+        {
+          "label": "nervousness",
+          "support": 23,
+          "f1_mean": 0.30185532624557015,
+          "f1_std": 0.03496724844071172,
+          "n_seeds": 3
+        },
+        {
+          "label": "optimism",
+          "support": 186,
+          "f1_mean": 0.5497286975388713,
+          "f1_std": 0.018634128928461,
+          "n_seeds": 3
+        },
+        {
+          "label": "pride",
+          "support": 16,
+          "f1_mean": 0.4474969474969475,
+          "f1_std": 0.049604818231433166,
+          "n_seeds": 3
+        },
+        {
+          "label": "realization",
+          "support": 145,
+          "f1_mean": 0.24370900306605964,
+          "f1_std": 0.008386104548185459,
+          "n_seeds": 3
+        },
+        {
+          "label": "relief",
+          "support": 11,
+          "f1_mean": 0.3979889391654098,
+          "f1_std": 0.09746946122056285,
+          "n_seeds": 3
+        },
+        {
+          "label": "remorse",
+          "support": 56,
+          "f1_mean": 0.6471534391534391,
+          "f1_std": 0.01760775334334773,
+          "n_seeds": 3
+        },
+        {
+          "label": "sadness",
+          "support": 156,
+          "f1_mean": 0.5754467292467792,
+          "f1_std": 0.012873512872757198,
+          "n_seeds": 3
+        },
+        {
+          "label": "surprise",
+          "support": 141,
+          "f1_mean": 0.5498734851060034,
+          "f1_std": 0.004064166078132572,
+          "n_seeds": 3
+        },
+        {
+          "label": "neutral",
+          "support": 1787,
+          "f1_mean": 0.6290787276910458,
+          "f1_std": 0.005032707665478813,
+          "n_seeds": 3
+        }
+      ]
+    }
+  ]
+}

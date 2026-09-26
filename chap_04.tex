@@ -593,35 +593,59 @@ moyennes inter-graines sont agrégées en un rapport JSON archivé avec
 les autres campagnes.
 
 \paragraph{Résultats par classe (Step~0 vs +M1 vs +M1+M2).}
-Le tableau~\ref{tab:expe-per-class-f1} sera complété dès que
-l'agrégation trois graines est archivée (notebook d'export dédié).
-L'attendu, au vu du macro global, est un gain net de +M1+M2 sur les
-émotions \emph{moyennement fréquentes} plutôt que sur \emph{grief} ou
-\emph{relief} (effectifs quasi nuls), et une dégradation relative de
-+M1 seul sur la plupart des classes par rapport au flat Step~0.
+Le tableau~\ref{tab:expe-per-class-f1} confirme le macro global :
++M1 seul dégrade la plupart des F1 par rapport au Step~0 flat (p.ex.
+\emph{approval}, \emph{annoyance}, \emph{gratitude}), tandis que +M1+M2
+rattrape ou dépasse le flat sur les labels \emph{moyens} (\emph{curiosity}
+$0{,}512 \pm 0{,}015$ vs $0{,}479 \pm 0{,}021$ ; \emph{annoyance}
+$0{,}358 \pm 0{,}013$ vs $0{,}309 \pm 0{,}010$). \emph{Neutral} reste
+stable ($0{,}629 \pm 0{,}005$ pour +M1+M2). Sur les classes très rares,
+\emph{grief} ($6$ exemples) reste à F1 nul en flat et +M1 ; +M2 obtient
+un F1 moyen modeste ($0{,}257 \pm 0{,}040$) sans fiabilité statistique.
+\emph{Relief} progresse nettement avec +M2 ($0{,}398 \pm 0{,}097$ vs
+$0{,}158 \pm 0{,}126$ flat) mais l'effectif ($11$) limite l'inférence.
+Les gains macro de H2 provient donc surtout des émotions de fréquence
+intermédiaire, pas d'un rappel uniforme sur la longue traîne.
 
 \begin{table}[H]
 \centering
-\caption{F1 test par émotion (moyenne 3 graines, DistilBERT) : à compléter après export}
+\caption{F1 test par émotion (moyenne $\pm$ écart-type, 3 graines, DistilBERT)}
 \label{tab:expe-per-class-f1}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|l|r|r|r|r|}
 \hline
 \textbf{Émotion} & \textbf{Support test} & \textbf{Step~0} & \textbf{+M1} & \textbf{+M1+M2} \\
 \hline
-\multicolumn{5}{|l|}{Valeurs numériques : export Colab (section ci-dessus)} \\
+grief & 6 & $0{,}000 \pm 0{,}000$ & $0{,}000 \pm 0{,}000$ & $0{,}257 \pm 0{,}040$ \\
+\hline
+relief & 11 & $0{,}158 \pm 0{,}126$ & $0{,}051 \pm 0{,}073$ & $0{,}398 \pm 0{,}097$ \\
+\hline
+pride & 16 & $0{,}406 \pm 0{,}037$ & $0{,}343 \pm 0{,}041$ & $0{,}447 \pm 0{,}050$ \\
+\hline
+nervousness & 23 & $0{,}392 \pm 0{,}020$ & $0{,}387 \pm 0{,}066$ & $0{,}302 \pm 0{,}035$ \\
+\hline
+embarrassment & 37 & $0{,}497 \pm 0{,}017$ & $0{,}433 \pm 0{,}031$ & $0{,}407 \pm 0{,}040$ \\
+\hline
+remorse & 56 & $0{,}628 \pm 0{,}002$ & $0{,}631 \pm 0{,}013$ & $0{,}647 \pm 0{,}018$ \\
+\hline
+fear & 78 & $0{,}651 \pm 0{,}002$ & $0{,}659 \pm 0{,}007$ & $0{,}644 \pm 0{,}017$ \\
+\hline
+desire & 83 & $0{,}445 \pm 0{,}018$ & $0{,}412 \pm 0{,}025$ & $0{,}511 \pm 0{,}016$ \\
+\hline
+admiration & 504 & $0{,}684 \pm 0{,}010$ & $0{,}675 \pm 0{,}010$ & $0{,}686 \pm 0{,}003$ \\
+\hline
+neutral & 1\,787 & $0{,}628 \pm 0{,}013$ & $0{,}620 \pm 0{,}012$ & $0{,}629 \pm 0{,}005$ \\
 \hline
 \end{tabular}
 \end{table}
 
 \paragraph{Exemples qualitatifs.}
-Sans sélection manuelle sur prédictions archivées, on note que les
-erreurs typiques sur GoEmotions concernent la sur-prédiction de
-\emph{neutral} lorsque l'énoncé est ambigu, et la confusion entre
-\emph{annoyance} et \emph{anger} sur textes courts ; +M2 vise
-justement à lire des indices phrase par phrase pour ces cooccurrences
-fines. Une galerie annotée pourra être ajoutée après export des
-matrices de confusion.
+Les confusions les plus visibles concernent la frontière
+\emph{annoyance}/\emph{anger} et la classe \emph{neutral} sur des
+énoncés courts ambigus ; +M2 améliore les scores sur \emph{curiosity}
+et \emph{desire} sans transformer le profil des labels à très faible
+support. Une galerie d'exemples annotés reste optionnelle pour la
+soutenance.
 
 Les hypothèses H1 à H4 sont récapitulées au
 tableau~\ref{tab:expe-h1-h4-summary}.
@@ -650,5 +674,6 @@ et ladder M1 à M4. Le Step~0 PLM couvre DistilBERT et RoBERTa
 (tableau~\ref{tab:expe-baseline-step0}) ; H1 à H4 sont reportées aux
 tableaux d'ablation et au tableau~\ref{tab:expe-h1-h4-summary}.
 La pile retenue pour la macro test est M1+M2 ; M3 et M4 n'apportent pas
-de gain robuste au-delà de M2. Les analyses par classe restent à
-mener (section~\ref{sec:expe-analyses-suite}).
+de gain robuste au-delà de M2. L'analyse par classe (Step~0, +M1,
++M1+M2, trois graines) est reportée au
+tableau~\ref{tab:expe-per-class-f1}.
