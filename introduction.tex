@@ -8,35 +8,43 @@ négative. La \textbf{détection d'émotions} vise à identifier des catégories
 affectives fines (joie, colère, tristesse, peur, etc.), fréquemment
 \textbf{plusieurs à la fois} dans un même énoncé. Cette tâche relève de la
 classification \emph{multi-étiquettes} : chaque émotion est une décision
-binaire, et les cooccurrences ainsi que le \textbf{déséquilibre} des classes
-: quelques labels très fréquents, beaucoup d'autres rares, compliquent
+binaire ; les cooccurrences et le \textbf{déséquilibre} des classes
+(quelques labels très fréquents, beaucoup d'autres rares) compliquent
 l'apprentissage et l'évaluation.
 
 Ce mémoire s'inscrit dans le Mastère de Recherche à l'Institut Supérieur
 d'Informatique (ISI), sous l'encadrement de M.~Sahbi Bahroun. Il porte sur
-la conception de \textbf{HAKE-MER} (\emph{Hierarchical Attention with
-Knowledge Enhancement for Multi-Emotion Recognition}), une architecture
-modulaire destinée à mieux exploiter la \textbf{structure} du texte
-(phrases, document), les \textbf{interactions entre émotions}, et des
-\textbf{ressources sémantiques externes} (lexiques affectifs). L'évaluation s'appuie sur le corpus GoEmotions \cite{demszky2020},
-référence pour les émotions fines en anglais, avec un protocole d'ablation à
-budget d'entraînement constant et le \textbf{F1-macro} comme métrique
-principale. Les campagnes Step~0 à M4 sont exécutées sur DistilBERT-base
-(chapitre~\ref{chap:experimentation}) ; RoBERTa ne couvre que le Step~0 flat.
+la conception et l'évaluation de \textbf{HAKE-MER} (\emph{Hierarchical
+Attention with Knowledge Enhancement for Multi-Emotion Recognition}),
+architecture modulaire qui combine encodage hiérarchique du texte,
+attention croisée entre émotions et enrichissement par lexiques affectifs
+(NRC, SenticNet). Les expériences portent sur GoEmotions
+\cite{demszky2020} avec un protocole d'ablation à budget constant, le
+\textbf{F1-macro} comme métrique principale et trois graines aléatoires.
+Le Step~0 compare DistilBERT-base et RoBERTa-base en encodage document
+flat ; la ladder M1 à M4 est menée sur DistilBERT-base
+(chapitre~\ref{chap:experimentation}).
+
+\textbf{Résultat principal.} L'attention label-specific sur les phrases
+(module M2) apporte le gain net en F1-macro test ($\approx 0{,}505$) ;
+la hiérarchie seule (M1) sous-performe une baseline PLM flat
+($\approx 0{,}486$--$0{,}487$). Les priors lexicaux (M3) et la
+pondération dynamique (M4) n'améliorent pas robustement la macro par
+rapport à la pile \textbf{M1+M2}, retenue comme configuration la plus
+efficace au regard des scores mesurés. L'analyse par classe confirme
+des progrès surtout sur des émotions de fréquence intermédiaire, pas
+sur la longue traîne la plus rare.
 
 \textbf{Contributions de ce mémoire} :
 \begin{itemize}[noitemsep]
-\item une architecture en quatre modules cumulables (encodage hiérarchique,
-      attention croisée, enrichissement lexical, pondération dynamique) ;
-\item un protocole expérimental explicite (hypothèses H1 à H4, deux backbones
-      pré-entraînés, comparaison NRC / SenticNet) ;
-\item une analyse visant les performances \emph{par classe}, au-delà des
-      moyennes globales.
+\item une architecture HAKE-MER en quatre modules cumulables (M1 à M4)
+      et quatre hypothèses H1 à H4 testées par ablation ;
+\item un protocole expérimental reproductible (campagnes archivées,
+      Step~0 sur deux encodeurs, comparaison NRC / SenticNet, synthèse
+      H1 à H4 et F1 par émotion sur le test) ;
+\item des recommandations de déploiement et des perspectives ancrées
+      sur les résultats obtenus (chapitre~\ref{chap:perspectives}).
 \end{itemize}
-
-Ce rapport enchaîne problématique, état de l'art, conception et
-résultats quantitatifs : le chapitre~\ref{chap:experimentation} reporte
-les métriques test et tranche H1 à H4.
 
 \paragraph{Organisation du mémoire.}
 Le chapitre~\ref{chap:contexte} présente le contexte, la problématique et
@@ -44,6 +52,7 @@ les objectifs. Le chapitre~\ref{chap:etat_art} situe HAKE-MER par rapport
 à la littérature sur les émotions multiples, l'attention hiérarchique et
 l'intégration de connaissances. Le chapitre~\ref{chap:conception} détaille
 l'architecture et les hypothèses de recherche. Le
-chapitre~\ref{chap:experimentation} fixe le cadre expérimental. Le
-chapitre~\ref{chap:perspectives} discute recommandations et prolongements.
-Une conclusion générale clôt le document.
+chapitre~\ref{chap:experimentation} décrit le protocole, reporte les
+métriques test et tranche H1 à H4. Le chapitre~\ref{chap:perspectives}
+formule recommandations pratiques et prolongements de recherche. Une
+conclusion générale clôt le document.

@@ -79,17 +79,17 @@
 % \englishAbstractKeywords{}
 
 %%% ARABIC
-\arabicAbstract{يهدف هذا البحث إلى الكشف عن عدة مشاعر في النصوص (تصنيف متعدد التسميات) باستخدام بنية \textLR{HAKE-MER} تجمع الترميز الهرمي، والانتباه الموجّه نحو المشاعر، وإثراءً دلالياً (\textLR{NRC}، \textLR{SenticNet}). على \textLR{GoEmotions} وبروتوكول تدريب ثابت، يظهر أن الانتباه حسب التسمية (\textLR{M2}) يحقق أهم مكاسب \textLR{F1-macro}، بينما لا يفوق الترميز الهرمي وحده (\textLR{M1}) خط الأساس المسطح، ولا تُحسّن الموارد المعجمية بثبات فوق \textLR{M1+M2}. الوزن الديناميكي (\textLR{M4}) لم يُحسّن \textLR{F1-macro} بثبات؛ أفضل أداء macro يبقى عند \textLR{M1+M2}.}
+\arabicAbstract{يهدف هذا البحث إلى الكشف عن عدة مشاعر في النصوص (تصنيف متعدد التسميات) عبر بنية \textLR{HAKE-MER} (ترميز هرمي، انتباه بين المشاعر، \textLR{NRC}/\textLR{SenticNet}، وزن ديناميكي). على \textLR{GoEmotions} وبروتوكول ثابت (ثلاث بذور)، \textLR{M2} يحقق أعلى \textLR{F1-macro} ($\approx 0{,}505$)؛ \textLR{M1} وحده دون خط الأساس المسطح؛ \textLR{M3} و\textLR{M4} دون تحسين macro مستقر. التكوين الموصى به: \textLR{M1+M2}. التحليل حسب الصنف يبرز مكاسب على فئات متوسطة التكرار لا على الذيل النادر.}
 
 \arabicAbstractKeywords{كشف المشاعر، تعلم عميق، \textLR{GoEmotions}، انتباه هرمي، تصنيف متعدد التسميات}
 
 %%% FRENCH
-\frenchAbstract{Ce mémoire porte sur la détection des émotions multiples dans les textes via l'architecture \textLR{HAKE-MER} (encodage hiérarchique, attention croisée par émotion, priors NRC/SenticNet, pondération dynamique). Sur GoEmotions, avec DistilBERT et un protocole d'affinage constant (trois graines), l'ablation montre que M2 apporte le gain principal en F1-macro test ($\approx 0{,}505$), que M1 seul sous-performe la baseline PLM flat, et que M3 (NRC ou SenticNet) n'améliore pas robustement la macro par rapport à M1+M2. M4 (pondération dynamique) n'améliore pas robustement la macro par rapport à M3 SenticNet ni à M1+M2 ; la configuration retenue est M1+M2.}
+\frenchAbstract{Ce mémoire conçoit et évalue \textLR{HAKE-MER} pour la détection multi-étiquettes des émotions sur GoEmotions. À protocole constant (DistilBERT, trois graines ; Step~0 également sur RoBERTa), les ablations tranchent H1 à H4 : M2 (attention par émotion) porte le gain en F1-macro test ($\approx 0{,}505$) ; M1 seul sous-performe le PLM flat ; M3 (NRC, SenticNet) et M4 n'améliorent pas robustement la macro. La configuration retenue est M1+M2. L'analyse par classe montre des progrès surtout sur des émotions de fréquence intermédiaire.}
 
 \frenchAbstractKeywords{Émotions, TALN, GoEmotions, attention hiérarchique, classification multi-étiquettes}
 
 %%% ENGLISH
-\englishAbstract{This thesis addresses multi-label emotion detection with \textLR{HAKE-MER}: hierarchical encoding, label-specific phrase attention, lexicon priors (NRC, SenticNet), and dynamic scaling. On GoEmotions under a fixed fine-tuning protocol (DistilBERT, three seeds), ablations show that M2 drives the main macro F1 gain ($\approx 0.505$ test), hierarchical encoding alone underperforms a flat PLM baseline, and M3 lexicon gates do not reliably beat M1+M2. M4 dynamic scaling does not reliably improve macro F1; the best test macro remains M1+M2 ($\approx 0.505$).}
+\englishAbstract{This thesis designs and evaluates \textLR{HAKE-MER} for multi-label emotion detection on GoEmotions. Under a fixed fine-tuning protocol (DistilBERT, three seeds; Step~0 also on RoBERTa), ablations H1--H4 show that label-specific phrase attention (M2) yields the main test macro F1 gain ($\approx 0.505$), hierarchical encoding alone (M1) underperforms a flat PLM baseline, and lexicon (M3) plus dynamic scaling (M4) do not reliably improve macro F1 over M1+M2. The recommended stack is M1+M2. Per-class analysis indicates gains mainly on mid-frequency emotions, not the rarest labels.}
 
 \englishAbstractKeywords{Emotion detection, NLP, GoEmotions, hierarchical attention, multi-label classification}
 
