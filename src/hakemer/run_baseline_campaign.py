@@ -73,11 +73,25 @@ def main() -> None:
         summary = train_loop(config)
         per_seed.append({"seed": seed, **summary})
 
+    runs_clean = []
+    for row in per_seed:
+        item = dict(row)
+        item.pop("output_dir", None)
+        runs_clean.append(item)
+
     report = {
         "backbone": args.backbone,
         "step": "baseline_plm",
-        **aggregate_runs(per_seed),
+        "protocol": {
+            "epochs": args.epochs,
+            "batch_size": args.batch_size,
+            "lr": args.lr,
+            "max_length": args.max_length,
+            "early_stopping_patience": 0,
+        },
+        **aggregate_runs(runs_clean),
     }
+    report["runs"] = runs_clean
     slug = args.backbone.replace("-", "_")
     artifact_dir = Path(args.artifact_dir)
     artifact_dir.mkdir(parents=True, exist_ok=True)
