@@ -76,5 +76,13 @@
       }
     }
   ],
-  "colab_executed_notebooks": []
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step0_plm/colab/20250926_baseline_plm_campaign_executed.ipynb",
+      "description": "Single Colab session: Phase 1 DistilBERT + Phase 2 RoBERTa (File → Download .ipynb)",
+      "repo_commit_at_clone": "d5cbf03",
+      "runtime_gpu": "NVIDIA A100-SXM4-40GB",
+      "phases": ["distilbert-base-uncased", "roberta-base"]
+    }
+  ]
 }
