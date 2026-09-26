@@ -35,8 +35,10 @@ class TrainConfig:
     early_stopping_patience: int = 0
 
     def validate_flags(self) -> None:
-        if self.use_m2 or self.use_m3 or self.use_m4:
-            raise NotImplementedError("Modules M2–M4 are not implemented yet.")
+        if self.use_m2 and not self.use_m1:
+            raise ValueError("Module M2 requires M1 (phrase encodings).")
+        if self.use_m3 or self.use_m4:
+            raise NotImplementedError("Modules M3–M4 are not implemented yet.")
         if self.use_m3 or self.lexicon_source != "none":
             raise NotImplementedError("Lexicon M3 requires use_m3 (not implemented yet).")
         if self.use_m1 and self.max_phrases < 1:
@@ -45,5 +47,10 @@ class TrainConfig:
     @property
     def run_name(self) -> str:
         slug = self.backbone.split("/")[-1].replace("-", "_")
-        step = "m1" if self.use_m1 else "baseline_plm"
+        if self.use_m2:
+            step = "m1_m2"
+        elif self.use_m1:
+            step = "m1"
+        else:
+            step = "baseline_plm"
         return f"{slug}_seed{self.seed}_{step}"

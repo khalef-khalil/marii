@@ -197,9 +197,11 @@ def parse_args() -> TrainConfig:
     p.add_argument("--decision-threshold", type=float, default=0.5)
     p.add_argument("--early-stopping-patience", type=int, default=0)
     p.add_argument("--use-m1", action="store_true", help="Module 1 hierarchical encoding")
+    p.add_argument("--use-m2", action="store_true", help="Module 2 emotion phrase cross-attention (requires M1)")
     p.add_argument("--max-phrases", type=int, default=4)
     p.add_argument("--phrase-max-length", type=int, default=32)
     args = p.parse_args()
+    use_m1 = args.use_m1 or args.use_m2
     return TrainConfig(
         backbone=args.backbone,
         seed=args.seed,
@@ -213,7 +215,8 @@ def parse_args() -> TrainConfig:
         device=args.device,
         decision_threshold=args.decision_threshold,
         early_stopping_patience=args.early_stopping_patience,
-        use_m1=args.use_m1,
+        use_m1=use_m1,
+        use_m2=args.use_m2,
         max_phrases=args.max_phrases,
         phrase_max_length=args.phrase_max_length,
     )

@@ -16,5 +16,6 @@ Template notebooks live in `notebooks/` (no execution outputs). Records live her
 |------|--------|-------------------|
 | Step 0 PLM baseline | `step0_plm/` | `notebooks/baseline_plm_campaign.ipynb` |
 | M1 hierarchical | `step_m1/` | `notebooks/m1_campaign.ipynb` |
+| M1+M2 cross-attention | `step_m1_m2/` | `notebooks/m1_m2_campaign.ipynb` |
 
-Future ablation steps (M2–M4) should add a folder and manifest the same way.
+Future ablation steps (M3–M4) should add a folder and manifest the same way.
