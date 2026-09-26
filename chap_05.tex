@@ -19,9 +19,10 @@ delà de HAKE-MER :
 \begin{itemize}
 \item \textbf{Multi-backbone.} Step~0 sur DistilBERT et RoBERTa a montré
       des F1-macro test voisins ($0{,}486 \pm 0{,}005$ vs
-      $0{,}487 \pm 0{,}005$) ; les modules n'ont été ablatés que sur
-      DistilBERT. Toute généralisation « l'architecture X bat Y » doit
-      préciser l'encodeur ou reproduire la ladder sur un second PLM.
+      $0{,}487 \pm 0{,}005$) ; +M1 et +M1+M2 sont reproduits sur
+      RoBERTa (tableau~\ref{tab:expe-roberta-ablation}) tandis que
+      M3/M4 restent sur DistilBERT. Toute généralisation inter-encodeur
+      s'appuie sur ce contrôle partiel, pas sur la ladder complète.
 \item \textbf{Contrôle du prétraitement.} M1 seul sous-performe le flat
       à budget token comparable : une hiérarchie naïve peut \emph{perdre}
       du contexte utile. Les gains viennent de M2 (lecture
@@ -74,9 +75,10 @@ l'interprétabilité lexicale.
 \item \textbf{M3 (NRC ou SenticNet)} : envisager seulement si l'on
       expose $|g|$ ou les descripteurs documentaires à un utilisateur
       (explication), pas pour gagner la macro dans ce cadre.
-\item \textbf{RoBERTa au Step~0} : utile comme contrôle de capacité
-      PLM ; répéter M1+M2 sur RoBERTa avant de généraliser les
-      conclusions inter-encodeur.
+\item \textbf{RoBERTa (+M1, +M1+M2)} : complète le contrôle encodeur
+      au tableau~\ref{tab:expe-roberta-ablation} ; si la macro suit le
+      même profil qu'en DistilBERT, M2 se généralise ; sinon, calibrer
+      la pile par backbone.
 \end{itemize}
 
 \paragraph{Coût et risques.}
@@ -101,9 +103,8 @@ résultats déjà archivés :
       un vecteur document partagé), graphes type ConceptNet, ou
       alignement fin entre Plutchik et GoEmotions au-delà du gate
       global M3 testé ici.
-\item \textbf{Ladder multi-encodeur.} Répéter M1 à M4 sur RoBERTa-base
-      (ou un autre PLM) pour séparer effet de capacité et effet
-      architectural.
+\item \textbf{Ladder multi-encodeur (M3/M4).} Étendre NRC, SenticNet et
+      M4 à RoBERTa-base si l'on veut tester H3/H4 hors DistilBERT.
 \item \textbf{Validation externe.} SemEval-2018 Tâche~1 ou corpus
       hors Reddit pour tester la robustesse du choix M1+M2.
 \item \textbf{Modèles généralistes.} Comparer M1+M2 à des LLM

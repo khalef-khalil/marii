@@ -89,17 +89,17 @@ Pour répondre à cette question, ce travail poursuit les objectifs suivants :
   dynamique), permettant d'isoler la contribution de chaque mécanisme ;
 \item \textbf{Évaluer} cette architecture de façon rigoureuse sur le jeu de
   données GoEmotions, par un protocole d'ablation cumulative à budget
-  d'entraînement strictement constant, sur deux backbones pré-entraînés
-  (DistilBERT et RoBERTa), afin de garantir que les gains observés sont
-  attribuables aux composantes architecturales et non à des facteurs
-  confondus ;
+  d'entraînement strictement constant : Step~0 et les étapes +M1/+M1+M2
+  sur DistilBERT et RoBERTa, ladder M3/M4 complète sur DistilBERT, afin
+  de séparer effets d'architecture et capacité de l'encodeur ;
 \item \textbf{Comparer} deux ressources de connaissances externes de nature
   différente (lexique catégoriel NRC contre ressource conceptuelle
   SenticNet) afin de déterminer laquelle s'intègre le mieux à
   l'architecture proposée ;
 \item \textbf{Analyser} les résultats au niveau de la classe, au-delà des
-  métriques globales, pour évaluer l'apport réel de chaque composante sur
-  les émotions rares, enjeu applicatif central du sujet.
+  métriques globales (tableau principal et annexe des $28$ F1), et par
+  une analyse de confusions ciblée sur \emph{grief}, \emph{relief} et
+  \emph{neutral}, enjeu applicatif central du sujet.
 \end{itemize}
 
 \section{Plan de travail}
@@ -134,9 +134,9 @@ quatre modules, définition des hypothèses de recherche H1 à H4
 (chapitre~3). \\
 \hline
 Expérimentation et évaluation &
-Implémentation, protocole d'ablation à budget constant (Step~0 sur
-DistilBERT et RoBERTa ; ladder M1 à M4 sur DistilBERT), comparaison
-NRC/SenticNet, analyse par classe (chapitre~4). \\
+Implémentation, protocole d'ablation à budget constant (Step~0 et +M1/+M1+M2
+sur DistilBERT et RoBERTa ; ladder M3/M4 sur DistilBERT), comparaison
+NRC/SenticNet, analyse par classe et annexe complète (chapitre~4). \\
 \hline
 Documentation et valorisation &
 Rédaction du mémoire, synthèse des enseignements méthodologiques et des

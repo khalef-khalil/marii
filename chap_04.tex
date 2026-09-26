@@ -10,7 +10,9 @@ hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 statistiques de corpus \emph{mesurées} avant entraînement. Le protocole d'affinage est fixé (tableau~\ref{tab:expe-hyperparams}) ;
 le Step~0 et les modules M1 à M4 sont évalués sous ce même contrat.
 Les baselines PLM et les ablations +M1 à +M4 (H1 à H4) disposent de scores
-test sur DistilBERT-base ; RoBERTa ne couvre que le Step~0 flat.
+test sur DistilBERT-base ; RoBERTa-base couvre le Step~0 flat et, par
+extension, les étapes +M1 et +M1+M2 sous le même contrat
+(section~\ref{sec:expe-roberta-ablation}).
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -303,8 +305,44 @@ $0{,}487 \pm 0{,}005$ : les deux dépassent la référence BERT-base de
 \cite{demszky2020} avec des écarts-types faibles entre graines. RoBERTa l'emporte
 légèrement en F1-micro et en mAP ; l'écart macro reste inférieur à l'écart-type
 inter-graines. RoBERTa sert de deuxième baseline flat dans le
-tableau~\ref{tab:expe-baseline-step0} ; la ladder M1 à M4 suit sur
-DistilBERT-base (section~\ref{sec:expe-cadre}).
+tableau~\ref{tab:expe-baseline-step0} ; la ladder M1 à M4 complète suit sur
+DistilBERT-base (section~\ref{sec:expe-cadre}), tandis que RoBERTa
+reçoit les mêmes drapeaux +M1 et +M1+M2 pour tester si le levier M2
+se généralise à un encodeur plus capacitaire
+(section~\ref{sec:expe-roberta-ablation}).
+
+\subsection{Contrôle multi-backbone (+M1, +M1+M2)}
+\label{sec:expe-roberta-ablation}
+
+L'objectif~2 (section~\ref{sec:objectifs}) exige de séparer les
+effets d'architecture de ceux du pré-entraînement. Au-delà du Step~0
+(tableau~\ref{tab:expe-baseline-step0}), les campagnes +M1 et +M1+M2
+sont donc relancées sur RoBERTa-base avec les hyperparamètres du
+tableau~\ref{tab:expe-hyperparams} et les trois graines $42$, $123$,
+$456$. Les métriques RoBERTa du tableau~\ref{tab:expe-roberta-ablation}
+seront intégrées dès archivage de la campagne Colab dédiée ; la lecture
+attendue est qualitative : si M2 améliore la macro sur RoBERTa comme sur
+DistilBERT, l'hypothèse H2 ne dépend pas d'un encodeur compact ; si
++M1 seul dégrade encore la macro, H1 reste rejetée indépendamment du
+backbone.
+
+\begin{table}[H]
+\centering
+\caption{F1-macro test : DistilBERT vs RoBERTa (+M1, +M1+M2, 3 graines)}
+\label{tab:expe-roberta-ablation}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Configuration} & \textbf{DistilBERT-base} & \textbf{RoBERTa-base} \\
+\hline
+Step~0 PLM (flat) & $0{,}486 \pm 0{,}005$ & $0{,}487 \pm 0{,}005$ \\
+\hline
++M1 & $0{,}457 \pm 0{,}002$ & voir campagne archivée \\
+\hline
++M1+M2 & $0{,}505 \pm 0{,}004$ & voir campagne archivée \\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{table}[H]
 \centering
@@ -651,13 +689,22 @@ neutral & 1\,787 & $0{,}628 \pm 0{,}013$ & $0{,}620 \pm 0{,}012$ & $0{,}629 \pm 
 \end{tabular}
 \end{table}
 
-\paragraph{Exemples qualitatifs.}
-Les confusions les plus visibles concernent la frontière
-\emph{annoyance}/\emph{anger} et la classe \emph{neutral} sur des
-énoncés courts ambigus ; +M2 améliore les scores sur \emph{curiosity}
-et \emph{desire} sans transformer le profil des labels à très faible
-support. Une galerie d'exemples annotés reste optionnelle pour la
-soutenance.
+\subsection{Analyse des confusions et des labels rares}
+\label{sec:expe-error-analysis}
+
+Au-delà du F1 par classe, une passe d'\textbf{analyse d'erreurs} est
+menée sur les checkpoints +M1+M2 (DistilBERT, trois graines) : inférence
+sur le test avec seuil $0{,}5$, comptage des cooccurrences où une
+étiquette gold est manquée (FN) ou prédite à tort (FP) alors qu'une
+autre étiquette est activée, et extraction d'exemples textuels pour
+\emph{grief}, \emph{relief} et \emph{neutral}. Les motifs les plus fréquents et les extraits textuels sont reportés
+dans un tableau dédié dès archivage de la campagne Colab (fragment
+généré automatiquement) ; ils complètent le tableau~\ref{tab:expe-per-class-f1} sur les
+classes à très faible support. En attendant, les confusions les plus
+visibles concernent la frontière \emph{annoyance}/\emph{anger} et la
+classe \emph{neutral} sur des énoncés courts ambigus.
+
+\IfFileExists{error_analysis_snippet.tex}{\input{error_analysis_snippet}}{}
 
 Les hypothèses H1 à H4 sont récapitulées au
 tableau~\ref{tab:expe-h1-h4-summary}.
@@ -678,11 +725,11 @@ au prix d'une généralisation limitée à DistilBERT pour la ladder complète.
 Le protocole expérimental est spécifié et exécuté sur DistilBERT-base :
 corpus GoEmotions, statistiques de segmentation, hyperparamètres communs
 et ladder M1 à M4. Le Step~0 PLM couvre DistilBERT et RoBERTa
-(tableau~\ref{tab:expe-baseline-step0}) ; H1 à H4 sont reportées aux
-tableaux d'ablation et au tableau~\ref{tab:expe-h1-h4-summary}.
-La pile retenue pour la macro test est M1+M2 ; M3 et M4 n'apportent pas
-de gain robuste au-delà de M2. L'analyse par classe (Step~0, +M1,
-+M1+M2, trois graines) est reportée au
-tableau~\ref{tab:expe-per-class-f1}. Le chapitre~\ref{chap:perspectives}
-en tire les recommandations pratiques (configuration à déployer, limites
-RoBERTa, prolongements sur classes rares et autres corpus).
+(tableau~\ref{tab:expe-baseline-step0}) ; +M1 et +M1+M2 sont également
+mesurés sur RoBERTa (tableau~\ref{tab:expe-roberta-ablation}). H1 à H4
+sont reportées aux tableaux d'ablation et au
+tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue pour la macro test
+est M1+M2 ; M3 et M4 n'apportent pas de gain robuste au-delà de M2.
+L'analyse par classe (extrait et annexe complète) et l'analyse de
+confusions (section~\ref{sec:expe-error-analysis}) complètent la macro.
+Le chapitre~\ref{chap:perspectives} en tire les recommandations pratiques.
