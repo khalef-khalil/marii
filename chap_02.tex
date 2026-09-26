@@ -8,7 +8,7 @@ Le chapitre~\ref{chap:contexte} a posé une question de recherche et
 trois limitations (L1 à L3) auxquelles HAKE-MER doit répondre. Nous
 montrons ici comment la littérature sur la \textbf{détection
 multi-étiquettes des émotions dans le texte}
-\cite{mohammad2020sentiment,pang2008,li2021survey,achen2020bertemotion} éclaire ces points et justifie
+\cite{mohammad2020sentiment,pang2008,seyeditabari2018} éclaire ces points et justifie
 les choix de corpus, de métriques et de familles de modèles retenus
 pour la suite.
 
@@ -39,7 +39,7 @@ $x$ et un inventaire d'émotions $\mathcal{E}=\{e_1,\dots,e_K\}$,
 apprendre une fonction qui associe à chaque $e_k$ une décision
 (binaire ou score), indépendamment des autres étiquettes au niveau
 de la fonction de perte, mais non indépendamment au niveau
-sémantique \cite{zhang2014multilabel,tsoumakas2009multilabel,read2009classifier}.
+sémantique \cite{zhang2014multilabel,read2009classifier,read2019classifier}.
 
 Formellement, on cherche $f : x \mapsto \{0,1\}^K$ (ou des
 probabilités $\hat{y}_k \in [0,1]$), ce qui diffère de la
@@ -110,9 +110,11 @@ illustration).}
 \label{fig:goemotions-multilabel-stats}
 \end{figure}
 
-Des jeux comme SemEval-2018 Tâche~1 \cite{mohammad2018semeval} et des
-analyses du bruit d'annotation \cite{bostrom2020emotion} complètent le
-cadre ; une validation externe hors Reddit reste une perspective du
+D'autres campagnes (SemEval-2018 Tâche~1 \cite{mohammad2018semeval},
+EmoContext \cite{semeval2019emocontext}) et des représentations
+contextualisées \cite{saravia2018carer} complètent le cadre ; le bruit
+d'annotation sur GoEmotions est quantifié par \cite{demszky2020}. Une
+validation externe hors Reddit reste une perspective du
 chapitre~\ref{chap:perspectives}.
 
 \subsection{Annotation, bruit et déséquilibre}
@@ -171,11 +173,12 @@ implicites.
 Les architectures convolutionnelles et récurrentes (CNN
 \cite{kim2014}, LSTM/GRU \cite{cho2014,lipton2015sequencernn}, BiLSTM)
 ont ensuite permis l'apprentissage de représentations à partir du
-texte brut. Les mécanismes d'\textbf{attention} \cite{bahdanau2015,luong2015attention,vaswani2017}
+texte brut ; des signaux distants (p.ex. emojis) peuvent aussi être
+exploités \cite{felbo2017emojis}. Les mécanismes d'\textbf{attention} \cite{bahdanau2015,luong2015attention,vaswani2017}
 permettent de pondérer les tokens selon leur pertinence pour la
 prédiction, point de départ des encodeurs modernes et des extensions
 \emph{label-specific} où chaque émotion dispose de sa propre lecture
-du texte \cite{mullenbach2018,akhtar2018multilabel}.
+du texte \cite{mullenbach2018}.
 
 \begin{figure}[H]
 \centering
