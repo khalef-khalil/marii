@@ -11,5 +11,12 @@
     "exact_match": { "mean": 0.44984951784288435, "std": 0.005385494801740183 },
     "map": { "mean": 0.4906502715534112, "std": 0.004008165175984027 }
   },
-  "colab_executed_notebooks": []
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m1/colab/20250926_m1_campaign_executed.ipynb",
+      "description": "Colab M1 campaign (DistilBERT, 3 seeds)",
+      "runtime_gpu": "NVIDIA A100-SXM4-40GB",
+      "repo_commit_at_clone": "f9df8aa"
+    }
+  ]
 }
