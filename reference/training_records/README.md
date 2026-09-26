@@ -20,5 +20,6 @@ Template notebooks live in `notebooks/` (no execution outputs). Records live her
 | M1+M2+M3 (NRC) | `step_m1_m2_m3_nrc/` | `notebooks/m1_m2_m3_nrc_campaign.ipynb` |
 | M1+M2+M3 (SenticNet) | `step_m1_m2_m3_senticnet/` | `notebooks/m1_m2_m3_senticnet_campaign.ipynb` |
 | RoBERTa +M1 / +M1+M2 | `step_roberta_ablation/` | `notebooks/roberta_m1_m1_m2_campaign.ipynb` |
+| Error analysis (+M1+M2) | `step_error_analysis/` | `notebooks/error_analysis_m1_m2_campaign.ipynb` |
 
 Future ablation step M4 should add a folder and manifest the same way.

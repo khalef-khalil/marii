@@ -1,0 +1,333 @@
+{
+  "run_dir": "/content/marii/runs/distilbert_base_uncased_seed123_m1_m2",
+  "run_name": "distilbert_base_uncased_seed123_m1_m2",
+  "seed": 123,
+  "backbone": "distilbert-base-uncased",
+  "threshold": 0.5,
+  "n_test": 5427,
+  "top_confusion_pairs": [
+    {
+      "pattern": "FN approval pred neutral",
+      "count": 82
+    },
+    {
+      "pattern": "FP approval gold neutral",
+      "count": 79
+    },
+    {
+      "pattern": "FN neutral pred curiosity",
+      "count": 78
+    },
+    {
+      "pattern": "FN annoyance pred neutral",
+      "count": 76
+    },
+    {
+      "pattern": "FP neutral gold approval",
+      "count": 76
+    },
+    {
+      "pattern": "FP curiosity gold neutral",
+      "count": 73
+    },
+    {
+      "pattern": "FN neutral pred approval",
+      "count": 72
+    },
+    {
+      "pattern": "FP disapproval gold neutral",
+      "count": 70
+    },
+    {
+      "pattern": "FP neutral gold disapproval",
+      "count": 70
+    },
+    {
+      "pattern": "FN disapproval pred neutral",
+      "count": 69
+    },
+    {
+      "pattern": "FN neutral pred disapproval",
+      "count": 69
+    },
+    {
+      "pattern": "FP neutral gold annoyance",
+      "count": 68
+    },
+    {
+      "pattern": "FP annoyance gold neutral",
+      "count": 57
+    },
+    {
+      "pattern": "FN neutral pred annoyance",
+      "count": 57
+    },
+    {
+      "pattern": "FN neutral pred admiration",
+      "count": 54
+    }
+  ],
+  "rare_label_examples": {
+    "grief": [
+      {
+        "kind": "TP",
+        "text": "My condolences.",
+        "gold": [
+          "grief",
+          "sadness"
+        ],
+        "pred": [
+          "grief",
+          "sadness"
+        ]
+      },
+      {
+        "kind": "FN",
+        "text": "[NAME] death is just so..... senseless. Why? WHY??? The based gods have forsaken us",
+        "gold": [
+          "grief"
+        ],
+        "pred": []
+      },
+      {
+        "kind": "FN",
+        "text": "Rip the guy from psych",
+        "gold": [
+          "grief"
+        ],
+        "pred": [
+          "anger",
+          "neutral"
+        ]
+      },
+      {
+        "kind": "FN",
+        "text": "The only death that made me feel any emotion. And it wasn\u2019t even the death itself.",
+        "gold": [
+          "grief",
+          "sadness"
+        ],
+        "pred": [
+          "sadness"
+        ]
+      },
+      {
+        "kind": "FN",
+        "text": "Oh my gosh. This woman who died also had a son who died. Holy tragedy",
+        "gold": [
+          "grief",
+          "sadness",
+          "surprise"
+        ],
+        "pred": [
+          "surprise"
+        ]
+      },
+      {
+        "kind": "FN",
+        "text": "You'll miss a begging old man asking for a spare coin. RIP",
+        "gold": [
+          "grief",
+          "sadness"
+        ],
+        "pred": [
+          "sadness"
+        ]
+      },
+      {
+        "kind": "FP",
+        "text": "\"Moose killed my parents.\"",
+        "gold": [
+          "anger"
+        ],
+        "pred": [
+          "grief"
+        ]
+      },
+      {
+        "kind": "FP",
+        "text": "If the answer is No, the kid dies. If the answer is yes, the kid also dies",
+        "gold": [
+          "neutral"
+        ],
+        "pred": [
+          "grief"
+        ]
+      }
+    ],
+    "relief": [
+      {
+        "kind": "TP",
+        "text": "Resetting a dislocated knee hurts like hell but it feels a lot better immediately after.",
+        "gold": [
+          "relief"
+        ],
+        "pred": [
+          "caring",
+          "relief"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "I\u2019ve exposed on social media. It made me feel better so I don\u2019t care what anyway has to say about it.",
+        "gold": [
+          "relief"
+        ],
+        "pred": [
+          "relief"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "at least it wasn\u2019t the evil [NAME].",
+        "gold": [
+          "relief"
+        ],
+        "pred": [
+          "approval",
+          "realization",
+          "relief"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "Oh that\u2019s actually seriously a relief, how do you know that though?",
+        "gold": [
+          "curiosity",
+          "relief"
+        ],
+        "pred": [
+          "relief"
+        ]
+      },
+      {
+        "kind": "FN",
+        "text": "Praise the [NAME] for REALITY! WOOF!!!!!",
+        "gold": [
+          "relief"
+        ],
+        "pred": [
+          "admiration"
+        ]
+      },
+      {
+        "kind": "FN",
+        "text": "I'm glad you have someone to help you out! Perhaps over time you'll find it easier.",
+        "gold": [
+          "joy",
+          "relief"
+        ],
+        "pred": [
+          "caring",
+          "joy"
+        ]
+      },
+      {
+        "kind": "FN",
+        "text": "Yay, coming out is hard, you're lucky that they didnt avoid you for the next month, I'm happy for you",
+        "gold": [
+          "caring",
+          "joy",
+          "relief"
+        ],
+        "pred": [
+          "joy"
+        ]
+      },
+      {
+        "kind": "FN",
+        "text": "I'm glad it only sprayed soda when his thumb went into the can, and not blood everywhere.",
+        "gold": [
+          "relief"
+        ],
+        "pred": [
+          "joy"
+        ]
+      }
+    ],
+    "neutral": [
+      {
+        "kind": "TP",
+        "text": "They got bored from haunting earth for thousands of years and ultimately moved on to the afterlife.",
+        "gold": [
+          "neutral"
+        ],
+        "pred": [
+          "neutral"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "After he left the bus, the two harpies sat next to each other and discussed why they were unable to find a decent man.",
+        "gold": [
+          "neutral"
+        ],
+        "pred": [
+          "neutral"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "Well, there's cubs and otters too.",
+        "gold": [
+          "neutral"
+        ],
+        "pred": [
+          "neutral"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "Watch Vegan Gains\u2019 video on that, he had it when he was like 13, highly doubt he was juicing then",
+        "gold": [
+          "confusion",
+          "neutral"
+        ],
+        "pred": [
+          "neutral"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "Possibly, but not if it actually succedes",
+        "gold": [
+          "neutral"
+        ],
+        "pred": [
+          "neutral"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "NJ has zero of their own picks from the 2010 draft still in the org",
+        "gold": [
+          "neutral"
+        ],
+        "pred": [
+          "neutral"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "Imagine having to pretend you didn't edit your link. The inferiority is dripping off you.",
+        "gold": [
+          "neutral"
+        ],
+        "pred": [
+          "neutral"
+        ]
+      },
+      {
+        "kind": "TP",
+        "text": "i mean, yeah tbh.",
+        "gold": [
+          "approval",
+          "neutral"
+        ],
+        "pred": [
+          "neutral"
+        ]
+      }
+    ]
+  }
+}

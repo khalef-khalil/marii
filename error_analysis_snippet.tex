@@ -1,0 +1,44 @@
+% Auto-generated from error_analysis_m1_m2_aggregate.json
+\begin{table}[H]
+\centering
+\caption{Paires d'erreurs les plus fréquentes (+M1+M2, DistilBERT, agrégat sur graines)}
+\label{tab:expe-error-pairs}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|p{0.62\textwidth}|r|}
+\hline
+\textbf{Motif (référence vs prédiction)} & \textbf{Occurrences} \\
+\hline
+FN approval pred neutral & 285 \\ 
+\hline
+FP neutral gold approval & 264 \\ 
+\hline
+FN annoyance pred neutral & 242 \\ 
+\hline
+FN neutral pred curiosity & 238 \\ 
+\hline
+FP curiosity gold neutral & 227 \\ 
+\hline
+FP neutral gold disapproval & 227 \\ 
+\hline
+FP approval gold neutral & 221 \\ 
+\hline
+FP neutral gold annoyance & 220 \\ 
+\hline
+FN disapproval pred neutral & 212 \\ 
+\hline
+FP disapproval gold neutral & 209 \\ 
+\hline
+
+\end{tabular}
+\end{table}
+
+\paragraph{Illustrations (extrait).}
+\begin{itemize}
+\item \textbf{grief} (TP) : « My condolences.… » ; or : \{grief, sadness\} ; prédit : \{grief, sadness\}.
+\item \textbf{grief} (FN) : « [NAME] death is just so..... senseless. Why? WHY??? The based gods have forsaken us… » ; or : \{grief\} ; prédit : \{\}.
+\item \textbf{relief} (TP) : « Resetting a dislocated knee hurts like hell but it feels a lot better immediately after.… » ; or : \{relief\} ; prédit : \{caring, relief\}.
+\item \textbf{relief} (TP) : « I’ve exposed on social media. It made me feel better so I don’t care what anyway has to say about it.… » ; or : \{relief\} ; prédit : \{relief\}.
+\item \textbf{neutral} (TP) : « They got bored from haunting earth for thousands of years and ultimately moved on to the afterlife.… » ; or : \{neutral\} ; prédit : \{neutral\}.
+\item \textbf{neutral} (TP) : « After he left the bus, the two harpies sat next to each other and discussed why they were unable to find a decent man.… » ; or : \{neutral\} ; prédit : \{neutral\}.
+
+\end{itemize}

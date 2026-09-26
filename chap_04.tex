@@ -700,12 +700,15 @@ menée sur les checkpoints +M1+M2 (DistilBERT, trois graines) : inférence
 sur le test avec seuil $0{,}5$, comptage des cooccurrences où une
 étiquette gold est manquée (FN) ou prédite à tort (FP) alors qu'une
 autre étiquette est activée, et extraction d'exemples textuels pour
-\emph{grief}, \emph{relief} et \emph{neutral}. Les motifs les plus fréquents et les extraits textuels sont reportés
-dans un tableau dédié dès archivage de la campagne Colab (fragment
-généré automatiquement) ; ils complètent le tableau~\ref{tab:expe-per-class-f1} sur les
-classes à très faible support. En attendant, les confusions les plus
-visibles concernent la frontière \emph{annoyance}/\emph{anger} et la
-classe \emph{neutral} sur des énoncés courts ambigus.
+\emph{grief}, \emph{relief} et \emph{neutral}. Le
+tableau~\ref{tab:expe-error-pairs} et les illustrations ci-dessous
+complètent le tableau~\ref{tab:expe-per-class-f1}. Les motifs dominants
+opposent \emph{neutral} à \emph{approval}, \emph{disapproval} et
+\emph{annoyance} (FN/FP croisés), ce qui confirme le rôle « hub » de
+\emph{neutral} sur GoEmotions plutôt que des confusions limitées à
+\emph{anger}/\emph{annoyance} seules. Sur les labels rares, un vrai
+positif \emph{grief} est parfois détecté ; un FN typique omet toute
+étiquette sur un énoncé pourtant étiqueté \emph{grief}.
 
 \IfFileExists{error_analysis_snippet.tex}{\input{error_analysis_snippet}}{}
 

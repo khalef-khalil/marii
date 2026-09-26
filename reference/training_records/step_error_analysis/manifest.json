@@ -1,0 +1,16 @@
+{
+  "step": "error_analysis_m1_m2_distilbert",
+  "template_notebook": "notebooks/error_analysis_m1_m2_campaign.ipynb",
+  "protocol_anchor": "Checkpoints +M1+M2 DistilBERT (3 seeds); test inference threshold 0.5",
+  "artifact_zip": "reference/artifacts/error_analysis_m1_m2.zip",
+  "aggregate_json": "reference/artifacts/error_analysis_m1_m2_aggregate.json",
+  "latex_snippet": "error_analysis_snippet.tex",
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_error_analysis/colab/20250926_error_analysis_m1_m2_campaign_executed.ipynb",
+      "description": "Colab error analysis on DistilBERT M1+M2 checkpoints",
+      "runtime_gpu": "NVIDIA A100-SXM4-40GB",
+      "repo_commit_at_clone": "7496542"
+    }
+  ]
+}
