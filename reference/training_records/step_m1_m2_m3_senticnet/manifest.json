@@ -1,0 +1,23 @@
+{
+  "step": "m1_m2_m3_senticnet",
+  "template_notebook": "notebooks/m1_m2_m3_senticnet_campaign.ipynb",
+  "protocol_anchor": "Same as M1+M2; M3 SenticNet 5-D prior, gate g init 0",
+  "campaign_json": "reference/artifacts/m1_m2_m3_senticnet_distilbert_base_uncased_campaign.json",
+  "artifact_zip": "reference/artifacts/m1_m2_m3_senticnet_distilbert_step0.zip",
+  "m1_m2_reference": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.5037068895108949, "std": 0.0031825644794025417 },
+    "f1_micro": { "mean": 0.5821551680481395, "std": 0.001534531986614857 },
+    "exact_match": { "mean": 0.45783428536330695, "std": 0.006050542524918492 },
+    "map": { "mean": 0.5150563555562557, "std": 0.0017153095114132244 }
+  },
+  "lexicon_gate_abs": { "mean": 0.03239566584428152, "std": 0.00060692291960861 },
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m1_m2_m3_senticnet/colab/20250926_m1_m2_m3_senticnet_campaign_executed.ipynb",
+      "description": "Colab M1+M2+M3 SenticNet campaign",
+      "runtime_gpu": "NVIDIA A100-SXM4-40GB",
+      "repo_commit_at_clone": "f3d42f4"
+    }
+  ]
+}

@@ -9,8 +9,8 @@ H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 statistiques de corpus \emph{mesurées} avant entraînement. Le protocole d'affinage est fixé (tableau~\ref{tab:expe-hyperparams}) ;
 le Step~0 et les modules M1 à M4 sont évalués sous ce même contrat.
-Les baselines PLM, les étapes +M1 (H1), +M2 (H2) et +M3 NRC disposent de scores test ;
-la branche SenticNet de H3 et M4 restent à mener.
+Les baselines PLM et les ablations +M1 (H1), +M2 (H2) et +M3 (NRC et SenticNet, H3)
+disposent de scores test ; seul M4 reste à entraîner.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -251,21 +251,20 @@ neutral & (aucune) \\
 \section{Pipeline SenticNet (rappel protocolaire)}
 \label{sec:expe-senticnet}
 
-Pour H3, la branche SenticNet reprend exactement les cinq descripteurs
-documentaires fixés au chapitre~\ref{sec:conception-choix} : polarité
-moyenne, polarité max, polarité min, fraction de tokens couverts, nombre
-de concepts distincts. L'implémentation réutilisera SenticNet~5
-\cite{cambria2018senticnet} ; les détails de lookup (lemme vs surface)
-seront figés dans le code et reproduits pour les runs NRC et SenticNet.
+Pour H3, la branche SenticNet reprend les cinq descripteurs documentaires
+fixés au chapitre~\ref{sec:conception-choix} : polarité moyenne, polarité
+max, polarité min, fraction de tokens couverts, nombre de concepts distincts.
+L'implémentation s'appuie sur SenticNet~5 \cite{cambria2018senticnet} avec
+le même protocole de lookup que pour NRC (lemme puis surface).
 
 \section{Comparaison des ressources externes (H3)}
 \label{sec:expe-ressources-plan}
 
-À architecture M1+M2 fixée, M3 activé et M4 désactivé, deux runs
+À architecture M1+M2 fixée, M3 activé et M4 désactivé, deux campagnes
 diffèrent uniquement par la ressource lexicale (NRC vs SenticNet).
-L'hypothèse
-H3 teste l'alignement taxonomique (NRC) plutôt que la supériorité
-a priori d'un graphe conceptuel.
+L'hypothèse H3 compare l'intégration de ces priors (alignement Plutchik
+vs signal conceptuel) sans postuler a priori la supériorité de l'une
+sur l'autre ni sur la pile M1+M2 seule.
 
 \section{Résultats et analyses}
 \label{sec:expe-analyses-plan}
@@ -383,7 +382,7 @@ lecture \emph{label-specific} sur les phrases. La branche M3 (NRC) et M4
 testeront si un prior lexical et une pondération dynamique prolongent
 cette ligne.
 
-\subsection{Ablation M1+M2+M3 (NRC, H3 partiel)}
+\subsection{Ablation M1+M2+M3 (NRC, H3)}
 \label{sec:expe-m3-nrc-h3}
 
 L'étape +M3 NRC injecte un vecteur documentaire à huit dimensions
@@ -412,10 +411,71 @@ de M1+M2 ($0{,}505 \pm 0{,}004$) : la moyenne sur trois graines n'indique
 pas de gain net du prior NRC. Une graine atteint $0{,}515$ (seed $42$) tandis
 que les deux autres restent sous $0{,}501$, d'où un écart-type plus élevé.
 La porte apprise $|g|$ vaut environ $0{,}042$ en fin d'entraînement : le
-modèle utilise une part modeste du signal lexique sans améliorer la macro
-de façon stable. \textbf{H3 reste partielle} tant que la branche
-SenticNet n'est pas mesurée ; sur NRC seul, l'enrichissement lexical ne
-bat pas M1+M2 de manière robuste.
+modèle utilise une part modeste du signal NRC sans améliorer la macro
+de façon stable par rapport à M1+M2.
+
+\subsection{Ablation M1+M2+M3 (SenticNet, H3)}
+\label{sec:expe-m3-senticnet-h3}
+
+L'étape +M3 SenticNet injecte un vecteur documentaire à cinq dimensions
+(polarités et couverture SenticNet~5, chapitre~\ref{sec:conception-choix})
+dans les requêtes d'émotions via la même porte $g$ (initialisée à $0$).
+Protocole d'affinage inchangé.
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : +M1+M2 vs +M3 SenticNet}
+\label{tab:expe-m3-senticnet-distilbert}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
++M1+M2 & $0{,}582 \pm 0{,}002$ & $0{,}505 \pm 0{,}004$ & $0{,}457 \pm 0{,}004$ & $0{,}504 \pm 0{,}002$ \\
+\hline
++M1+M2+M3 (SenticNet) & $0{,}582 \pm 0{,}002$ & $0{,}504 \pm 0{,}003$ & $0{,}458 \pm 0{,}006$ & $0{,}515 \pm 0{,}002$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Le F1-macro test moyen est $0{,}504$ ($\pm 0{,}003$), au niveau de M1+M2
+($0{,}505 \pm 0{,}004$) et de la branche NRC ($0{,}504 \pm 0{,}008$).
+Les trois graines restent proches ($0{,}505$, $0{,}499$, $0{,}507$), avec un
+écart-type inter-graines plus faible que pour NRC. La porte $|g|$ vaut
+environ $0{,}032$ : usage lexique légèrement plus faible qu'avec NRC.
+Le F1-micro rejoint le Step~0 et M1+M2 ; le mAP gagne environ un point
+par rapport à M1+M2 sans traduction nette en F1-macro.
+
+\subsection{Synthèse H3 (NRC vs SenticNet)}
+\label{sec:expe-h3-synthese}
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : pile M1+M2 et variantes M3}
+\label{tab:expe-h3-lexicons}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
++M1+M2 & $0{,}582 \pm 0{,}002$ & $0{,}505 \pm 0{,}004$ & $0{,}457 \pm 0{,}004$ & $0{,}504 \pm 0{,}002$ \\
+\hline
++M1+M2+M3 (NRC) & $0{,}577 \pm 0{,}002$ & $0{,}504 \pm 0{,}008$ & $0{,}453 \pm 0{,}003$ & $0{,}504 \pm 0{,}001$ \\
+\hline
++M1+M2+M3 (SenticNet) & $0{,}582 \pm 0{,}002$ & $0{,}504 \pm 0{,}003$ & $0{,}458 \pm 0{,}006$ & $0{,}515 \pm 0{,}002$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{H3 est tranchée sur le plan comparatif} : ni NRC ni SenticNet
+n'améliorent de façon robuste le F1-macro par rapport à M1+M2 ; les
+moyennes sur trois graines coïncident à $\approx 0{,}504$--$0{,}505$.
+SenticNet présente une variance inter-graines plus faible ; NRC peut
+monter à $0{,}515$ sur une graine mais retombe sous $0{,}501$ sur les
+autres. SenticNet préserve le F1-micro de M1+M2 et le mAP le plus élevé
+des trois piles, sans gain macro décisif. Le levier principal reste
+donc M2 ; M3 ajoute un prior appris modestement ($|g| \approx 0{,}03$
+à $0{,}04$) plutôt qu'un saut de performance macro sur GoEmotions.
 
 \subsection{Runs exploratoires (hyperparamètres non finaux)}
 \label{sec:expe-baseline-pilot}
@@ -428,11 +488,10 @@ tableau~\ref{tab:expe-baseline-step0}.
 \subsection{Analyses complémentaires (en cours)}
 \label{sec:expe-analyses-suite}
 
-Les éléments suivants compléteront ce chapitre lorsque SenticNet (H3)
-et M4 seront entraînés :
+Les éléments suivants compléteront ce chapitre lorsque M4 sera entraîné :
 \begin{itemize}
-\item ablation M3 SenticNet et M4 (mêmes métriques, encodeur DistilBERT,
-      comparer au tableau~\ref{tab:expe-m3-nrc-distilbert}) ;
+\item ablation M4 (mêmes métriques, encodeur DistilBERT, comparer au
+      tableau~\ref{tab:expe-h3-lexicons}) ;
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
@@ -465,5 +524,8 @@ rappel SenticNet. Le protocole d'affinage est ancré sur GoEmotions
 tableau~\ref{tab:expe-baseline-step0} est complet pour DistilBERT-base et
 RoBERTa-base ; H1 et H2 sont tranchées aux
 tableaux~\ref{tab:expe-m1-distilbert} et~\ref{tab:expe-m1-m2-distilbert} ;
-M3 NRC est reporté au tableau~\ref{tab:expe-m3-nrc-distilbert} (H3 partiel).
-SenticNet et M4 compléteront la section~\ref{sec:expe-analyses-suite}.
+H3 (NRC et SenticNet) est reportée aux
+tableaux~\ref{tab:expe-m3-nrc-distilbert},
+\ref{tab:expe-m3-senticnet-distilbert} et~\ref{tab:expe-h3-lexicons}.
+M4 et les analyses par classe compléteront la
+section~\ref{sec:expe-analyses-suite}.
