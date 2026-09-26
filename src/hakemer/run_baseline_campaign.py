@@ -39,6 +39,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--epochs", type=int, default=4)
     p.add_argument("--batch-size", type=int, default=16)
     p.add_argument("--lr", type=float, default=5e-5)
+    p.add_argument("--early-stopping-patience", type=int, default=0)
     p.add_argument("--max-length", type=int, default=128)
     p.add_argument("--output-dir", default="runs")
     p.add_argument("--max-train-samples", type=int, default=None)
