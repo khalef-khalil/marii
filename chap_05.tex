@@ -61,11 +61,14 @@ traduisent en messages concrets pour un lecteur praticien :
 \label{sec:persp-recommandations}
 
 \paragraph{Configuration retenue.}
-Pour maximiser le F1-macro test mesuré, la pile recommandée est
-\textbf{M1+M2} (DistilBERT-base, protocole du
-tableau~\ref{tab:expe-hyperparams}) : segmentation $M{=}4$, attention
-par émotion, pas de branche M3/M4 en production si la macro prime sur
-l'interprétabilité lexicale.
+Pour maximiser le F1-macro test mesuré, la pile est \textbf{M1+M2} :
+$0{,}526 \pm 0{,}007$ avec RoBERTa-base,
+$0{,}505 \pm 0{,}004$ avec DistilBERT-base
+(tableau~\ref{tab:expe-roberta-ablation}, protocole du
+tableau~\ref{tab:expe-hyperparams}). Segmentation $M{=}4$, attention
+par émotion ; pas de branche M3/M4 si la macro prime sur
+l'interprétabilité lexicale. DistilBERT reste le compromis latence
+et maintenance lorsque $\approx 2$ points de macro suffisent.
 
 \paragraph{Quand simplifier ou enrichir.}
 \begin{itemize}
@@ -75,10 +78,9 @@ l'interprétabilité lexicale.
 \item \textbf{M3 (NRC ou SenticNet)} : envisager seulement si l'on
       expose $|g|$ ou les descripteurs documentaires à un utilisateur
       (explication), pas pour gagner la macro dans ce cadre.
-\item \textbf{RoBERTa (+M1, +M1+M2)} : complète le contrôle encodeur
-      au tableau~\ref{tab:expe-roberta-ablation} ; si la macro suit le
-      même profil qu'en DistilBERT, M2 se généralise ; sinon, calibrer
-      la pile par backbone.
+\item \textbf{RoBERTa (+M1, +M1+M2)} : même profil qualitatif qu'en
+      DistilBERT (M2 confirme H2, M1 seul insuffisant) avec une macro
+      test plus haute sur +M1+M2 ($0{,}526 \pm 0{,}007$).
 \end{itemize}
 
 \paragraph{Coût et risques.}
