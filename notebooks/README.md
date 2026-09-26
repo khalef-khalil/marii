@@ -33,4 +33,16 @@ Run `m1_m2_m3_nrc_campaign.ipynb` → archive `m1_m2_m3_nrc_distilbert_step0.zip
 
 Run `m1_m2_m3_senticnet_campaign.ipynb` → archive `m1_m2_m3_senticnet_distilbert_step0.zip`.
 
+## RoBERTa +M1 / +M1+M2 (multi-backbone)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/roberta_m1_m1_m2_campaign.ipynb)
+
+Run `roberta_m1_m1_m2_campaign.ipynb` → archive `roberta_m1_m1_m2_campaign.zip` under `reference/training_records/step_roberta_ablation/`.
+
+## Error analysis (+M1+M2, DistilBERT)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/error_analysis_m1_m2_campaign.ipynb)
+
+Run `error_analysis_m1_m2_campaign.ipynb` → archive `error_analysis_m1_m2.zip` and executed notebook under `reference/training_records/step_error_analysis/`.
+
 **Training records:** archive executed Colab notebooks and manifests under [`reference/training_records/`](../reference/training_records/README.md). After updating artifacts, run `python scripts/build_step0_training_record.py` to refresh the Step 0 record notebooks from campaign JSON.
