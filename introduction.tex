@@ -18,9 +18,13 @@ la conception et l'évaluation de \textbf{HAKE-MER} (\emph{Hierarchical
 Attention with Knowledge Enhancement for Multi-Emotion Recognition}),
 architecture modulaire qui combine encodage hiérarchique du texte,
 attention croisée entre émotions et enrichissement par lexiques affectifs
-(NRC, SenticNet). Les expériences portent sur GoEmotions
-\cite{demszky2020} avec un protocole d'ablation à budget constant, le
-\textbf{F1-macro} comme métrique principale et trois graines aléatoires.
+(NRC, SenticNet), au-dessus d'encodeurs contextuels affinés
+\cite{howard2018ulmfit,devlin2019}. Les expériences portent sur GoEmotions
+\cite{demszky2020}, dans le cadre de la détection multi-étiquettes en
+texte \cite{zhang2014multilabel,mohammad2020sentiment}, avec un protocole
+d'ablation à budget constant, le
+\textbf{F1-macro} comme métrique principale \cite{bond2022multilabel,wu2021multilabelranking}
+et trois graines aléatoires.
 Le Step~0 compare DistilBERT-base et RoBERTa-base en encodage document
 flat ; la ladder M1 à M4 est menée sur DistilBERT-base
 (chapitre~\ref{chap:experimentation}).

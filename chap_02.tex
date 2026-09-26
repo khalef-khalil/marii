@@ -139,7 +139,8 @@ protocole retenu.
 \subsection{Métriques d'évaluation}
 
 Pour la classification multi-étiquettes, les métriques usuelles
-\cite{zhang2014multilabel} incluent :
+\cite{zhang2014multilabel,boutell2004multilabel,wu2021multilabelranking,bond2022multilabel}
+incluent :
 \begin{itemize}
 \item le \textbf{F1-micro}, sensible aux classes fréquentes ;
 \item le \textbf{F1-macro}, moyenne non pondérée du F1 par émotion,
@@ -157,15 +158,19 @@ moyennes globales dans le chapitre de résultats.
 
 Les modèles neuronaux et les modèles de langue pré-entraînés
 constituent le socle sur lequel s'appuient HAKE-MER et la baseline
-obligatoire du protocole.
+obligatoire du protocole \cite{minaee2021textcls,sharma2024deeplearningmlc}.
+Les jeux multi-étiquettes textuels historiques (p.ex. RCV1
+\cite{lewis2004rcv1}) ont préfiguré les défis de déséquilibre et de
+corrélation entre labels que GoEmotions porte à 28 émotions fines.
 
 \subsection{De l'ingénierie de traits au deep learning}
 
 Les premières approches combinaient traits lexicaux (n-grammes,
-présence de termes affectifs), lexiques de sentiment ou d'émotions,
-et classifieurs multi-étiquettes (SVM, forêts, chaînes de
-classificateurs modélisant des dépendances entre labels
-\cite{read2009classifier,read2019classifier}). Elles
+présence de termes affectifs), représentations distribuées de mots
+\cite{mikolov2013word2vec,pennington2014glove}, lexiques de sentiment
+ou d'émotions, et classifieurs multi-étiquettes (SVM, forêts, chaînes
+de classificateurs modélisant des dépendances entre labels
+\cite{read2009classifier,read2019classifier,dembczynski2012}). Elles
 restent utiles comme référence historique et pour l'interprétabilité,
 mais peinent sur le contexte long, l'ironie et les émotions
 implicites.
@@ -190,15 +195,19 @@ du texte \cite{mullenbach2018}.
 
 \subsection{Modèles pré-entraînés et ligne de base}
 
-L'affinement de \textbf{modèles de langue pré-entraînés}
+La généralisation du \emph{fine-tuning} de modèles de langue
+\cite{howard2018ulmfit,peters2018elmo} prépare l'affinement de
+\textbf{modèles de langue pré-entraînés}
 \cite{devlin2019,liu2019roberta,sanh2019distilbert} avec une tête
 multi-étiquettes sigmoïde constitue aujourd'hui la \textbf{ligne de
-base} la plus répandue sur GoEmotions \cite{demszky2020}. Cette
-configuration (encodeur contextuel + classifieur binaire par émotion)
-sert de point de comparaison obligatoire dans
-notre protocole d'ablation : toute contribution architecturale (M1,
-M2, M3) doit être mesurée \emph{à budget et backbone constants} par
-rapport à cet affinage standard.
+base} la plus répandue sur GoEmotions \cite{demszky2020}. Les pratiques
+d'affinage (warmup, têtes légères) et l'écosystème d'implémentation
+\cite{sun2019,wolf2020} influencent directement le protocole retenu au
+chapitre~\ref{chap:experimentation}. Cette configuration (encodeur
+contextuel + classifieur binaire par émotion) sert de point de
+comparaison obligatoire dans notre protocole d'ablation : toute
+contribution architecturale (M1, M2, M3) doit être mesurée \emph{à budget
+et backbone constants} par rapport à cet affinage standard.
 
 Sur la taxonomie complète (28 classes), les auteurs rapportent pour
 BERT-base \cite{devlin2019} un \textbf{F1-macro de 0{,}46} sur leur
@@ -212,9 +221,11 @@ internes au protocole du chapitre~\ref{chap:experimentation}.
 
 Traiter chaque émotion comme une sortie indépendante sur un vecteur
 global partagé ignore les \textbf{cooccurrences} et
-\textbf{incompatibilités} entre labels (joie/surprise vs joie/tristesse).
-La littérature propose plusieurs réponses : chaînes de
-classificateurs \cite{read2009classifier,read2019classifier}, graphes
+\textbf{incompatibilités} entre labels (joie/surprise vs joie/tristesse),
+alors que la multi-étiquette admet des dépendances marginales et
+conditionnelles entre étiquettes \cite{dembczynski2012}. La littérature
+propose plusieurs réponses : chaînes de classificateurs
+\cite{read2009classifier,read2019classifier}, graphes
 de corrélation entre étiquettes, attention dédiée par émotion,
 encodeurs d'interactions entre représentations d'étiquettes. Ce fil
 justifie le \textbf{module~2} de HAKE-MER
@@ -302,7 +313,9 @@ sémantique abstraite de la ressource.
 
 \subsection{Graphes de connaissances et bon sens (hors périmètre principal)}
 
-Des travaux intègrent ConceptNet \cite{speer2017}, bases d'inférences
+Des travaux intègrent ConceptNet \cite{speer2017}, des graphes de
+connaissances de bon sens pour l'émotion en dialogue
+\cite{ghosal2020cosmic}, bases d'inférences
 causales (ATOMIC) ou modèles génératifs de bon sens (COMET) pour les
 émotions implicites. Ces approches sont \textbf{pertinentes pour des
 perspectives} (chapitre~\ref{chap:perspectives}) mais hors du

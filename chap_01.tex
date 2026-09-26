@@ -27,8 +27,9 @@ L'analyse automatique des émotions dans le texte s'est imposée comme un
 sous-domaine central du traitement automatique des langues, avec des
 applications directes en modération de contenu, en analyse de l'expérience
 client, en santé mentale numérique et en systèmes conversationnels
-affectifs. Contrairement à l'analyse de sentiment classique, qui réduit un
-texte à une polarité (positif, négatif, neutre) \cite{pang2008,mohammad2020sentiment},
+affectifs \cite{minaee2021textcls,mohammad2020sentiment}. Contrairement à
+l'analyse de sentiment classique, qui réduit un texte à une polarité
+(positif, négatif, neutre) \cite{pang2008},
 la détection d'émotions vise à identifier des catégories affectives fines
 (joie, colère, tristesse, surprise, etc.), souvent multiples et simultanées
 au sein d'un même énoncé.
@@ -38,14 +39,15 @@ au sein d'un même énoncé.
 
 La plupart des travaux en classification des émotions textuelles reposent
 sur l'hypothèse simplificatrice qu'un texte exprime une émotion dominante
-unique. Cette hypothèse ne reflète pas la réalité des
+unique \cite{seyeditabari2018}. Cette hypothèse ne reflète pas la réalité des
 états affectifs humains, qui se manifestent fréquemment sous forme de
 mélanges d'émotions coexistant dans un même énoncé, par exemple
 l'expression simultanée de la surprise et de la joie, ou de la déception et
 de la colère. Les jeux de données récents à annotation multi-étiquettes,
 tels que GoEmotions \cite{demszky2020}, montrent qu'environ 17\,\% des
 textes portent au moins deux émotions simultanées, ce qui invalide
-l'approche mono-étiquette pour un grand nombre de cas réels.
+l'approche mono-étiquette pour un grand nombre de cas réels
+\cite{zhang2014multilabel,read2019classifier}.
 
 Trois limites structurelles freinent les approches existantes de
 détection multi-émotions, détaillées et documentées au chapitre~2 :
@@ -67,7 +69,8 @@ détection multi-émotions, détaillées et documentées au chapitre~2 :
   émotions fréquentes (joie, neutralité) dominent très largement les
   émotions rares (deuil, soulagement, nervosité), ce qui pénalise
   l'apprentissage des classes minoritaires, précisément celles pour
-  lesquelles la détection est la plus critique en pratique.
+  lesquelles la détection est la plus critique en pratique
+  \cite{lin2017focal,chawla2002smote}.
 \end{itemize}
 
 Ces limites motivent la question de recherche centrale de ce mémoire :

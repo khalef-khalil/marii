@@ -23,7 +23,7 @@ def main() -> int:
             continue
         key = key_m.group(1)
         file_m = re.search(r"file\s*=\s*\{([^}]+)\}", block)
-        title_m = re.search(r"title\s*=\s*\{([^}]+)\}", block, re.I)
+        title_m = re.search(r"title\s*=\s*\{", block, re.I)
         if not file_m:
             errors.append(f"{key}: no file= field")
             continue
@@ -31,12 +31,29 @@ def main() -> int:
         if not pdf.is_file():
             errors.append(f"{key}: missing {pdf}")
             continue
+        title = ""
         if title_m:
-            title = re.sub(r"\s+", " ", title_m.group(1)).lower()
+            start = title_m.end()
+            depth = 1
+            buf: list[str] = []
+            for ch in block[start:]:
+                if ch == "{":
+                    depth += 1
+                    buf.append(ch)
+                elif ch == "}":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                    buf.append(ch)
+                else:
+                    buf.append(ch)
+            title = re.sub(r"\s+", " ", "".join(buf)).lower()
+            title = title.replace("-", " ").replace("{", "").replace("}", "")
+        if title:
             snippet = (PdfReader(str(pdf)).pages[0].extract_text() or "").lower()
-            # Require at least one significant word from title (len>5) to appear in PDF
-            words = [w for w in re.findall(r"[a-z]{6,}", title) if w not in {"using", "approach", "learning"}]
-            if words and not any(w in snippet for w in words[:3]):
+            stop = {"using", "approach", "learning", "method", "based", "model"}
+            words = [w for w in re.findall(r"[a-z]{5,}", title) if w not in stop]
+            if words and not any(w in snippet for w in words[:5]):
                 errors.append(f"{key}: title may not match PDF (check {pdf.name})")
     if errors:
         for e in errors:

@@ -20,8 +20,8 @@ La classification multi-étiquettes apprend une
 fonction $f : x \mapsto Y \subseteq \mathcal{E}$, réalisée par $K$
 sorties sigmoïdes $\hat{y}_k = \sigma(z_k)$ entraînées par entropie
 croisée binaire, variante de la \emph{binary relevance}
-\cite{zhang2014multilabel} (une perte par étiquette, sans modèle
-explicite des co-occurrences) :
+\cite{zhang2014multilabel,boutell2004multilabel} (une perte par
+étiquette, sans modèle explicite des co-occurrences) :
 \begin{equation}
 \mathcal{L}_{\mathrm{BCE}}
 = -\frac{1}{K}\sum_{k=1}^{K}
@@ -55,8 +55,9 @@ Trois limites des approches standards motivent la conception :
 HAKE-MER répond à ces limites par quatre modules composables,
 construits au-dessus d'un backbone pré-entraîné partagé (RoBERTa-base
 et DistilBERT-base \cite{liu2019roberta,sanh2019distilbert}, avec
-affinage calqué sur les pratiques BERT \cite{devlin2019,sun2019},
-figure~\ref{fig:hakemer-archi}) : le \textbf{Module 1 (Encodage
+affinage calqué sur les pratiques BERT \cite{devlin2019,sun2019} et
+une lecture par couches des abstractions linguistiques apprises
+\cite{tenney2019bert}, figure~\ref{fig:hakemer-archi}) : le \textbf{Module 1 (Encodage
 Hiérarchique)} préserve la structure du texte (L2) ; le
 \textbf{Module 2 (Attention Croisée Multi-Émotions)} modélise les
 interactions entre émotions (L1) ; le \textbf{Module 3
@@ -197,7 +198,9 @@ sans changer l'architecture.
 \subsection{Extraction NRC et correspondance GoEmotions}
 
 Pour le NRC Emotion Lexicon \cite{mohammad2013}, chaque token du
-document reçoit, lorsqu'il est couvert par le lexique, un score par
+texte (lookup de surface, complémentaire aux embeddings statiques
+\cite{pennington2014glove,mikolov2013word2vec}) reçoit, lorsqu'il est
+couvert par le lexique, un score par
 émotion Plutchik ($d_c{=}8$). Au niveau document, on retient la
 moyenne des scores par dimension sur les tokens couverts (zéro si aucun
 mot n'est couvert). Une table de correspondance \emph{many-to-one}
@@ -264,7 +267,8 @@ modèle des lectures \emph{label-specific}
 \cite{vaswani2017} appliquée sur l'axe des $K$ émotions modélise
 ensuite leurs interactions (renforcement ou inhibition mutuels), en
 complément des chaînes de classificateurs
-\cite{read2009classifier,read2019classifier}. La tête de classification
+\cite{read2009classifier,read2019classifier,dembczynski2012}. La tête de
+classification
 est \emph{par étiquette} : $z_k = w_k^\top r_k + b_k$.
 
 \section{Module 3 : Enrichissement Sémantique}

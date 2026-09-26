@@ -97,21 +97,31 @@ Les prolongements suivants ciblent les limites observées au
 chapitre~\ref{chap:experimentation}, sans remettre en cause les
 résultats déjà archivés :
 \begin{itemize}
-\item \textbf{Déséquilibre et longue traîne.} Pertes repondérées,
+\item \textbf{Déséquilibre et longue traîne.} Pertes repondérées
+      \cite{lin2017focal}, rééchantillonnage \cite{chawla2002smote},
       seuils par émotion, ou entraînement ciblé sur les labels à
       très faible support (\emph{grief}, \emph{relief}) où le F1
       reste instable.
 \item \textbf{Lexique et connaissances.} Fusion par émotion (non
-      un vecteur document partagé), graphes type ConceptNet, ou
-      alignement fin entre Plutchik et GoEmotions au-delà du gate
-      global M3 testé ici.
+      un vecteur document partagé), graphes type ConceptNet
+      \cite{speer2017}, injection de connaissances de bon sens
+      \cite{ghosal2020cosmic}, ou alignement fin entre Plutchik et
+      GoEmotions au-delà du gate global M3 testé ici.
 \item \textbf{Ladder multi-encodeur (M3/M4).} Étendre NRC, SenticNet et
       M4 à RoBERTa-base si l'on veut tester H3/H4 hors DistilBERT.
-\item \textbf{Validation externe.} SemEval-2018 Tâche~1 ou corpus
-      hors Reddit pour tester la robustesse du choix M1+M2.
+\item \textbf{Validation externe.} Campagnes SemEval (p.ex. affect in
+      tweets \cite{mohammad2018semeval}, EmoContext
+      \cite{semeval2019emocontext}) ou corpus hors Reddit pour tester
+      la robustesse du choix M1+M2.
 \item \textbf{Modèles généralistes.} Comparer M1+M2 à des LLM
-      instructs ou modèles affectifs lorsque des protocoles
-      reproductibles et comparables existent.
+      instructs, à des encodeurs de phrase spécialisés
+      \cite{reimers2019sentence}, ou à des modèles affectifs lorsque
+      des protocoles reproductibles et comparables existent
+      \cite{sharma2024deeplearningmlc}.
+\item \textbf{Interprétabilité.} Compléter l'analyse de confusions
+      par des explications locales ou l'analyse d'attention
+      \cite{ribeiro2016lime,clark2019bert} pour documenter le rôle de
+      \emph{neutral} et des labels rares.
 \end{itemize}
 
 \section*{Conclusion}

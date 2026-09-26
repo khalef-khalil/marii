@@ -77,8 +77,9 @@ budget sur la recette GoEmotions \cite{demszky2020} : lot
 $16$, taux d'apprentissage $5\times 10^{-5}$, quatre époques d'entraînement
 (la configuration officielle du jeu et le code associé retiennent
 quatre époques pour BERT-base sur ce corpus). L'implémentation utilise
-AdamW et un planificateur linéaire avec warmup (\emph{Transformers}
-\cite{wolf2020}, pratique usuelle \cite{sun2019,devlin2019}) ; seuls
+AdamW \cite{kingma2015adam,loshchilov2019adamw} et un planificateur
+linéaire avec warmup (\emph{Transformers} \cite{wolf2020}, pratique
+usuelle \cite{sun2019,devlin2019}) ; seuls
 l'encodeur (DistilBERT-base, RoBERTa-base) et les modules M1 à M4
 varient entre runs d'ablation. Le tableau~\ref{tab:expe-hyperparams}
 a fixé ces valeurs \emph{a priori} pour toutes les étapes.
@@ -116,7 +117,8 @@ Segmentation (M1+) & $M{=}4$ phrases, $32$ tokens/phrase \\
 \hline
 Seuil de décision & $0{,}5$ sur les sigmoïdes (sauf étude de seuil post hoc) \\
 \hline
-Métriques de test & F1-micro, F1-macro, exact match, mAP \\
+Métriques de test & F1-micro, F1-macro, exact match, mAP
+\cite{wu2021multilabelranking,bond2022multilabel} \\
 \hline
 \end{tabular}
 \end{table}
@@ -126,8 +128,10 @@ Métriques de test & F1-micro, F1-macro, exact match, mAP \\
 
 Une implémentation unique de HAKE-MER active ou désactive les modules
 M1 à M4 et choisit la ressource lexicale (aucune, NRC, SenticNet).
-Seuls ces choix diffèrent entre runs d'ablation ; le chargement des
-données, les métriques et la boucle d'entraînement restent communs.
+Elle repose sur PyTorch \cite{paszke2019pytorch} et la bibliothèque
+\emph{Transformers} \cite{wolf2020}. Seuls les choix de modules
+diffèrent entre runs d'ablation ; le chargement des données, les
+métriques et la boucle d'entraînement restent communs.
 
 Chaque run enregistre au minimum : identifiant de configuration,
 backbone, graine, courbes train/validation, F1-macro et F1-micro
@@ -740,7 +744,11 @@ menée sur les checkpoints +M1+M2 (DistilBERT, trois graines) : inférence
 sur le test avec seuil $0{,}5$, comptage des cooccurrences où une
 étiquette gold est manquée (FN) ou prédite à tort (FP) alors qu'une
 autre étiquette est activée, et extraction d'exemples textuels pour
-\emph{grief}, \emph{relief} et \emph{neutral}. La
+\emph{grief}, \emph{relief} et \emph{neutral}. Cette démarche reste
+comptable (pas d'explication token à token) ; des méthodes
+d'interprétabilité des encodeurs \cite{clark2019bert,ribeiro2016lime}
+constituent un prolongement naturel pour relier motifs d'erreurs et
+tokens saillants. La
 figure~\ref{fig:expe-error-pairs} et le tableau~\ref{tab:expe-error-pairs}
 complètent le tableau~\ref{tab:expe-per-class-f1}. Les motifs dominants
 opposent \emph{neutral} à \emph{approval}, \emph{disapproval} et
