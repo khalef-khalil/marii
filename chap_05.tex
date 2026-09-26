@@ -19,10 +19,9 @@ delà de HAKE-MER :
 \begin{itemize}
 \item \textbf{Multi-backbone.} Step~0 sur DistilBERT et RoBERTa a montré
       des F1-macro test voisins ($0{,}486 \pm 0{,}005$ vs
-      $0{,}487 \pm 0{,}005$) ; +M1 et +M1+M2 sont reproduits sur
-      RoBERTa (tableau~\ref{tab:expe-roberta-ablation}) tandis que
-      M3/M4 restent sur DistilBERT. Toute généralisation inter-encodeur
-      s'appuie sur ce contrôle partiel, pas sur la ladder complète.
+      $0{,}487 \pm 0{,}005$) ; la ladder M1 à M4 est reproduite sur
+      les deux encodeurs (tableau~\ref{tab:expe-roberta-ablation}) pour
+      comparer H1 à H4 à protocole identique.
 \item \textbf{Contrôle du prétraitement.} M1 seul sous-performe le flat
       à budget token comparable : une hiérarchie naïve peut \emph{perdre}
       du contexte utile. Les gains viennent de M2 (lecture
@@ -107,8 +106,9 @@ résultats déjà archivés :
       \cite{speer2017}, injection de connaissances de bon sens
       \cite{ghosal2020cosmic}, ou alignement fin entre Plutchik et
       GoEmotions au-delà du gate global M3 testé ici.
-\item \textbf{Ladder multi-encodeur (M3/M4).} Étendre NRC, SenticNet et
-      M4 à RoBERTa-base si l'on veut tester H3/H4 hors DistilBERT.
+\item \textbf{Autres lexiques.} Tester d'autres ressources affectives ou
+      des fusions par émotion sur la pile M1+M2 déjà validée sur les
+      deux backbones.
 \item \textbf{Validation externe.} Campagnes SemEval (p.ex. affect in
       tweets \cite{mohammad2018semeval}, EmoContext
       \cite{semeval2019emocontext}) ou corpus hors Reddit pour tester

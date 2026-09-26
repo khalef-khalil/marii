@@ -10,8 +10,7 @@ hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 statistiques de corpus \emph{mesurées} avant entraînement. Le protocole d'affinage est fixé (tableau~\ref{tab:expe-hyperparams}) ;
 le Step~0 et les modules M1 à M4 sont évalués sous ce même contrat.
 Les baselines PLM et les ablations +M1 à +M4 (H1 à H4) disposent de scores
-test sur DistilBERT-base ; RoBERTa-base couvre le Step~0 flat et, par
-extension, les étapes +M1 et +M1+M2 sous le même contrat
+test sur DistilBERT-base et RoBERTa-base sous le même contrat
 (section~\ref{sec:expe-roberta-ablation}).
 
 \section{Cadre expérimental}
@@ -143,9 +142,10 @@ identique}.
 \subsection{Backbones}
 
 Deux encodeurs principaux : \textbf{RoBERTa-base} et
-\textbf{DistilBERT-base}. Les ablations M1 à M4 ont été menées sur
-\textbf{DistilBERT-base} ; RoBERTa sert de second point de repère au
-Step~0 flat uniquement (tableau~\ref{tab:expe-baseline-step0}).
+\textbf{DistilBERT-base}. La ladder M1 à M4 est menée sur les deux
+backbones (tableaux DistilBERT des sections~\ref{sec:expe-m1-h1} à
+\ref{sec:expe-m4-h4} et comparaison synthétique au
+tableau~\ref{tab:expe-roberta-ablation}).
 
 \subsection{Runs exploratoires (hors référence)}
 \label{sec:expe-baseline-pilot}
@@ -317,33 +317,32 @@ $0{,}487 \pm 0{,}005$ : les deux dépassent la référence BERT-base de
 \cite{demszky2020} avec des écarts-types faibles entre graines. RoBERTa l'emporte
 légèrement en F1-micro et en mAP ; l'écart macro reste inférieur à l'écart-type
 inter-graines. RoBERTa sert de deuxième baseline flat dans le
-tableau~\ref{tab:expe-baseline-step0} ; la ladder M1 à M4 complète suit sur
-DistilBERT-base (section~\ref{sec:expe-cadre}), tandis que RoBERTa
-reçoit les mêmes drapeaux +M1 et +M1+M2 pour tester si le levier M2
-se généralise à un encodeur plus capacitaire
-(section~\ref{sec:expe-roberta-ablation}).
+tableau~\ref{tab:expe-baseline-step0} ; la ladder M1 à M4 est reproduite
+sur les deux encodeurs (section~\ref{sec:expe-roberta-ablation}) afin de
+trancher H1 à H4 indépendamment de la capacité du pré-entraînement.
 
-\subsection{Contrôle multi-backbone (+M1, +M1+M2)}
+\subsection{Ladder multi-backbone (M1 à M4)}
 \label{sec:expe-roberta-ablation}
 
 L'objectif~2 (section~\ref{sec:objectifs}) exige de séparer les
 effets d'architecture de ceux du pré-entraînement. Au-delà du Step~0
-(tableau~\ref{tab:expe-baseline-step0}), les campagnes +M1 et +M1+M2
-sont donc relancées sur RoBERTa-base avec les hyperparamètres du
-tableau~\ref{tab:expe-hyperparams} et les trois graines $42$, $123$,
-$456$. Le tableau~\ref{tab:expe-roberta-ablation} reporte les F1-macro
-test obtenus. Sur RoBERTa, +M1 seul reste légèrement sous le flat
-($0{,}485 \pm 0{,}002$ vs $0{,}487 \pm 0{,}005$) et nettement sous
-+M1+M2 : la dégradation M1 est moins marquée qu'en DistilBERT, mais
-M1 seul n'est toujours pas une configuration à retenir. +M1+M2 atteint
-$0{,}526 \pm 0{,}007$, au-dessus du Step~0 RoBERTa et de la meilleure
-pile DistilBERT ($0{,}505 \pm 0{,}004$) : le levier M2 se généralise à
-un encodeur plus capacitaire et H2 reste confirmée sur les deux
-backbones.
+(tableau~\ref{tab:expe-baseline-step0}), les mêmes drapeaux M1 à M4
+(NRC, SenticNet, M4) sont relancés sur RoBERTa-base avec les
+hyperparamètres du tableau~\ref{tab:expe-hyperparams} et les trois
+graines $42$, $123$, $456$. Le tableau~\ref{tab:expe-roberta-ablation}
+reporte les F1-macro test appariés DistilBERT/RoBERTa. Sur RoBERTa,
++M1 seul reste légèrement sous le flat ($0{,}485 \pm 0{,}002$ vs
+$0{,}487 \pm 0{,}005$) et nettement sous +M1+M2 : M1 seul n'est pas
+une configuration à retenir. +M1+M2 atteint $0{,}526 \pm 0{,}007$,
+au-dessus du Step~0 RoBERTa et de la meilleure pile DistilBERT
+($0{,}505 \pm 0{,}004$) : H2 reste confirmée sur les deux backbones.
+Les lignes +M3 (NRC, SenticNet) et +M4 complètent le tableau dès que
+les campagnes RoBERTa correspondantes sont archivées au même format
+que DistilBERT.
 
 \begin{table}[H]
 \centering
-\caption{F1-macro test : DistilBERT vs RoBERTa (+M1, +M1+M2, 3 graines)}
+\caption{F1-macro test : DistilBERT vs RoBERTa (ladder M1 à M4, 3 graines)}
 \label{tab:expe-roberta-ablation}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|l|c|c|}
@@ -356,6 +355,7 @@ Step~0 PLM (flat) & $0{,}486 \pm 0{,}005$ & $0{,}487 \pm 0{,}005$ \\
 \hline
 +M1+M2 & $0{,}505 \pm 0{,}004$ & $0{,}526 \pm 0{,}007$ \\
 \hline
+\IfFileExists{roberta_ablation_extra_rows.tex}{\input{roberta_ablation_extra_rows}}{}
 \end{tabular}
 \end{table}
 
@@ -780,15 +780,15 @@ troncature phrase reste faible aux bornes retenues
 (section~\ref{sec:expe-corpus-stats}) ; (ii) l'initialisation $g{=}0$
 et $b_2{=}+3$ pour M3/M4 évite de biaiser le départ des portes ;
 (iii) les trois graines et le budget unique rendent lisibles H1 à H4,
-au prix d'une généralisation limitée à DistilBERT pour la ladder complète.
+avec la même discipline de protocole sur RoBERTa-base.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Le protocole expérimental est spécifié et exécuté sur DistilBERT-base :
-corpus GoEmotions, statistiques de segmentation, hyperparamètres communs
-et ladder M1 à M4. Le Step~0 PLM couvre DistilBERT et RoBERTa
-(tableau~\ref{tab:expe-baseline-step0}) ; +M1 et +M1+M2 sont également
-mesurés sur RoBERTa (tableau~\ref{tab:expe-roberta-ablation}). H1 à H4
+Le protocole expérimental est spécifié et exécuté sur GoEmotions avec
+DistilBERT-base et RoBERTa-base : statistiques de segmentation,
+hyperparamètres communs et ladder M1 à M4 sur les deux encodeurs
+(tableau~\ref{tab:expe-baseline-step0},
+tableau~\ref{tab:expe-roberta-ablation}). H1 à H4
 sont reportées aux tableaux d'ablation et au
 tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue pour la macro test
 est M1+M2 ; M3 et M4 n'apportent pas de gain robuste au-delà de M2.

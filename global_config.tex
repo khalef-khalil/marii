@@ -84,12 +84,12 @@
 \arabicAbstractKeywords{كشف المشاعر، تعلم عميق، \textLR{GoEmotions}، انتباه هرمي، تصنيف متعدد التسميات}
 
 %%% FRENCH
-\frenchAbstract{Ce mémoire conçoit et évalue \textLR{HAKE-MER} pour la détection multi-étiquettes des émotions sur GoEmotions. À protocole constant (trois graines ; ladder complète sur DistilBERT, +M1/+M1+M2 aussi sur RoBERTa), les ablations tranchent H1 à H4 : M2 porte le gain macro (jusqu'à $\approx 0{,}526$ en RoBERTa, $\approx 0{,}505$ en DistilBERT) ; M1 seul reste sous le flat ou +M1+M2 ; M3 et M4 n'améliorent pas robustement la macro. Pile recommandée : M1+M2 (encodeur selon budget latence). Analyse par classe et annexe complète sur les 28 émotions.}
+\frenchAbstract{Ce mémoire conçoit et évalue \textLR{HAKE-MER} pour la détection multi-étiquettes des émotions sur GoEmotions. À protocole constant (trois graines ; ladder M1 à M4 sur DistilBERT et RoBERTa), les ablations tranchent H1 à H4 : M2 porte le gain macro (jusqu'à $\approx 0{,}526$ en RoBERTa, $\approx 0{,}505$ en DistilBERT) ; M1 seul reste sous le flat ou +M1+M2 ; M3 et M4 n'améliorent pas robustement la macro. Pile recommandée : M1+M2 (encodeur selon budget latence). Analyse par classe et annexe complète sur les 28 émotions.}
 
 \frenchAbstractKeywords{Émotions, TALN, GoEmotions, attention hiérarchique, classification multi-étiquettes}
 
 %%% ENGLISH
-\englishAbstract{This thesis designs and evaluates \textLR{HAKE-MER} for multi-label emotion detection on GoEmotions. Under a fixed protocol (three seeds; full ladder on DistilBERT, +M1/+M1+M2 also on RoBERTa), ablations H1 to H4 show that label-specific phrase attention (M2) drives macro F1 gains (up to $\approx 0.526$ on RoBERTa, $\approx 0.505$ on DistilBERT), M1 alone stays below flat or M1+M2, and lexicon (M3) plus dynamic scaling (M4) do not reliably beat M1+M2. Recommended stack: M1+M2 (backbone by latency budget). Per-class and full 28-label annex highlight mid-frequency gains, not the rarest tail.}
+\englishAbstract{This thesis designs and evaluates \textLR{HAKE-MER} for multi-label emotion detection on GoEmotions. Under a fixed protocol (three seeds; full M1 to M4 ladder on DistilBERT and RoBERTa), ablations H1 to H4 show that label-specific phrase attention (M2) drives macro F1 gains (up to $\approx 0.526$ on RoBERTa, $\approx 0.505$ on DistilBERT), M1 alone stays below flat or M1+M2, and lexicon (M3) plus dynamic scaling (M4) do not reliably beat M1+M2. Recommended stack: M1+M2 (backbone by latency budget). Per-class and full 28-label annex highlight mid-frequency gains, not the rarest tail.}
 
 \englishAbstractKeywords{Emotion detection, NLP, GoEmotions, hierarchical attention, multi-label classification}
 

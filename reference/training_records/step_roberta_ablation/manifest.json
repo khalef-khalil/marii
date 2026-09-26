@@ -1,10 +1,22 @@
 {
-  "step": "roberta_m1_m1_m2",
-  "template_notebook": "notebooks/roberta_m1_m1_m2_campaign.ipynb",
-  "protocol_anchor": "Same as DistilBERT M1/M1+M2: batch 16, LR 5e-5, 4 epochs; M=4 phrases, 32 tokens/phrase; seeds 42, 123, 456",
+  "step": "roberta_full_ladder",
+  "notebooks": {
+    "m1_m2": "notebooks/roberta_m1_m1_m2_campaign.ipynb",
+    "m3_m4": "notebooks/roberta_m3_m4_campaign.ipynb",
+    "full": "notebooks/roberta_full_ladder_campaign.ipynb"
+  },
+  "shell": {
+    "m1_m2": "run_roberta_ablation.sh",
+    "m3_m4": "run_roberta_m3_m4_ablation.sh",
+    "full": "run_roberta_full_ablation.sh"
+  },
+  "protocol_anchor": "Same as DistilBERT: batch 16, LR 5e-5, 4 epochs; M=4 phrases, 32 tokens/phrase; seeds 42, 123, 456",
   "campaign_json_m1": "reference/artifacts/m1_roberta_base_campaign.json",
   "campaign_json_m1_m2": "reference/artifacts/m1_m2_roberta_base_campaign.json",
-  "artifact_zip": "reference/artifacts/roberta_m1_m1_m2_campaign.zip",
+  "campaign_json_m3_nrc": "reference/artifacts/m1_m2_m3_nrc_roberta_base_campaign.json",
+  "campaign_json_m3_senticnet": "reference/artifacts/m1_m2_m3_senticnet_roberta_base_campaign.json",
+  "campaign_json_m4": "reference/artifacts/m1_m2_m3_senticnet_m4_roberta_base_campaign.json",
+  "artifact_zip_m1_m2": "reference/artifacts/roberta_m1_m1_m2_campaign.zip",
   "baseline_reference": "reference/artifacts/baseline_plm_roberta_base_campaign.json",
   "test_aggregate_m1": {
     "f1_macro": { "mean": 0.48540325598779416, "std": 0.0024677260809850107 }
@@ -12,6 +24,8 @@
   "test_aggregate_m1_m2": {
     "f1_macro": { "mean": 0.5256928175823756, "std": 0.0066287846398205095 }
   },
+  "integrate_m3_m4": "python3 scripts/integrate_roberta_m3_m4_artifacts.py",
+  "render_table_rows": "python3 scripts/render_roberta_ablation_tex.py",
   "colab_executed_notebooks": [
     {
       "path": "reference/training_records/step_roberta_ablation/colab/20250926_roberta_m1_m1_m2_campaign_executed.ipynb",
