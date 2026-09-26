@@ -1,0 +1,23 @@
+{
+  "step": "m1_m2_m3_nrc",
+  "template_notebook": "notebooks/m1_m2_m3_nrc_campaign.ipynb",
+  "protocol_anchor": "Same as M1+M2; M3 NRC 8-D prior, gate g init 0",
+  "campaign_json": "reference/artifacts/m1_m2_m3_nrc_distilbert_base_uncased_campaign.json",
+  "artifact_zip": "reference/artifacts/m1_m2_m3_nrc_distilbert_step0.zip",
+  "m1_m2_reference": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.5038612670745899, "std": 0.008138066362659123 },
+    "f1_micro": { "mean": 0.5768693570759275, "std": 0.0017468441094822483 },
+    "exact_match": { "mean": 0.4534722222222222, "std": 0.002888888888888889 },
+    "map": { "mean": 0.5044444444444444, "std": 0.0005555555555555556 }
+  },
+  "lexicon_gate_abs": { "mean": 0.04171869779626528, "std": 0.0011658291064451857 },
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m1_m2_m3_nrc/colab/20250926_m1_m2_m3_nrc_campaign_executed.ipynb",
+      "description": "Colab M1+M2+M3 NRC campaign",
+      "runtime_gpu": "NVIDIA A100-SXM4-40GB",
+      "repo_commit_at_clone": "da45d7c"
+    }
+  ]
+}

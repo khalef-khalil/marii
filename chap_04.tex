@@ -9,8 +9,8 @@ H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 statistiques de corpus \emph{mesurées} avant entraînement. Le protocole d'affinage est fixé (tableau~\ref{tab:expe-hyperparams}) ;
 le Step~0 et les modules M1 à M4 sont évalués sous ce même contrat.
-Les baselines PLM, l'étape +M1 (H1) et l'étape +M2 (H2) disposent de scores test ;
-M3 à M4 et la validation de H3 à H4 restent à mener.
+Les baselines PLM, les étapes +M1 (H1), +M2 (H2) et +M3 NRC disposent de scores test ;
+la branche SenticNet de H3 et M4 restent à mener.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -379,9 +379,43 @@ absolus) ; les trois graines convergent ($0{,}499$, $0{,}508$, $0{,}508$).
 améliorent nettement la détection macro par rapport à M1 seul, avec un
 F1-micro retrouvé au niveau du Step~0 flat ($0{,}582 \pm 0{,}002$).
 La hiérarchie seule (M1) reste insuffisante ; le gain provient de la
-lecture \emph{label-specific} sur les phrases. Les étapes M3 et M4
+lecture \emph{label-specific} sur les phrases. La branche M3 (NRC) et M4
 testeront si un prior lexical et une pondération dynamique prolongent
 cette ligne.
+
+\subsection{Ablation M1+M2+M3 (NRC, H3 partiel)}
+\label{sec:expe-m3-nrc-h3}
+
+L'étape +M3 NRC injecte un vecteur documentaire à huit dimensions
+(frequences d'affects NRCLex sur tokens couverts) dans les requêtes
+d'émotions via la porte $g$ (initialisée à $0$, chapitre~\ref{sec:conception-m3}).
+Protocole d'affinage inchangé.
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : +M1+M2 vs +M3 NRC}
+\label{tab:expe-m3-nrc-distilbert}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
++M1+M2 & $0{,}582 \pm 0{,}002$ & $0{,}505 \pm 0{,}004$ & $0{,}457 \pm 0{,}004$ & $0{,}504 \pm 0{,}002$ \\
+\hline
++M1+M2+M3 (NRC) & $0{,}577 \pm 0{,}002$ & $0{,}504 \pm 0{,}008$ & $0{,}453 \pm 0{,}003$ & $0{,}504 \pm 0{,}001$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Le F1-macro test moyen reste à $0{,}504$ ($\pm 0{,}008$), soit le niveau
+de M1+M2 ($0{,}505 \pm 0{,}004$) : la moyenne sur trois graines n'indique
+pas de gain net du prior NRC. Une graine atteint $0{,}515$ (seed $42$) tandis
+que les deux autres restent sous $0{,}501$, d'où un écart-type plus élevé.
+La porte apprise $|g|$ vaut environ $0{,}042$ en fin d'entraînement : le
+modèle utilise une part modeste du signal lexique sans améliorer la macro
+de façon stable. \textbf{H3 reste partielle} tant que la branche
+SenticNet n'est pas mesurée ; sur NRC seul, l'enrichissement lexical ne
+bat pas M1+M2 de manière robuste.
 
 \subsection{Runs exploratoires (hyperparamètres non finaux)}
 \label{sec:expe-baseline-pilot}
@@ -394,12 +428,11 @@ tableau~\ref{tab:expe-baseline-step0}.
 \subsection{Analyses complémentaires (en cours)}
 \label{sec:expe-analyses-suite}
 
-Les éléments suivants compléteront ce chapitre lorsque les étapes
-M3 et M4 seront entraînées :
+Les éléments suivants compléteront ce chapitre lorsque SenticNet (H3)
+et M4 seront entraînés :
 \begin{itemize}
-\item ablation M3 (NRC, SenticNet) et M4 (mêmes métriques, encodeur DistilBERT,
-      ligne Step~0, M1 et M1+M2 des
-      tableaux~\ref{tab:expe-m1-distilbert} et~\ref{tab:expe-m1-m2-distilbert}) ;
+\item ablation M3 SenticNet et M4 (mêmes métriques, encodeur DistilBERT,
+      comparer au tableau~\ref{tab:expe-m3-nrc-distilbert}) ;
 \item F1 par classe et matrices de confusion (frontière avec
       \emph{neutral}, classes quasi vides) ;
 \item exemples qualitatifs sur émotions rares ;
@@ -430,7 +463,7 @@ hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
 rappel SenticNet. Le protocole d'affinage est ancré sur GoEmotions
 (tableau~\ref{tab:expe-hyperparams}) ; le Step~0 PLM du
 tableau~\ref{tab:expe-baseline-step0} est complet pour DistilBERT-base et
-RoBERTa-base ; H1 (M1 seul) et H2 (M1+M2) sont tranchées aux
-tableaux~\ref{tab:expe-m1-distilbert} et~\ref{tab:expe-m1-m2-distilbert}.
-Les étapes M3 et M4 sur DistilBERT-base compléteront la
-section~\ref{sec:expe-analyses-suite} et testeront H3 à H4.
+RoBERTa-base ; H1 et H2 sont tranchées aux
+tableaux~\ref{tab:expe-m1-distilbert} et~\ref{tab:expe-m1-m2-distilbert} ;
+M3 NRC est reporté au tableau~\ref{tab:expe-m3-nrc-distilbert} (H3 partiel).
+SenticNet et M4 compléteront la section~\ref{sec:expe-analyses-suite}.
