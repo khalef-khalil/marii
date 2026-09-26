@@ -19,6 +19,8 @@ class TrainConfig:
     adam_epsilon: float = 1e-8
     warmup_ratio: float = 0.1
     max_length: int = 128
+    max_phrases: int = 4
+    phrase_max_length: int = 32
     num_labels: int = 28
     use_m1: bool = False
     use_m2: bool = False
@@ -33,18 +35,15 @@ class TrainConfig:
     early_stopping_patience: int = 0
 
     def validate_flags(self) -> None:
-        if any((self.use_m1, self.use_m2, self.use_m3, self.use_m4)):
-            raise NotImplementedError(
-                "Modules M1–M4 are not implemented yet. Use all use_m* = False for baseline PLM."
-            )
-        if self.lexicon_source != "none":
+        if self.use_m2 or self.use_m3 or self.use_m4:
+            raise NotImplementedError("Modules M2–M4 are not implemented yet.")
+        if self.use_m3 or self.lexicon_source != "none":
             raise NotImplementedError("Lexicon M3 requires use_m3 (not implemented yet).")
+        if self.use_m1 and self.max_phrases < 1:
+            raise ValueError("max_phrases must be >= 1 when use_m1 is set.")
 
     @property
     def run_name(self) -> str:
-        parts = [
-            self.backbone.split("/")[-1].replace("-", "_"),
-            f"seed{self.seed}",
-            "baseline_plm",
-        ]
-        return "_".join(parts)
+        slug = self.backbone.split("/")[-1].replace("-", "_")
+        step = "m1" if self.use_m1 else "baseline_plm"
+        return f"{slug}_seed{self.seed}_{step}"

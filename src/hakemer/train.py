@@ -31,6 +31,15 @@ def resolve_device(name: str) -> torch.device:
     return torch.device(name)
 
 
+def forward_batch(model, batch, device) -> torch.Tensor:
+    input_ids = batch["input_ids"].to(device)
+    attention_mask = batch["attention_mask"].to(device)
+    phrase_mask = batch.get("phrase_mask")
+    if phrase_mask is not None:
+        phrase_mask = phrase_mask.to(device)
+    return model(input_ids, attention_mask, phrase_mask=phrase_mask)
+
+
 @torch.no_grad()
 def evaluate(
     model,
@@ -43,10 +52,8 @@ def evaluate(
     all_logits: list[np.ndarray] = []
     all_labels: list[np.ndarray] = []
     for batch in loader:
-        input_ids = batch["input_ids"].to(device)
-        attention_mask = batch["attention_mask"].to(device)
         labels = batch["labels"].to(device)
-        logits = model(input_ids, attention_mask)
+        logits = forward_batch(model, batch, device)
         all_logits.append(logits.cpu().numpy())
         all_labels.append(labels.cpu().numpy())
     y_true = np.vstack(all_labels)
@@ -70,14 +77,19 @@ def train_loop(config: TrainConfig) -> dict:
 
     tokenizer = AutoTokenizer.from_pretrained(config.backbone)
     train_hf, val_hf, test_hf = load_go_emotions_splits()
+    ds_kw = dict(
+        use_m1=config.use_m1,
+        max_phrases=config.max_phrases,
+        phrase_max_length=config.phrase_max_length,
+    )
     train_ds = GoEmotionsTorchDataset(
-        train_hf, tokenizer, config.max_length, config.num_labels, config.max_train_samples
+        train_hf, tokenizer, config.max_length, config.num_labels, config.max_train_samples, **ds_kw
     )
     val_ds = GoEmotionsTorchDataset(
-        val_hf, tokenizer, config.max_length, config.num_labels, config.max_eval_samples
+        val_hf, tokenizer, config.max_length, config.num_labels, config.max_eval_samples, **ds_kw
     )
     test_ds = GoEmotionsTorchDataset(
-        test_hf, tokenizer, config.max_length, config.num_labels, config.max_eval_samples
+        test_hf, tokenizer, config.max_length, config.num_labels, config.max_eval_samples, **ds_kw
     )
 
     train_loader = make_dataloader(train_ds, config.batch_size, shuffle=True)
@@ -106,11 +118,9 @@ def train_loop(config: TrainConfig) -> dict:
         model.train()
         running_loss = 0.0
         for batch in tqdm(train_loader, desc=f"Epoch {epoch}/{config.epochs}", leave=False):
-            input_ids = batch["input_ids"].to(device)
-            attention_mask = batch["attention_mask"].to(device)
             labels = batch["labels"].to(device)
             optimizer.zero_grad(set_to_none=True)
-            logits = model(input_ids, attention_mask)
+            logits = forward_batch(model, batch, device)
             loss = criterion(logits, labels)
             loss.backward()
             optimizer.step()
@@ -186,6 +196,9 @@ def parse_args() -> TrainConfig:
     p.add_argument("--device", default="auto")
     p.add_argument("--decision-threshold", type=float, default=0.5)
     p.add_argument("--early-stopping-patience", type=int, default=0)
+    p.add_argument("--use-m1", action="store_true", help="Module 1 hierarchical encoding")
+    p.add_argument("--max-phrases", type=int, default=4)
+    p.add_argument("--phrase-max-length", type=int, default=32)
     args = p.parse_args()
     return TrainConfig(
         backbone=args.backbone,
@@ -200,6 +213,9 @@ def parse_args() -> TrainConfig:
         device=args.device,
         decision_threshold=args.decision_threshold,
         early_stopping_patience=args.early_stopping_patience,
+        use_m1=args.use_m1,
+        max_phrases=args.max_phrases,
+        phrase_max_length=args.phrase_max_length,
     )
 
 
