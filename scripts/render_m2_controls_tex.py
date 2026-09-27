@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""LaTeX rows for M2 mechanistic control campaigns."""
+"""LaTeX rows for M2 mechanistic control campaigns (per backbone)."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
+
+BACKBONES = (
+    ("distilbert_base_uncased", "m2_controls_snippet.tex"),
+    ("roberta_base", "m2_controls_roberta_snippet.tex"),
+)
 
 
 def fmt(path: Path) -> str:
@@ -13,10 +18,7 @@ def fmt(path: Path) -> str:
     return f"${m['mean']:.3f} \\pm {m['std']:.3f}$".replace(".", "{,}")
 
 
-def main() -> None:
-    root = Path(__file__).resolve().parents[1]
-    art = root / "reference" / "artifacts"
-    slug = "distilbert_base_uncased"
+def render_for_slug(art: Path, slug: str) -> list[str]:
     rows = [
         ("M1+M2 (référence)", f"m1_m2_{slug}_campaign.json"),
         ("M1+M2 sans encodeur inter-émotions", f"m1_m2_no_enc_{slug}_campaign.json"),
@@ -30,10 +32,18 @@ def main() -> None:
         else:
             lines.append(f"{label} & {fmt(path)} \\\\")
         lines.append("\\hline")
-    out = art / "m2_controls_snippet.tex"
-    body = "\n".join(lines)
-    out.write_text(body + "\n", encoding="utf-8")
-    print(body)
+    return lines
+
+
+def main() -> None:
+    root = Path(__file__).resolve().parents[1]
+    art = root / "reference" / "artifacts"
+    for slug, out_name in BACKBONES:
+        body = "\n".join(render_for_slug(art, slug))
+        out = art / out_name
+        out.write_text(body + "\n", encoding="utf-8")
+        print(f"=== {out_name} ===")
+        print(body)
 
 
 if __name__ == "__main__":

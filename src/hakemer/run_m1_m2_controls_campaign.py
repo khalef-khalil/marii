@@ -11,7 +11,7 @@ from hakemer.train import train_loop
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="M1+M2 mechanistic controls (DistilBERT, 3 seeds)")
+    p = argparse.ArgumentParser(description="M1+M2 mechanistic controls (3 seeds)")
     p.add_argument(
         "--variant",
         required=True,

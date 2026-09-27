@@ -30,6 +30,16 @@ un objectif de gain d'environ 3 à 5\,\% sur l'état de l'art. Le mémoire
 final se concentre sur GoEmotions et une ablation M1 à M4 reproductible
 (NRC et SenticNet, deux encodeurs, trois graines).
 
+Le sujet déposé couvrait un programme large (graphes, sens commun,
+plusieurs corpus, benchmark SOTA). En cours d'implémentation, le périmètre
+a été resserré pour privilégier une étude \emph{contrôlée} des modules
+M1 à M4 plutôt qu'une liste d'expériences difficiles à comparer entre
+elles. GoEmotions sert de cadre unique ; NRC et SenticNet remplacent
+ConceptNet/EmoNet comme signaux externes directement injectables et
+traçables. Ce choix vise la profondeur et la reproductibilité, pas la
+reproduction ligne à ligne de chaque item du sujet initial
+(tableau~\ref{tab:evolution-sujet}).
+
 \begin{table}[H]
 \centering
 \caption{Écart entre le sujet initial et le périmètre réalisé}
@@ -57,6 +67,19 @@ modules et résultats négatifs documentés \\
 
 Les prolongements (graphes, corpus externes, comparaisons reproductibles
 supplémentaires) restent au \ChapRef{perspectives}.
+
+\ParHead{Rapport aux objectifs du sujet déposé :}Le sujet initial
+formulait surtout trois axes : (i)~détecter plusieurs émotions simultanées
+(et moduler leur intensité) ; (ii)~enrichir le modèle par connaissances
+externes et raisonnement de sens commun ; (iii)~modéliser le texte à
+plusieurs niveaux (mot, phrase, document). Le mémoire livré répond
+\emph{en grande partie} à (i) et (iii) via GoEmotions, la pile M1+M2 et
+l'ablation. L'intensité dynamique (M4) a été testée mais n'est pas retenue.
+L'axe (ii) est \emph{partiellement} couvert : NRC et SenticNet remplacent
+ConceptNet/EmoNet et mesurent l'apport d'un signal affectif externe, sans
+graphe de connaissances ni chaîne de raisonnement explicite. Les corpus
+SemEval/EmoInt et le benchmark « cinq SOTA » ne sont pas réalisés ; ils
+sont reportés au chapitre~5.
 
 La détection d'émotions en texte est un sujet important du TALN, utile
 par exemple pour la modération, l'analyse client ou les chatbots

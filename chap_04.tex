@@ -345,10 +345,21 @@ deux piles +M3 sont exportés.
 \section{Résultats et analyses}
 \label{sec:expe-analyses-results}
 
-Cette section reporte les métriques test obtenues sous le contrat
-ci-dessus : baselines PLM, ladder d'ablation sur DistilBERT-base,
-synthèse H1 à H4 et analyse par classe sur les émotions rares et
-\emph{neutral}.
+Les étapes principales de la ladder (Step~0, +M1, +M1+M2, +M3, +M4) sont
+comparées sur \textbf{DistilBERT-base et RoBERTa-base}
+(tableau~\ref{tab:expe-roberta-ablation}). En revanche, les analyses
+détaillées de cette section (ablations ligne à ligne, contrôles
+mécanistiques M2, NRC/SenticNet approfondis, F1 par émotion, confusions,
+cardinalité gold, ablations lexicales) sont menées sur
+\textbf{DistilBERT-base} seul, retenu comme backbone de référence pour
+limiter le coût des campagnes. Les conclusions de ces analyses fines
+sont donc \emph{diagnostiques pour DistilBERT} : elles complètent, sans
+les remplacer, les comparaisons inter-encodeurs du tableau
+synthétique.
+
+Cette section reporte les métriques test : baselines PLM, ladder sur
+DistilBERT (détail), synthèse H1 à H4 et analyse par classe sur les
+émotions rares et \emph{neutral}.
 
 \subsection{Baseline PLM (étape 0, protocole définitif)}
 \label{sec:expe-baseline-distilbert}
@@ -515,8 +526,8 @@ passe de $0{,}457$ à $0{,}505$ par rapport à M1 seul ($0{,}582 \pm 0{,}002$
 en F1-micro). L'ablation M1$\to$M1+M2 change simultanément pooling
 documentaire, têtes par émotion et blocs M2 ; elle n'isole pas
 causalement chaque sous-brique. Le
-tableau~\ref{tab:expe-m2-controls} rapporte des contrôles mécanistiques
-(DistilBERT, trois graines).
+tableaux~\ref{tab:expe-m2-controls} et~\ref{tab:expe-m2-controls-roberta}
+rapportent les contrôles mécanistiques (trois graines).
 
 \begin{table}[H]
 \centering
@@ -532,13 +543,27 @@ tableau~\ref{tab:expe-m2-controls} rapporte des contrôles mécanistiques
 \end{tabular}
 \end{table}
 
-Sans encodeur inter-émotions, le F1-macro test tombe à
+\begin{table}[H]
+\centering
+\caption{Contrôles M2 (RoBERTa-base, F1-macro test, trois graines)}
+\label{tab:expe-m2-controls-roberta}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{7.5cm}|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-macro} \\
+\hline
+\IfFileExists{reference/artifacts/m2_controls_roberta_snippet.tex}{\input{reference/artifacts/m2_controls_roberta_snippet}}{Campagne RoBERTa en cours} \\
+\hline
+\end{tabular}
+\end{table}
+
+Sur DistilBERT, sans encodeur inter-émotions, le F1-macro test tombe à
 $0{,}476 \pm 0{,}013$ (contre $0{,}505 \pm 0{,}004$ pour M1+M2 complet) :
-sous ce protocole, l'interaction entre les $28$ vecteurs d'émotion contribue
-de façon nette au gain associé à la pile M1+M2.
-En revanche, retirer l'attention croisée phrase laisse le F1-macro à
-$0{,}504 \pm 0{,}004$, au niveau de la référence M1+M2 : ce bloc n'explique
-pas, à lui seul, l'écart M1 versus M1+M2 observé plus haut.
+l'interaction entre les $28$ vecteurs d'émotion contribue nettement au gain.
+Retirer l'attention croisée phrase laisse le F1-macro à
+$0{,}504 \pm 0{,}004$, proche de la référence M1+M2. Les lignes RoBERTa du
+tableau~\ref{tab:expe-m2-controls-roberta} vérifient si le même schéma
+se reproduit sur le second backbone.
 
 Les branches M3 et M4 vérifient si un prior lexical et une pondération
 dynamique prolongent cette ligne.
