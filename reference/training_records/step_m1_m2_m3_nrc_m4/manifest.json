@@ -1,0 +1,20 @@
+{
+  "step": "m1_m2_m3_nrc_m4",
+  "template_notebook": "notebooks/m1_m2_m3_nrc_m4_campaign.ipynb",
+  "protocol_anchor": "Same as M1+M2+M3 NRC: batch 16, LR 5e-5, 4 epochs; M4 dynamic gates enabled",
+  "campaign_json": "reference/artifacts/m1_m2_m3_nrc_m4_distilbert_base_uncased_campaign.json",
+  "artifact_zip": "reference/artifacts/m1_m2_m3_nrc_m4_distilbert_step0.zip",
+  "m1_m2_reference": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
+  "m3_nrc_reference": "reference/artifacts/m1_m2_m3_nrc_distilbert_base_uncased_campaign.json",
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.5099307607584286, "std": 0.002848089270200068 },
+    "f1_micro": { "mean": 0.5777475237292683, "std": 0.0038305902228560696 }
+  },
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m1_m2_m3_nrc_m4/colab/20250927_m1_m2_m3_nrc_m4_campaign_executed.ipynb",
+      "description": "Colab H4 NRC+M4 (DistilBERT, 3 seeds)",
+      "runtime_gpu": "G4"
+    }
+  ]
+}

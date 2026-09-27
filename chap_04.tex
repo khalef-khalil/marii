@@ -693,12 +693,14 @@ Au global,
 abaissé pour NRC ($0{,}280$ vs $0{,}296$ pour M1+M2) sans supériorité
 lexicale robuste ; M2 demeure le levier principal.
 
-\subsection{Ablation M1+M2+M3+M4 (SenticNet, H4)}
+\subsection{Ablation M1+M2+M3+M4 (H4)}
 \label{sec:expe-m4-h4}
 
-H4 compare la pile M1+M2+M3 (SenticNet) à l'ajout de M4 : portes
+H4 compare la pile M1+M2+M3 à l'ajout de M4 : portes
 $\gamma_k$ (équation~\ref{eq:dyngate}, $b_2{=}+3$) sur les $r_k$ avant
 les têtes sigmoïdes, M3 inchangé. Protocole d'affinage identique.
+Les deux lexiques retenus (\SecRef{sec:conception-choix}, NRC et
+SenticNet) sont testés.
 
 \begin{table}[H]
 \centering
@@ -722,13 +724,40 @@ Le F1-macro test moyen passe de $0{,}504$ à $0{,}499$ ($\pm 0{,}006$) :
 une graine atteint $0{,}507$ (seed $42$) mais les deux autres restent sous
 $0{,}496$, d'où une moyenne inférieure à M3 SenticNet et à M1+M2
 ($0{,}505 \pm 0{,}004$). Le F1-micro et le mAP reculent légèrement.
-\textbf{H4 n'est pas soutenue} : la pondération dynamique n'améliore pas
-robustement la macro sur GoEmotions dans ce cadre. Sur RoBERTa-base,
-+M4 SenticNet ($0{,}521 \pm 0{,}005$) reste sous +M3 SenticNet et au
-niveau de +M1+M2 sans gain net. La configuration la plus efficace en
-F1-macro test reste \textbf{M1+M2} sans lexique ni M4 sur DistilBERT ;
-sur RoBERTa-base, \textbf{M1+M2} ($0{,}526 \pm 0{,}007$) devance légèrement
-les piles lexicales et M4.
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : +M3 NRC vs +M4}
+\label{tab:expe-m4-nrc-distilbert}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{3.5pt}
+\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
++M1+M2+M3 (NRC) & $0{,}577 \pm 0{,}002$ & $0{,}504 \pm 0{,}008$ & $0{,}453 \pm 0{,}003$ & $0{,}504 \pm 0{,}001$ \\
+\hline
++M1+M2+M3+M4 (NRC) & $0{,}578 \pm 0{,}004$ & $0{,}510 \pm 0{,}003$ & $0{,}454 \pm 0{,}007$ & $0{,}513 \pm 0{,}001$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Sur la branche NRC, le F1-macro moyen passe de $0{,}504$ à
+$0{,}510$ ($\pm 0{,}003$) : les trois graines se regroupent autour de
+$0{,}506$--$0{,}512$, avec un écart-type inter-graines plus faible qu'en
+M3 NRC seul. La porte $|g|$ reste d'environ $0{,}041$. Ce gain reste
+modeste par rapport à M1+M2 ($0{,}505 \pm 0{,}004$) et aux incertitudes
+recouvrantes ; il ne suffit pas à inverser la lecture globale de H4.
+
+\textbf{H4 reste prudente} : la pondération dynamique n'améliore pas
+robustement la macro avec SenticNet ; avec NRC elle relève légèrement la
+moyenne par rapport à M3 NRC seul, sans écart net et durable vis-à-vis de
+M1+M2. Sur RoBERTa-base, +M4 SenticNet ($0{,}521 \pm 0{,}005$) reste sous
++M3 SenticNet et au niveau de +M1+M2 sans gain net. La configuration retenue
+pour la comparaison interne reste \textbf{M1+M2} sans lexique ni M4 sur
+DistilBERT ; sur RoBERTa-base, \textbf{M1+M2} ($0{,}526 \pm 0{,}007$)
+devance légèrement les piles lexicales et M4.
 
 \subsection{Synthèse des hypothèses H1 à H4}
 \label{sec:expe-hypotheses-synthese}
@@ -752,7 +781,10 @@ H3 & +M1+M2 vs +M3 (NRC / SenticNet) &
 $0{,}505 \pm 0{,}004$ vs $0{,}504 \pm 0{,}008$ / $0{,}504 \pm 0{,}003$ &
 prior doc. neutre ; ext. par étiquette (§~\ref{sec:expe-m3-per-label}) marginale \\
 \hline
-H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ & H4 non soutenue \\
+H4 & +M3 vs +M4 (SenticNet / NRC) &
+$0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ /
+$0{,}504 \pm 0{,}008$ vs $0{,}510 \pm 0{,}003$ &
+SenticNet : non ; NRC : gain marginal vs M3 seul \\
 \hline
 \end{tabular}
 \end{table}

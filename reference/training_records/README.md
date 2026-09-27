@@ -18,6 +18,9 @@ Template notebooks live in `notebooks/` (no execution outputs). Records live her
 | M1 hierarchical | `step_m1/` | `notebooks/m1_campaign.ipynb` |
 | M1+M2 cross-attention | `step_m1_m2/` | `notebooks/m1_m2_campaign.ipynb` |
 | M1+M2+M3 (NRC) | `step_m1_m2_m3_nrc/` | `notebooks/m1_m2_m3_nrc_campaign.ipynb` |
+| M1+M2+M3+M4 (NRC, H4) | `step_m1_m2_m3_nrc_m4/` | `notebooks/m1_m2_m3_nrc_m4_campaign.ipynb` |
+| M2 control (no inter-emotion encoder) | `step_m2_no_enc/` | `notebooks/m1_m2_control_no_enc_campaign.ipynb` |
+| M2 control (no phrase cross-attention) | `step_m2_no_xattn/` | `notebooks/m1_m2_control_no_xattn_campaign.ipynb` |
 | M1+M2+M3 (SenticNet) | `step_m1_m2_m3_senticnet/` | `notebooks/m1_m2_m3_senticnet_campaign.ipynb` |
 | M1+M2+M3 (NRC per-label prior) | `step_m3_es_nrc/` | `notebooks/m1_m2_m3_nrc_emotion_specific_campaign.ipynb` |
 | M1+M2+M3 (SenticNet per-label prior) | `step_m3_es_senticnet/` | `notebooks/m1_m2_m3_senticnet_emotion_specific_campaign.ipynb` |
