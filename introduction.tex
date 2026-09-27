@@ -32,9 +32,10 @@ RoBERTa-base en encodage document flat ; la ladder M1 à M4 est menée sur
 les deux encodeurs ; le détail des scores test est reporté au
 \ChapRef{experimentation}.
 
-\ParHead{Orientation des résultats :}Les campagnes montrent que l'attention label-specific sur les phrases,
-module M2, concentre l'essentiel du gain en F1-macro par rapport à une
-baseline PLM plate et à la hiérarchie seule, module M1. Les priors
+\ParHead{Orientation des résultats :}Les campagnes montrent que la pile M1+M2 (module M2 inclus)
+concentre l'essentiel du gain en F1-macro par rapport à une baseline PLM
+plate et à la hiérarchie seule, module M1 ; les contrôles mécanistiques
+attribuent surtout ce gain à l'encodeur inter-émotions. Les priors
 lexicaux et la pondération dynamique, modules M3 et M4, n'apportent pas
 d'amélioration macro robuste par rapport à la pile M1+M2 sur les deux
 encodeurs testés. L'analyse par classe indique des progrès surtout sur

@@ -14,8 +14,9 @@ et sur l'apprentissage profond multi-étiquettes
 L'architecture HAKE-MER a été conçue de manière modulaire
 afin de mesurer, à protocole constant sur GoEmotions, l'apport de
 chaque brique. Les expériences menées sur DistilBERT-base et RoBERTa-base,
-trois graines et protocole identique, montrent que M2, attention croisée et
-têtes par émotion, porte le gain principal en F1-macro test, DistilBERT
+trois graines et protocole identique, montrent que la pile M1+M2 (M2 et têtes par émotion, avec encodeur
+inter-émotions comme levier principal selon les contrôles mécanistiques)
+porte le gain principal en F1-macro test, DistilBERT
 $\approx 0{,}505$ et RoBERTa $\approx 0{,}526$,
 que M1 seul sous-performe une baseline PLM flat
 ($\approx 0{,}486$), et que M3 à prior \emph{document} n'améliore pas robustement la macro ;
@@ -34,12 +35,14 @@ annotés restent optionnels pour la soutenance.
 \ParHead{Ce que les expériences établissent :}Sous le protocole GoEmotions
 retenu, la pile M1+M2 améliore le F1-macro par rapport au flat et à M1 seul
 sur DistilBERT et RoBERTa ; l'ablation M1$\to$M1+M2 ne sépare pas
-causallement chaque sous-composant de M2 (contrôles au
+causalement chaque sous-composant de M2 (contrôles au
 tableau~\ref{tab:expe-m2-controls}). Les priors lexicaux testés et M4 SenticNet n'ajoutent pas de gain macro
 robuste (NRC+M4 reste marginal) ; les progrès portent surtout sur
 des émotions de fréquence intermédiaire, pas sur la traîne extrême la
 plus rare. Les scores test du ladder complet sont exploratoires ; le choix
-de pile s'appuie sur la validation (tableau~\ref{tab:expe-val-test-selection}).
+de pile s'appuie sur la validation selon la règle du
+tableau~\ref{tab:expe-val-test-selection} (ladder principale, deux
+backbones lorsque disponible).
 
 En synthèse, HAKE-MER apporte une contribution mesurable surtout par
 M1+M2 ; les modules lexicaux et dynamiques testés ici ne justifient pas,

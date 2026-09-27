@@ -182,10 +182,19 @@ identique} ; le nombre de paramètres et le coût de calcul varient
 \end{tabular}
 \end{table}
 
-La pile \textbf{M1+M2} affiche le F1-macro validation moyen le plus élevé
-parmi les étapes principales ; les scores test du ladder complet sont
-reportés de façon \emph{exploratoire} (ablation), sans choisir a posteriori
-la configuration sur le test.
+La règle de rétention est : \textbf{maximiser le F1-macro validation
+moyen} sur la ladder \emph{principale} (Step~0, +M1, +M1+M2, +M3, +M4
+SenticNet), \textbf{sur les deux backbones} lorsque la campagne existe,
+en excluant les contrôles mécanistiques M2 et la branche NRC+M4 testée
+seulement sur DistilBERT. Sous cette règle, \textbf{M1+M2} est retenu
+($0{,}506 \pm 0{,}003$ val. DistilBERT ; $0{,}524 \pm 0{,}004$ val.
+RoBERTa). NRC+M4 ($0{,}508 \pm 0{,}002$ val.) et M1+M2 sans attention
+phrase ($0{,}507 \pm 0{,}006$) dépassent légèrement M1+M2 sur DistilBERT
+seul : gains inférieurs à l'écart-type inter-graines, non répliqués sur
+RoBERTa pour NRC+M4, et écartés au profit de la pile la plus simple et
+la plus stable sur les deux encodeurs. Les scores \emph{test} du ladder
+complet restent \emph{exploratoires}, sans sélection a posteriori sur le
+test.
 
 \subsection{Backbones}
 
@@ -515,11 +524,11 @@ l'étape M1.
 
 Le F1-macro test passe de $0{,}457$ à $0{,}505$ ($\approx 4{,}8$ points
 absolus) ; les trois graines convergent ($0{,}499$, $0{,}508$, $0{,}508$).
-\textbf{H2 est soutenue au niveau de la pile M1+M2} : la lecture
-\emph{label-specific} sur les phrases améliore nettement la macro par
-rapport à M1 seul ($0{,}582 \pm 0{,}002$ en F1-micro). L'ablation M1$\to$M1+M2
-change simultanément pooling documentaire, attention phrase et têtes ;
-elle n'isole pas causallement chaque sous-brique. Le
+\textbf{H2 est soutenue au niveau de la pile M1+M2} : la macro test
+passe de $0{,}457$ à $0{,}505$ par rapport à M1 seul ($0{,}582 \pm 0{,}002$
+en F1-micro). L'ablation M1$\to$M1+M2 change simultanément pooling
+documentaire, têtes par émotion et blocs M2 ; elle n'isole pas
+causalement chaque sous-brique. Le
 tableau~\ref{tab:expe-m2-controls} rapporte des contrôles mécanistiques
 (DistilBERT, trois graines).
 
@@ -1003,21 +1012,25 @@ trois graines).
 \caption{F1-macro test par cardinalité gold (DistilBERT, moyenne $\pm$ écart-type ; Step~0 : buckets sur les checkpoints de la campagne principale ; +M1 et +M1+M2 : passe d'évaluation supplémentaire, même protocole)}
 \label{tab:expe-cardinality}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|r|c|c|c|}
 \hline
-\textbf{Cardinalité} & \textbf{Step~0} & \textbf{+M1} & \textbf{+M1+M2} \\
+\textbf{Card. gold} & \textbf{$n$ test} & \textbf{Step~0} & \textbf{+M1} & \textbf{+M1+M2} \\
 \hline
 \IfFileExists{reference/artifacts/cardinality_snippet.tex}{\input{reference/artifacts/cardinality_snippet}}{Export depuis campagnes avec checkpoints locaux} \\
 \hline
 \end{tabular}
 \end{table}
 
-Sur les exemples à une seule étiquette gold, le Step~0 ($0{,}502 \pm 0{,}007$)
-reste au-dessus de +M1 ($0{,}490 \pm 0{,}007$) mais sous +M1+M2
-($0{,}506 \pm 0{,}003$). L'écart se renforce avec plusieurs étiquettes
-gold (deux labels : $0{,}437$ vs $0{,}361$ vs $0{,}488$ ; trois labels :
-$0{,}315$ vs $0{,}288$ vs $0{,}320$), ce qui corrobore le rôle de M2
-sur les cas multi-émotions. Les F1-macro \emph{globaux} du
+Sur les exemples à une seule étiquette gold ($n{=}4\,590$), le Step~0
+($0{,}502 \pm 0{,}007$) reste au-dessus de +M1 ($0{,}490 \pm 0{,}007$)
+mais sous +M1+M2 ($0{,}506 \pm 0{,}003$). À deux étiquettes ($n{=}774$),
++M1+M2 ($0{,}488$) devance Step~0 ($0{,}437$) et +M1 ($0{,}361$) ; à
+trois étiquettes ($n{=}61$), les trois piles restent proches
+($0{,}315$--$0{,}320$). Pour $4+$ labels ($n{=}2$ seulement), tous les
+F1-macro sont proches de zéro et ne permettent pas de conclure : cette
+ligne est \emph{exploratoire}. Au global, le tableau \emph{suggère} un
+bénéfice de M1+M2 sur les cas à deux étiquettes gold. Les F1-macro
+\emph{globaux} du
 tableau~\ref{tab:expe-h1-h4-summary} restent la référence pour les
 campagnes principales ; ce tableau isole la dépendance au nombre
 d'étiquettes gold par bucket.
@@ -1035,7 +1048,8 @@ tableau~\ref{tab:expe-h1-h4-summary}.
 \subsection{Validité interne}
 Les comparaisons M1$\to$M1+M2 modifient plusieurs mécanismes à la fois
 (pooling, attention phrase, encodeur inter-émotions, têtes). H1 compare
-une hiérarchie $4\times 32$ tokens à un flat $128$ tokens : le résultat
+une hiérarchie en quatre segments de $32$ tokens (budget nominal $128$
+tokens) à un encodage flat plafonné à $128$ tokens : le résultat
 négatif porte sur cette implémentation, pas sur toute forme de
 hiérarchie. Trois graines stabilisent les tendances mais ne remplacent
 ni tests statistiques ni intervalles de confiance.

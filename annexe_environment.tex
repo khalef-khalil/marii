@@ -1,0 +1,36 @@
+\section*{Annexe B.~Environnement d'exécution (campagnes Colab)}
+\addcontentsline{toc}{section}{Annexe B.~Environnement d'exécution}
+
+Les campagnes archivées ont été exécutées sur \textbf{Google Colab} (GPU
+T4 ou équivalent, CUDA). Versions \emph{minimal} déclarées dans le dépôt
+(\texttt{requirements-train.txt}, \texttt{scripts/requirements.txt}) :
+
+{\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Composant} & \textbf{Version (borne inférieure)} \\
+\hline
+Python & 3.10+ (runtime Colab) \\
+\hline
+PyTorch & $\geq 2.0.0$ \\
+\hline
+Transformers & $\geq 4.30.0$ \\
+\hline
+scikit-learn & $\geq 1.3.0$ \\
+\hline
+datasets (Hugging Face) & $\geq 2.14.0$ \\
+\hline
+NLTK & $\geq 3.8$ \\
+\hline
+NRCLex & $\geq 4.0$ \\
+\hline
+GoEmotions & jeu \texttt{go\_emotions} (split officiel via \texttt{datasets}) \\
+\hline
+\end{tabular}
+}
+
+Les notebooks exécutés sous \texttt{reference/training\_records/} fixent
+le commit Git et les sorties \texttt{metrics.json} ; pour une reproduction
+bit-à-bit, réutiliser le même runtime Colab et le même commit indiqué dans
+chaque manifeste de campagne.

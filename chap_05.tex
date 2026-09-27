@@ -24,8 +24,9 @@ delà de HAKE-MER :
       comparer H1 à H4 à protocole identique.
 \item \textbf{Contrôle du prétraitement} : M1 seul sous-performe le flat
       à budget token comparable : une hiérarchie naïve peut \emph{perdre}
-      du contexte utile. Les gains viennent de M2 (lecture
-      label-specific), pas du seul découpage phrase.
+      du contexte utile. Les gains viennent surtout de la pile M1+M2 ;
+      les contrôles M2 imputent l'essentiel du gain à l'encodeur
+      inter-émotions plutôt qu'à l'attention croisée phrase seule.
 \item \textbf{Métriques par classe} : Le F1-macro masque des profils
       hétérogènes (tableau~\ref{tab:expe-per-class-f1}) : M2 améliore
       surtout des émotions de fréquence intermédiaire, pas la longue
@@ -44,11 +45,13 @@ traduisent en messages concrets pour un lecteur praticien :
 \begin{itemize}
 \item \textbf{H1 non soutenue} : L'encodage hiérarchique sans M2 n'est pas
       une alternative crédible au \texttt{[CLS]} flat sur GoEmotions
-      sous ce protocole ; ne pas déployer M1 seul pour le F1-macro.
+      sous ce protocole ; M1 seul n'est pas recommandé dans le cadre
+      évalué ici pour le F1-macro.
 \item \textbf{H2 soutenue sous ce protocole} : M2 restaure et dépasse le flat sur les
       deux encodeurs ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$
       en DistilBERT ; $0{,}526 \pm 0{,}007$ en RoBERTa) : l'attention
-      croisée phrase$\times$émotion est le cœur utile de HAKE-MER.
+      interaction entre les représentations d'émotion (encodeur M2) est
+      le levier identifiable le plus net dans ce protocole.
 \item \textbf{H3 prudente} : prior \emph{document} neutre en macro ;
       prior par étiquette : NRC gagne au plus $\approx 0{,}003$ de macro
       ($0{,}508 \pm 0{,}001$ vs $0{,}505 \pm 0{,}004$), SenticNet neutre ;
@@ -56,9 +59,8 @@ traduisent en messages concrets pour un lecteur praticien :
       mesuré seulement sur cette extension (NRC $0{,}280$, SenticNet
       $0{,}290$, M1+M2 $0{,}296$).
 \item \textbf{H4 prudente} : +M4 SenticNet recule sur DistilBERT ;
-      NRC+M4 ($0{,}510 \pm 0{,}003$) n'offre qu'un gain marginal vs M1+M2 ;
-      la complexité M4 n'est pas justifiée pour la macro sur les deux
-      backbones testés.
+      NRC+M4 ($0{,}510 \pm 0{,}003$) n'offre qu'un gain marginal vs M1+M2,
+      sans campagne RoBERTa ; la complexité M4 n'est pas retenue.
 \end{itemize}
 
 \section{Recommandations pratiques}

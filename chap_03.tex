@@ -351,13 +351,14 @@ F1-macro validation) et avec F1-macro comme métrique principale.
 
 \begin{itemize}
 \item[\textbf{H1.}] \textbf{M1 vs baseline PLM} : sous l'implémentation
-  hiérarchique retenue ($4$ phrases $\times$ $32$ tokens), M1 améliore le
+  hiérarchique retenue (quatre phrases de $32$ tokens), M1 améliore le
   F1-macro test par rapport au flat $128$ tokens à backbone fixé ;
 \item[\textbf{H2.}] \textbf{M1+M2 vs M1} : la pile M1+M2 (requêtes par
-  émotion, lecture phrase et têtes par étiquette) améliore le F1-macro
-  par rapport à M1 seul ; des contrôles mécanistiques (sans encodeur
-  inter-émotions ou sans attention phrase) précisent l'attribution au
-  tableau~\ref{tab:expe-m2-controls} ;
+  émotion, blocs M2 et têtes par étiquette) améliore le F1-macro par
+  rapport à M1 seul ; les contrôles mécanistiques
+  (tableau~\ref{tab:expe-m2-controls}) indiquent que l'encodeur
+  inter-émotions porte l'essentiel du gain, l'attention croisée phrase
+  seule ne dégradant pas nettement la macro dans ce protocole ;
 \item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : (i) prior lexical
   \emph{document} global (NRC ou SenticNet) ; (ii) extension exploratoire
   prior NRC \emph{par étiquette} ; la macro et l'écart fréquent vs rare
