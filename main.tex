@@ -11,6 +11,7 @@
 %\documentclass[pfe]{./tpl/isipfe}
 \documentclass[]{./tpl/isipfe}
 \graphicspath{{./img/}}
+\usepackage[protrusion=true,expansion=true]{microtype}
 \usepackage{tikz}
 \usetikzlibrary{positioning, arrows.meta, calc, fit, backgrounds}
 \usepackage{booktabs}
@@ -46,6 +47,10 @@
 % the command `\makeindex` is mandatory to create the index file main.idx
 % https://tex.stackexchange.com/questions/9913/input-index-file-not-found
 \makeindex
+
+\setlength{\emergencystretch}{2.5em}
+\tolerance=3500
+\hbadness=10000
 
 \begin{document}
     \input{global_config}
@@ -99,7 +104,10 @@
         \input{conclusion}
         \clearpage
         
+        {\sloppy
+        \setlength{\emergencystretch}{4em}
         \printbibliography[heading=bibintoc]
+        }
         
         \input{annexes}
         \clearpage

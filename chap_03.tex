@@ -229,7 +229,7 @@ taxonomie GoEmotions, pas sur la richesse abstraite du graphe seul.
 
 Le texte est segmenté comme en section~\ref{sec:conception-choix}, puis
 encodé par le backbone en un seul appel vectorisé. Le module s'inspire de
-l'agrégation mot$\to$phrase des réseaux d'attention hiérarchiques
+l'agrégation mot vers phrase des réseaux d'attention hiérarchiques
 \cite{yang2016}, avec une couche d'\emph{attention additive}
 \cite{bahdanau2015}. Pour une phrase de représentations de tokens
 $H=(h_1,\dots,h_T)$ et de masque $m$, cette couche calcule :
@@ -241,11 +241,12 @@ s = \sum_t \alpha_t\, h_t,
 \end{equation}
 les positions masquées recevant un score $-\infty$ avant le softmax.
 On obtient les vecteurs de phrases $s_1,\dots,s_M$. Contrairement au
-HAN complet \cite{yang2016}, HAKE-MER ne réalise pas d'agrégation
-phrase$\to$document lorsque M2 est actif : M2 remplace ce pooling global
-par une lecture \emph{par émotion}. En configuration M1 seul (ablation),
-une seconde attention phrase$\to$document et une tête linéaire partagée
-servent de ligne intermédiaire avant la comparaison M1+M2.
+HAN complet \cite{yang2016}, HAKE-MER ne réalise pas, lorsque M2 est
+actif, d'agrégation des phrases au niveau document : M2 remplace ce
+pooling global par une lecture \emph{par émotion}. En configuration M1
+seul (ablation), une seconde attention agrège les phrases au niveau
+document et une tête linéaire partagée sert de ligne intermédiaire
+avant la comparaison M1+M2.
 
 \section{Module 2 : Attention Croisée Multi-Émotions}
 \label{sec:conception-m2}

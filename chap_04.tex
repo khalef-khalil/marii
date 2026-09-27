@@ -384,8 +384,8 @@ RoBERTa-base & $0{,}586 \pm 0{,}003$ & $0{,}487 \pm 0{,}005$ & $0{,}473 \pm 0{,}
 
 L'étape +M1 du tableau~\ref{tab:expe-ablation-flags} active la
 segmentation en $M{=}4$ phrases (NLTK), l'encodage DistilBERT à
-$32$ tokens par phrase et l'agrégation additive mot$\to$phrase puis
-phrase$\to$document (chapitre~\ref{sec:conception-m1}), sans M2 à M4.
+$32$ tokens par phrase et l'agrégation additive mot vers phrase puis
+phrase vers document (chapitre~\ref{sec:conception-m1}), sans M2 à M4.
 Le budget d'affinage reste celui du tableau~\ref{tab:expe-hyperparams}
 (quatre époques, trois graines, sélection au F1-macro validation).
 La comparaison porte sur la \textbf{même} baseline DistilBERT Step~0 :
@@ -416,13 +416,13 @@ multi-étiquettes macro par rapport au PLM document à encodeur fixé.
 L'écart concerne aussi le F1-micro et l'exact match ; seule la lecture
 flat avec troncature globale et pooling [CLS] performe mieux ici.
 Cette observation motive la suite de l'ablation (M2 : attention
-émotion$\to$phrases) plutôt qu'un prolongement direct de M1 seul.
+émotion vers phrases) plutôt qu'un prolongement direct de M1 seul.
 
 \subsection{Ablation M1+M2 (attention par émotion, H2)}
 \label{sec:expe-m1-m2-h2}
 
 L'étape +M2 (tableau~\ref{tab:expe-ablation-flags}) conserve M1 et
-remplace le pooling phrase$\to$document par une lecture croisée
+remplace le pooling phrase vers document par une lecture croisée
 multi-têtes par émotion sur $s_1,\dots,s_M$, un encodeur sur l'axe
 des $K$ émotions et des têtes de classification par étiquette
 (chapitre~\ref{sec:conception-m2}). Protocole d'affinage identique à
@@ -570,6 +570,8 @@ les têtes sigmoïdes, M3 inchangé. Protocole d'affinage identique.
 \caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : +M3 SenticNet vs +M4}
 \label{tab:expe-m4-distilbert}
 \renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{3.5pt}
+\small
 \begin{tabular}{|l|c|c|c|c|}
 \hline
 \textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
