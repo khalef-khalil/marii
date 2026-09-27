@@ -1,11 +1,28 @@
 {
   "step": "m1_m2_m3_senticnet_es",
   "template_notebook": "notebooks/m1_m2_m3_senticnet_emotion_specific_campaign.ipynb",
-  "protocol_anchor": "Same as global M3 SenticNet; lexicon_fusion emotion_specific",
+  "protocol_anchor": "Same as global M3 SenticNet; lexicon_fusion emotion_specific (NRC bridge per label)",
   "campaign_json": "reference/artifacts/m1_m2_m3_senticnet_es_distilbert_base_uncased_campaign.json",
   "artifact_zip": "reference/artifacts/m1_m2_m3_senticnet_es_distilbert_step0.zip",
+  "metrics_dir": "reference/artifacts/step_m3_es_senticnet_distilbert",
   "m1_m2_reference": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
   "global_m3_senticnet_reference": "reference/artifacts/m1_m2_m3_senticnet_distilbert_base_uncased_campaign.json",
+  "nrc_per_label_reference": "reference/artifacts/m1_m2_m3_nrc_es_distilbert_base_uncased_campaign.json",
   "colab_open_url": "https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_senticnet_emotion_specific_campaign.ipynb",
-  "colab_executed_notebooks": []
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.5038034575311647, "std": 0.0007115743528617065 },
+    "f1_micro": { "mean": 0.57906420733706, "std": 0.002035872852883203 },
+    "exact_match": { "mean": 0.45556169768441745, "std": 0.0035740646215775924 },
+    "map": { "mean": 0.5051420367057341, "std": 0.0034269312735125397 }
+  },
+  "lexicon_gate_abs": { "mean": 0.0369097168246905, "std": 0.0004936636251656138 },
+  "delta_frequent_minus_rare_seed42": 0.2874,
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m3_es_senticnet/colab/20250927_m1_m2_m3_senticnet_emotion_specific_campaign_executed.ipynb",
+      "description": "Colab M1+M2+M3 SenticNet per-label prior campaign",
+      "runtime_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "repo_commit_at_clone": "fb555d0"
+    }
+  ]
 }
