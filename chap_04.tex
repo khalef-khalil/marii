@@ -13,6 +13,14 @@ Les baselines PLM et les ablations +M1 à +M4 (H1 à H4) disposent de scores
 test sur DistilBERT-base et RoBERTa-base sous le même contrat
 (section~\ref{sec:expe-roberta-ablation}).
 
+\paragraph{Synthèse des scores test.}
+Sous ce protocole, le Step~0 flat atteint environ $0{,}486$ à $0{,}487$ de
+F1-macro ; +M1 seul recule nettement ; +M1+M2 devient la meilleure pile
+macro, environ $0{,}505$ en DistilBERT-base et $0{,}526$ en RoBERTa-base.
+Les variantes +M3 et +M4 restent au niveau de M1+M2 ou en dessous sur la
+macro, sans gain robuste. Les sections suivantes détaillent le cadre,
+puis les ablations et l'analyse par classe qui motivent cette lecture.
+
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
 

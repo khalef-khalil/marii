@@ -2,52 +2,53 @@
 \addcontentsline{toc}{chapter}{Introduction générale}
 \markboth{Introduction générale}{}
 
-Les textes produits en ligne (commentaires, messages, avis) véhiculent
+Les textes produits en ligne, commentaires, messages ou avis, véhiculent
 des états affectifs qui dépassent souvent une simple polarité positive ou
-négative. La \textbf{détection d'émotions} vise à identifier des catégories
-affectives fines (joie, colère, tristesse, peur, etc.), fréquemment
-\textbf{plusieurs à la fois} dans un même énoncé. Cette tâche relève de la
+négative. La détection d'émotions vise à identifier des catégories
+affectives fines, joie, colère, tristesse, peur, etc., souvent
+plusieurs à la fois dans un même énoncé. Cette tâche relève de la
 classification \emph{multi-étiquettes} : chaque émotion est une décision
-binaire ; les cooccurrences et le \textbf{déséquilibre} des classes
-(quelques labels très fréquents, beaucoup d'autres rares) compliquent
-l'apprentissage et l'évaluation.
+binaire, et les cooccurrences ainsi que le déséquilibre marqué des classes
+compliquent l'apprentissage et l'évaluation.
 
 Ce mémoire s'inscrit dans le Mastère de Recherche à l'Institut Supérieur
 d'Informatique (ISI), sous l'encadrement de M.~Sahbi Bahroun. Il porte sur
-la conception et l'évaluation de \textbf{HAKE-MER} (\emph{Hierarchical
+la conception et l'évaluation de HAKE-MER (\emph{Hierarchical
 Attention with Knowledge Enhancement for Multi-Emotion
 Recognition}), architecture modulaire pour la détection multi-émotions.
 
-Cette architecture combine encodage hiérarchique du texte, attention
-croisée entre émotions et enrichissement par lexiques affectifs (NRC,
-SenticNet), au-dessus d'encodeurs contextuels affinés
+L'architecture combine encodage hiérarchique du texte, attention
+croisée entre émotions et enrichissement par lexiques affectifs NRC et
+SenticNet, au-dessus d'encodeurs contextuels affinés
 \cite{howard2018ulmfit,devlin2019}. Les expériences portent sur
 GoEmotions \cite{demszky2020}, dans le cadre de la détection
 multi-étiquettes en texte \cite{zhang2014multilabel,mohammad2020sentiment},
-avec un protocole d'ablation à budget d'affinage identique, le \textbf{F1-macro} comme
+avec un protocole d'ablation à budget d'affinage identique, le F1-macro comme
 métrique principale \cite{bond2022multilabel,wu2021multilabelranking} et
 trois graines aléatoires. Le Step~0 compare DistilBERT-base et
 RoBERTa-base en encodage document flat ; la ladder M1 à M4 est menée sur
-les deux encodeurs (\ChapRef{experimentation}).
+les deux encodeurs ; le détail des scores test est reporté au
+\ChapRef{experimentation}.
 
-\textbf{Résultat principal.} L'attention label-specific sur les phrases
-(module M2) apporte le gain net en F1-macro test sur les deux encodeurs
-($\approx 0{,}505$ en DistilBERT-base, $\approx 0{,}526$ en RoBERTa-base
-pour \textbf{M1+M2}). La hiérarchie seule (M1) sous-performe une baseline
-PLM flat ($\approx 0{,}486$--$0{,}487$). Les priors lexicaux (M3) et la
-pondération dynamique (M4) n'améliorent pas robustement la macro par
-rapport à M1+M2 sur aucun des deux backbones : la pile \textbf{M1+M2}
-reste la configuration la plus efficace au regard des scores mesurés.
-L'analyse par classe confirme des progrès surtout sur des émotions de
-fréquence intermédiaire, pas sur la longue traîne la plus rare.
+\paragraph{Orientation des résultats.}
+Les campagnes montrent que l'attention label-specific sur les phrases,
+module M2, concentre l'essentiel du gain en F1-macro par rapport à une
+baseline PLM plate et à la hiérarchie seule, module M1. Les priors
+lexicaux et la pondération dynamique, modules M3 et M4, n'apportent pas
+d'amélioration macro robuste par rapport à la pile M1+M2 sur les deux
+encodeurs testés. L'analyse par classe indique des progrès surtout sur
+des émotions de fréquence intermédiaire, plutôt que sur la longue traîne
+la plus rare. Les chiffres, tableaux d'ablation et synthèse H1 à H4
+figurent au \ChapRef{experimentation} ; le résumé en tête de volume en
+donne une vue condensée pour le lecteur pressé.
 
-\textbf{Contributions de ce mémoire} :
+\paragraph{Contributions.}
 \begin{itemize}[noitemsep]
-\item une architecture HAKE-MER en quatre modules cumulables (M1 à M4)
+\item une architecture HAKE-MER en quatre modules cumulables M1 à M4
       et quatre hypothèses H1 à H4 testées par ablation ;
-\item un protocole expérimental documenté (graines, hyperparamètres et
-      campagnes archivées, Step~0 sur deux encodeurs, comparaison NRC /
-      SenticNet, synthèse H1 à H4 et F1 par émotion sur le test) ;
+\item un protocole expérimental documenté, graines, hyperparamètres et
+      campagnes archivées, Step~0 sur deux encodeurs, comparaison NRC et
+      SenticNet, synthèse H1 à H4 et F1 par émotion sur le test ;
 \item des recommandations de déploiement et des perspectives ancrées
       sur les résultats obtenus (\ChapRef{perspectives}).
 \end{itemize}
