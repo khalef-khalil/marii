@@ -16,8 +16,11 @@ test sur DistilBERT-base et RoBERTa-base sous le même contrat
 \ParHead{Synthèse des scores test :}Sous ce protocole, le Step~0 flat atteint environ $0{,}486$ à $0{,}487$ de
 F1-macro ; +M1 seul recule nettement ; +M1+M2 devient la meilleure pile
 macro, environ $0{,}505$ en DistilBERT-base et $0{,}526$ en RoBERTa-base.
-Les variantes +M3 et +M4 restent au niveau de M1+M2 ou en dessous sur la
-macro, sans gain robuste. Les sections suivantes détaillent le cadre,
+Les variantes +M3 (prior \emph{document}) restent au niveau de M1+M2 ;
++M4 SenticNet recule légèrement ; seule la branche NRC+M4
+($0{,}510 \pm 0{,}003$) dépasse marginalement M1+M2
+($0{,}505 \pm 0{,}004$) sans écart net suffisant pour modifier la pile
+retenue. Les sections suivantes détaillent le cadre,
 puis les ablations et l'analyse par classe qui motivent cette lecture.
 
 \section{Cadre expérimental}
@@ -1104,8 +1107,10 @@ hyperparamètres communs et ladder M1 à M4 sur les deux encodeurs
 tableau~\ref{tab:expe-roberta-ablation}). H1 à H4
 sont reportées aux tableaux d'ablation et au
 tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue sur validation est
-M1+M2 (tableau~\ref{tab:expe-val-test-selection}) ; M3 et M4 n'apportent
-pas de gain macro robuste au-delà de M2 sur ce protocole.
+M1+M2 (tableau~\ref{tab:expe-val-test-selection}) ; M3 document et M4
+SenticNet n'apportent pas de gain macro robuste ; NRC+M4 reste marginal
+(tableau~\ref{tab:expe-m4-nrc-distilbert}). Les tableaux par cardinalité
+gold et les contrôles mécanistiques de M2 complètent cette lecture.
 L'analyse par classe (extrait et annexe complète) et l'analyse de
 confusions (section~\ref{sec:expe-error-analysis}) complètent la macro.
 Le \ChapRef{perspectives} en tire les recommandations pratiques.

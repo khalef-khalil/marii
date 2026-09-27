@@ -55,9 +55,10 @@ traduisent en messages concrets pour un lecteur praticien :
       $\Delta$ fréquent vs rare
       mesuré seulement sur cette extension (NRC $0{,}280$, SenticNet
       $0{,}290$, M1+M2 $0{,}296$).
-\item \textbf{H4 non soutenue} : M4 n'améliore pas la macro par rapport
-      à M3 SenticNet ni à M1+M2 sur les deux backbones ; la complexité
-      supplémentaire n'est pas justifiée par les scores test actuels.
+\item \textbf{H4 prudente} : +M4 SenticNet recule sur DistilBERT ;
+      NRC+M4 ($0{,}510 \pm 0{,}003$) n'offre qu'un gain marginal vs M1+M2 ;
+      la complexité M4 n'est pas justifiée pour la macro sur les deux
+      backbones testés.
 \end{itemize}
 
 \section{Recommandations pratiques}

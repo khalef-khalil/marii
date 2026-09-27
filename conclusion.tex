@@ -22,9 +22,10 @@ que M1 seul sous-performe une baseline PLM flat
 une extension à prior par étiquette n'ajoute qu'un gain macro marginal
 sur DistilBERT ($\approx +0{,}003$, NRC $0{,}508 \pm 0{,}001$ vs M1+M2
 $0{,}505 \pm 0{,}004$) avec $\Delta$ fréquent vs rare encore élevé
-(H3 prudente au \ChapRef{experimentation}). M4 n'améliore pas
-robustement la F1-macro test, $0{,}499 \pm 0{,}006$, par rapport à M3
-SenticNet ni à M1+M2 : la pile retenue en macro reste M1+M2.
+(H3 prudente au \ChapRef{experimentation}). H4 reste prudente :
++M4 SenticNet recule ($0{,}499 \pm 0{,}006$) ; NRC+M4
+($0{,}510 \pm 0{,}003$) ne dépasse M1+M2 que marginalement
+($0{,}505 \pm 0{,}004$) : la pile retenue en macro reste M1+M2.
 L'analyse par classe (Step~0, +M1, +M1+M2) confirme que les gains macro
 de M2 portent surtout sur des émotions de fréquence intermédiaire
 (\ChapRef{experimentation}) ; des exemples qualitatifs
@@ -34,8 +35,8 @@ annotés restent optionnels pour la soutenance.
 retenu, la pile M1+M2 améliore le F1-macro par rapport au flat et à M1 seul
 sur DistilBERT et RoBERTa ; l'ablation M1$\to$M1+M2 ne sépare pas
 causallement chaque sous-composant de M2 (contrôles au
-tableau~\ref{tab:expe-m2-controls}). Les priors lexicaux testés et M4
-n'ajoutent pas de gain macro robuste ; les progrès portent surtout sur
+tableau~\ref{tab:expe-m2-controls}). Les priors lexicaux testés et M4 SenticNet n'ajoutent pas de gain macro
+robuste (NRC+M4 reste marginal) ; les progrès portent surtout sur
 des émotions de fréquence intermédiaire, pas sur la traîne extrême la
 plus rare. Les scores test du ladder complet sont exploratoires ; le choix
 de pile s'appuie sur la validation (tableau~\ref{tab:expe-val-test-selection}).
