@@ -30,12 +30,14 @@ flat ; la ladder M1 à M4 est menée sur les deux encodeurs
 (chapitre~\ref{chap:experimentation}).
 
 \textbf{Résultat principal.} L'attention label-specific sur les phrases
-(module M2) apporte le gain net en F1-macro test ($\approx 0{,}505$) ;
-la hiérarchie seule (M1) sous-performe une baseline PLM flat
-($\approx 0{,}486$--$0{,}487$). Les priors lexicaux (M3) et la
-pondération dynamique (M4) n'améliorent pas robustement la macro par
-rapport à la pile \textbf{M1+M2}, retenue comme configuration la plus
-efficace au regard des scores mesurés. L'analyse par classe confirme
+(module M2) apporte le gain net en F1-macro test sur les deux encodeurs
+($\approx 0{,}505$ en DistilBERT-base, $\approx 0{,}526$ en RoBERTa-base
+pour \textbf{M1+M2}) ; la hiérarchie seule (M1) sous-performe une
+baseline PLM flat ($\approx 0{,}486$--$0{,}487$). Les priors lexicaux
+(M3) et la pondération dynamique (M4) n'améliorent pas robustement la
+macro par rapport à M1+M2 sur aucun des deux backbones : la pile
+\textbf{M1+M2} reste la configuration la plus efficace au regard des
+scores mesurés. L'analyse par classe confirme
 des progrès surtout sur des émotions de fréquence intermédiaire, pas
 sur la longue traîne la plus rare.
 
