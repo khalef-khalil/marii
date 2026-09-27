@@ -1,0 +1,19 @@
+{
+  "step": "m1_m2_no_xattn_distilbert",
+  "template_notebook": "notebooks/m1_m2_control_no_xattn_campaign.ipynb",
+  "protocol_anchor": "Same as M1+M2: batch 16, LR 5e-5, 4 epochs; M2 without phrase cross-attention",
+  "campaign_json": "reference/artifacts/m1_m2_no_xattn_distilbert_base_uncased_campaign.json",
+  "artifact_zip": "reference/artifacts/m1_m2_no_xattn_distilbert_step0.zip",
+  "m1_m2_reference": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.5036673451091512, "std": 0.00366124059702827 },
+    "f1_micro": { "mean": 0.5798879108925868, "std": 0.0009024070230713152 }
+  },
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m2_no_xattn/colab/20250927_m1_m2_control_no_xattn_campaign_executed.ipynb",
+      "description": "Colab M2 control no_xattn (DistilBERT, 3 seeds)",
+      "runtime_gpu": "G4"
+    }
+  ]
+}
