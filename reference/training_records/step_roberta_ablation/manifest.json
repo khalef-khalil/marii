@@ -17,12 +17,26 @@
   "campaign_json_m3_senticnet": "reference/artifacts/m1_m2_m3_senticnet_roberta_base_campaign.json",
   "campaign_json_m4": "reference/artifacts/m1_m2_m3_senticnet_m4_roberta_base_campaign.json",
   "artifact_zip_m1_m2": "reference/artifacts/roberta_m1_m1_m2_campaign.zip",
+  "artifact_zips_m3_m4": [
+    "reference/training_records/step_roberta_ablation/zips/roberta_m3_nrc_campaign.zip",
+    "reference/training_records/step_roberta_ablation/zips/roberta_m3_senticnet_campaign.zip",
+    "reference/training_records/step_roberta_ablation/zips/roberta_m4_senticnet_campaign.zip"
+  ],
   "baseline_reference": "reference/artifacts/baseline_plm_roberta_base_campaign.json",
   "test_aggregate_m1": {
     "f1_macro": { "mean": 0.48540325598779416, "std": 0.0024677260809850107 }
   },
   "test_aggregate_m1_m2": {
     "f1_macro": { "mean": 0.5256928175823756, "std": 0.0066287846398205095 }
+  },
+  "test_aggregate_m3_nrc": {
+    "f1_macro": { "mean": 0.49262130224601686, "std": 0.04463272251933952 }
+  },
+  "test_aggregate_m3_senticnet": {
+    "f1_macro": { "mean": 0.5234742118306431, "std": 0.0030256198410126794 }
+  },
+  "test_aggregate_m4_senticnet": {
+    "f1_macro": { "mean": 0.5209322559295221, "std": 0.005057904100953186 }
   },
   "integrate_m3_m4": "python3 scripts/integrate_roberta_m3_m4_artifacts.py",
   "render_table_rows": "python3 scripts/render_roberta_ablation_tex.py",
@@ -32,6 +46,11 @@
       "description": "Colab RoBERTa +M1 and +M1+M2 (3 seeds each)",
       "runtime_gpu": "NVIDIA A100-SXM4-40GB",
       "repo_commit_at_clone": "ec9652e"
+    },
+    {
+      "path": "reference/training_records/step_roberta_ablation/colab/20250927_roberta_m3_m4_campaign_executed.ipynb",
+      "description": "Colab RoBERTa +M3 (NRC, SenticNet) and +M4 SenticNet (3 seeds each)",
+      "repo_commit_at_clone": "851661b"
     }
   ]
 }

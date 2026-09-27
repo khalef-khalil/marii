@@ -13,9 +13,10 @@ et sur l'apprentissage profond multi-étiquettes
 
 L'architecture \textbf{HAKE-MER} a été conçue de manière modulaire
 afin de mesurer, à protocole constant sur GoEmotions, l'apport de
-chaque brique. Les expériences menées sur DistilBERT-base (trois
-graines) montrent que \textbf{M2} (attention croisée et têtes par
-émotion) porte le gain principal en F1-macro test ($\approx 0{,}505$),
+chaque brique. Les expériences menées sur DistilBERT-base et RoBERTa-base (trois
+graines, protocole identique) montrent que \textbf{M2} (attention croisée et têtes par
+émotion) porte le gain principal en F1-macro test (DistilBERT
+$\approx 0{,}505$ ; RoBERTa $\approx 0{,}526$),
 que \textbf{M1} seul sous-performe une baseline PLM flat
 ($\approx 0{,}486$), et que \textbf{M3} (NRC ou SenticNet) n'améliore
 pas de façon robuste la macro par rapport à M1+M2 (H3 tranchée au

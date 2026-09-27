@@ -336,9 +336,13 @@ $0{,}487 \pm 0{,}005$) et nettement sous +M1+M2 : M1 seul n'est pas
 une configuration à retenir. +M1+M2 atteint $0{,}526 \pm 0{,}007$,
 au-dessus du Step~0 RoBERTa et de la meilleure pile DistilBERT
 ($0{,}505 \pm 0{,}004$) : H2 reste confirmée sur les deux backbones.
-Les lignes +M3 (NRC, SenticNet) et +M4 complètent le tableau dès que
-les campagnes RoBERTa correspondantes sont archivées au même format
-que DistilBERT.
+Les lignes +M3 et +M4 du tableau complètent la ladder RoBERTa.
++M3 SenticNet ($0{,}523 \pm 0{,}003$) reste au niveau de +M1+M2 sans gain
+macro robuste ; la branche NRC ($0{,}493 \pm 0{,}045$) est dominée par la
+graine $42$ ($0{,}430$) tandis que les graines $123$ et $456$ avoisinent
+$0{,}524$. +M4 SenticNet ($0{,}521 \pm 0{,}005$) n'améliore pas la macro
+par rapport à +M3 SenticNet : H3 et H4 se lisent comme sur DistilBERT au
+regard du F1-macro test.
 
 \begin{table}[H]
 \centering
@@ -544,6 +548,10 @@ autres. SenticNet préserve le F1-micro de M1+M2 et le mAP le plus élevé
 des trois piles, sans gain macro décisif. Le levier principal reste
 donc M2 ; M3 ajoute un prior appris modestement ($|g| \approx 0{,}03$
 à $0{,}04$) plutôt qu'un saut de performance macro sur GoEmotions.
+Sur RoBERTa-base (tableau~\ref{tab:expe-roberta-ablation}), SenticNet
+préserve la macro au niveau de +M1+M2 ; NRC affiche une variance inter-graines
+élevée (graine $42$ sous-performante). Le constat H3 (pas de gain macro
+robuste du lexique) se reproduit sur les deux encodeurs.
 Sur le volet « classes rares » de H3 (chapitre~\ref{sec:conception-hypotheses}),
 ni NRC ni SenticNet ne réduisent de façon nette l'écart F1 entre labels
 fréquents et très rares : le tableau~\ref{tab:expe-per-class-f1} montre
@@ -578,8 +586,12 @@ une graine atteint $0{,}507$ (seed $42$) mais les deux autres restent sous
 $0{,}496$, d'où une moyenne inférieure à M3 SenticNet et à M1+M2
 ($0{,}505 \pm 0{,}004$). Le F1-micro et le mAP reculent légèrement.
 \textbf{H4 n'est pas confirmée} : la pondération dynamique n'améliore pas
-robustement la macro sur GoEmotions dans ce cadre. La configuration la
-plus efficace en F1-macro test reste \textbf{M1+M2} sans lexique ni M4.
+robustement la macro sur GoEmotions dans ce cadre. Sur RoBERTa-base,
++M4 SenticNet ($0{,}521 \pm 0{,}005$) reste sous +M3 SenticNet et au
+niveau de +M1+M2 sans gain net. La configuration la plus efficace en
+F1-macro test reste \textbf{M1+M2} sans lexique ni M4 sur DistilBERT ;
+sur RoBERTa-base, \textbf{M1+M2} ($0{,}526 \pm 0{,}007$) devance légèrement
+les piles lexicales et M4.
 
 \subsection{Synthèse des hypothèses H1 à H4}
 \label{sec:expe-hypotheses-synthese}
