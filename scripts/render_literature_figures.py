@@ -47,9 +47,9 @@ def fig_han() -> None:
     ax.set_ylim(0, 6)
     ax.axis("off")
     levels = [
-        (1, 5, "Mots", "#F5E6D3"),
+        (1, 1, "Mots", "#F5E6D3"),
         (1, 3, "Phrases", "#D6EAF8"),
-        (1, 1, "Document", "#D5F5E3"),
+        (1, 5, "Document", "#D5F5E3"),
     ]
     for x, y, label, color in levels:
         rect = mpatches.FancyBboxPatch(

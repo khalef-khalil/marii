@@ -15,31 +15,31 @@ l'apprentissage et l'évaluation.
 Ce mémoire s'inscrit dans le Mastère de Recherche à l'Institut Supérieur
 d'Informatique (ISI), sous l'encadrement de M.~Sahbi Bahroun. Il porte sur
 la conception et l'évaluation de \textbf{HAKE-MER} (\emph{Hierarchical
-Attention with Knowledge Enhancement for Multi-Emotion Recognition}),
-architecture modulaire qui combine encodage hiérarchique du texte,
-attention croisée entre émotions et enrichissement par lexiques affectifs
-(NRC, SenticNet), au-dessus d'encodeurs contextuels affinés
-\cite{howard2018ulmfit,devlin2019}. Les expériences portent sur GoEmotions
-\cite{demszky2020}, dans le cadre de la détection multi-étiquettes en
-texte \cite{zhang2014multilabel,mohammad2020sentiment}, avec un protocole
-d'ablation à budget constant, le
-\textbf{F1-macro} comme métrique principale \cite{bond2022multilabel,wu2021multilabelranking}
-et trois graines aléatoires.
-Le Step~0 compare DistilBERT-base et RoBERTa-base en encodage document
-flat ; la ladder M1 à M4 est menée sur les deux encodeurs
-(chapitre~\ref{chap:experimentation}).
+Attention with Knowledge Enhancement for Multi-Emotion
+Recognition}), architecture modulaire pour la détection multi-émotions.
+
+Cette architecture combine encodage hiérarchique du texte, attention
+croisée entre émotions et enrichissement par lexiques affectifs (NRC,
+SenticNet), au-dessus d'encodeurs contextuels affinés
+\cite{howard2018ulmfit,devlin2019}. Les expériences portent sur
+GoEmotions \cite{demszky2020}, dans le cadre de la détection
+multi-étiquettes en texte \cite{zhang2014multilabel,mohammad2020sentiment},
+avec un protocole d'ablation à budget constant, le \textbf{F1-macro} comme
+métrique principale \cite{bond2022multilabel,wu2021multilabelranking} et
+trois graines aléatoires. Le Step~0 compare DistilBERT-base et
+RoBERTa-base en encodage document flat ; la ladder M1 à M4 est menée sur
+les deux encodeurs (chapitre~\ref{chap:experimentation}).
 
 \textbf{Résultat principal.} L'attention label-specific sur les phrases
 (module M2) apporte le gain net en F1-macro test sur les deux encodeurs
 ($\approx 0{,}505$ en DistilBERT-base, $\approx 0{,}526$ en RoBERTa-base
-pour \textbf{M1+M2}) ; la hiérarchie seule (M1) sous-performe une
-baseline PLM flat ($\approx 0{,}486$--$0{,}487$). Les priors lexicaux
-(M3) et la pondération dynamique (M4) n'améliorent pas robustement la
-macro par rapport à M1+M2 sur aucun des deux backbones : la pile
-\textbf{M1+M2} reste la configuration la plus efficace au regard des
-scores mesurés. L'analyse par classe confirme
-des progrès surtout sur des émotions de fréquence intermédiaire, pas
-sur la longue traîne la plus rare.
+pour \textbf{M1+M2}). La hiérarchie seule (M1) sous-performe une baseline
+PLM flat ($\approx 0{,}486$--$0{,}487$). Les priors lexicaux (M3) et la
+pondération dynamique (M4) n'améliorent pas robustement la macro par
+rapport à M1+M2 sur aucun des deux backbones : la pile \textbf{M1+M2}
+reste la configuration la plus efficace au regard des scores mesurés.
+L'analyse par classe confirme des progrès surtout sur des émotions de
+fréquence intermédiaire, pas sur la longue traîne la plus rare.
 
 \textbf{Contributions de ce mémoire} :
 \begin{itemize}[noitemsep]

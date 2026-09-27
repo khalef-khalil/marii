@@ -203,16 +203,24 @@ vecteur injecté reste
 \emph{partagé} entre émotions (section~\ref{sec:conception-m3}), la
 table servant à l'analyse et à la justification du protocole.
 
-\begin{table}[H]
-\centering
-\caption{Correspondance GoEmotions $\rightarrow$ émotions NRC (Plutchik)}
-\label{tab:nrc-goemotions-map}
-\small
+{\small
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+\begin{longtable}{|p{3.2cm}|p{10.8cm}|}
+\caption{Correspondance GoEmotions $\rightarrow$ émotions NRC (Plutchik)}
+\label{tab:nrc-goemotions-map} \\
 \hline
 \textbf{Étiquette GoEmotions} & \textbf{Émotions NRC associées} \\
 \hline
+\endfirsthead
+\multicolumn{2}{|c|}{\emph{(suite du tableau~\ref{tab:nrc-goemotions-map})}} \\
+\hline
+\textbf{Étiquette GoEmotions} & \textbf{Émotions NRC associées} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
 admiration & trust, joy \\
 \hline
 amusement & joy, surprise \\
@@ -269,8 +277,8 @@ surprise & surprise \\
 \hline
 neutral & (aucune) \\
 \hline
-\end{tabular}
-\end{table}
+\end{longtable}
+}
 
 \section{Pipeline SenticNet (rappel protocolaire)}
 \label{sec:expe-senticnet}

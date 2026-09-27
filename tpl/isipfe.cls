@@ -82,8 +82,12 @@
 % the one page when a figure exists
 \renewcommand\floatpagefraction{0.8} %   Default = 0.5
 
-%% Disable hyphenation
+%% Disable hyphenation (body still needs stretch for long technical terms)
 \usepackage[none]{hyphenat}
+\usepackage[protrusion=true,expansion=true]{microtype}
+\setlength{\emergencystretch}{2.5em}
+\tolerance=3500
+\hbadness=10000
 
 %% Defining section, subsection and subsubsection spacing
 \usepackage{titlesec}
@@ -149,6 +153,24 @@
 %\DefineBibliographyStrings{french}{%
 %  bibliography = {Bibliographie},
 %}
+
+% Bibliography layout (document uses [none]{hyphenat} elsewhere)
+\renewcommand*{\bibfont}{\small}
+\AtBeginBibliography{%
+  \frenchspacing
+  \hyphenpenalty=50\relax
+  \exhyphenpenalty=50\relax
+  \tolerance=4000\relax
+  \emergencystretch=2.5em\relax
+  \hfuzz=2pt\relax
+  \hbadness=10000\relax
+  \raggedright
+  \sloppy
+}
+\setcounter{biburlbreakpenalty}{100}
+\setcounter{biburlnumpenalty}{100}
+\setcounter{biburlucpenalty}{100}
+\setcounter{biburllcpenalty}{100}
 
 %============== To Enable List Customization ==============%
 \usepackage{enumitem}

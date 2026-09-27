@@ -224,11 +224,21 @@ minimale, fraction de tokens couverts et nombre de concepts distincts
 Comme pour NRC, l'hypothèse H3 porte sur l'\emph{alignement} avec la
 taxonomie GoEmotions, pas sur la richesse abstraite du graphe seul.
 
+Les deux extractions (NRC et SenticNet) produisent un même type de
+vecteur document $c$ injecté ensuite par le module~3 ; elles ne modifient
+pas le tronc hiérarchique décrit ci-dessous. Cette séparation permet de
+tester H3 à architecture et segmentation identiques, en ne changeant que
+la ressource affective et la dimension $d_c$ avant projection.
+
 \section{Module 1 : Encodage Hiérarchique}
 \label{sec:conception-m1}
 
-Le texte est segmenté comme en section~\ref{sec:conception-choix}, puis
-encodé par le backbone en un seul appel vectorisé. Le module s'inspire de
+Le module~1 matérialise la réponse à la limitation L2 identifiée au
+chapitre~\ref{chap:etat_art} : conserver une représentation par phrase
+avant toute décision multi-étiquettes. Le texte est segmenté comme en
+section~\ref{sec:conception-choix}, puis encodé par le backbone en un
+seul appel vectorisé sur l'ensemble des phrases du mini-batch (tokens
+masqués, longueurs variables tronquées). Le module s'inspire de
 l'agrégation mot vers phrase des réseaux d'attention hiérarchiques
 \cite{yang2016}, avec une couche d'\emph{attention additive}
 \cite{bahdanau2015}. Pour une phrase de représentations de tokens

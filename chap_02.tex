@@ -249,6 +249,16 @@ une autre la surprise. Aplatir le document en un unique vecteur
 \textbf{hiérarchiques} visent à encoder d'abord les phrases (ou
 segments), puis à agréger au niveau document avec des poids appris.
 
+Sur GoEmotions, les commentaires Reddit annotés au niveau document
+peuvent néanmoins enchaîner plusieurs phrases aux fonctions discursives
+différentes \cite{demszky2020}. Un encodeur de type BERT qui ne
+retient, pour la décision finale, qu'un unique vecteur
+\texttt{[CLS]} par commentaire \cite{devlin2019} superpose alors des
+indices affectifs qui ne sont pas localisés au même segment de texte.
+La hiérarchisation vise précisément à \textbf{isoler} ces signaux
+avant la tête multi-étiquettes, plutôt qu'à augmenter seule la
+capacité paramétrique du classificateur.
+
 \subsection{Travaux fondateurs et extensions Transformer}
 
 Le réseau d'attention hiérarchique (HAN) \cite{yang2016} pour la
@@ -261,10 +271,32 @@ multi-étiquettes, l'enjeu n'est pas seulement la longueur du
 document mais la \textbf{séparation des signaux affectifs} portés
 par des unités discursives distinctes.
 
+Concrètement, le HAN de Yang et al. \cite{yang2016} empile trois
+niveaux d'encodage supervisé. Les mots d'une phrase sont d'abord
+transformés en représentations contextuelles, puis résumés par une
+attention de niveau mot en vecteur de phrase ; les phrases du
+document sont ensuite pondérées par une attention de niveau phrase
+avant agrégation document. Les poids appris sont interprétables
+comme une mise au point sur les unités les plus informatives pour la
+tâche, ce qui a alimenté de nombreuses extensions en classification
+de documents longs ou multi-sections.
+
+Les empilements Transformer \cite{vaswani2017} remplacent souvent
+les encodeurs récurrents des premières HAN par de l'auto-attention
+à l'intérieur de chaque segment, tout en conservant une passe
+d'agrégation entre segments. Pour les émotions, l'intérêt reste le
+même : éviter qu'un token très salient dans une phrase domine la
+prédiction d'étiquettes qui ne se manifestent que dans une autre
+phrase du même commentaire.
+
 Le \textbf{module~1} de HAKE-MER s'inscrit dans cette lignée :
-segmentation en phrases, encodage par le backbone partagé, agrégation
-phrase$\to$document par attention additive, avec des bornes de
-longueur fixées au chapitre~\ref{chap:experimentation}.
+segmentation en phrases, encodage par le backbone partagé,
+pooling par attention additive \cite{bahdanau2015} au niveau phrase,
+avec des bornes de longueur fixées au chapitre~\ref{chap:experimentation}.
+Le schéma de la figure~\ref{fig:lit-han} en rappelle la logique à
+trois strates (sans reproduire l'empilement récurrent complet,
+détaillé au chapitre~\ref{chap:conception}) avant l'étude des
+lexiques externes.
 
 \begin{figure}[H]
 \centering
