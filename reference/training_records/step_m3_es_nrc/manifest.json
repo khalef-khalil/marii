@@ -4,8 +4,24 @@
   "protocol_anchor": "Same as global M3 NRC; lexicon_fusion emotion_specific (per GoEmotion NRC bridge)",
   "campaign_json": "reference/artifacts/m1_m2_m3_nrc_es_distilbert_base_uncased_campaign.json",
   "artifact_zip": "reference/artifacts/m1_m2_m3_nrc_es_distilbert_step0.zip",
+  "metrics_dir": "reference/artifacts/step_m3_es_nrc_distilbert",
   "m1_m2_reference": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
   "global_m3_nrc_reference": "reference/artifacts/m1_m2_m3_nrc_distilbert_base_uncased_campaign.json",
   "colab_open_url": "https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_nrc_emotion_specific_campaign.ipynb",
-  "colab_executed_notebooks": []
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.5075817162615536, "std": 0.001026285730171358 },
+    "f1_micro": { "mean": 0.5802975106863596, "std": 0.002575433149566814 },
+    "exact_match": { "mean": 0.4540261654689515, "std": 0.002745469767044668 },
+    "map": { "mean": 0.5043216338579325, "std": 0.0022818657114621996 }
+  },
+  "lexicon_gate_abs": { "mean": 0.03728974858919779, "std": 0.0005301936354098432 },
+  "delta_frequent_minus_rare_seed42": 0.2735,
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m3_es_nrc/colab/20250927_m1_m2_m3_nrc_emotion_specific_campaign_executed.ipynb",
+      "description": "Colab M1+M2+M3 NRC per-label prior campaign",
+      "runtime_gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+      "repo_commit_at_clone": "588498d"
+    }
+  ]
 }

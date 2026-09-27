@@ -1,0 +1,187 @@
+{
+  "best_val_f1_macro": 0.5102526231688601,
+  "test": {
+    "f1_micro": 0.5802821632515955,
+    "f1_macro": 0.508116504916863,
+    "exact_match": 0.4523677906762484,
+    "map": 0.501966992157507,
+    "per_label": [
+      {
+        "label": "admiration",
+        "f1": 0.6844106463878327,
+        "support": 504
+      },
+      {
+        "label": "amusement",
+        "f1": 0.7985611510791367,
+        "support": 264
+      },
+      {
+        "label": "anger",
+        "f1": 0.5337078651685393,
+        "support": 198
+      },
+      {
+        "label": "annoyance",
+        "f1": 0.35294117647058826,
+        "support": 320
+      },
+      {
+        "label": "approval",
+        "f1": 0.39001560062402496,
+        "support": 351
+      },
+      {
+        "label": "caring",
+        "f1": 0.39330543933054396,
+        "support": 135
+      },
+      {
+        "label": "confusion",
+        "f1": 0.4485294117647059,
+        "support": 153
+      },
+      {
+        "label": "curiosity",
+        "f1": 0.5114754098360655,
+        "support": 284
+      },
+      {
+        "label": "desire",
+        "f1": 0.5072463768115942,
+        "support": 83
+      },
+      {
+        "label": "disappointment",
+        "f1": 0.26609442060085836,
+        "support": 151
+      },
+      {
+        "label": "disapproval",
+        "f1": 0.38289205702647655,
+        "support": 267
+      },
+      {
+        "label": "disgust",
+        "f1": 0.47619047619047616,
+        "support": 123
+      },
+      {
+        "label": "embarrassment",
+        "f1": 0.42857142857142855,
+        "support": 37
+      },
+      {
+        "label": "excitement",
+        "f1": 0.47668393782383417,
+        "support": 103
+      },
+      {
+        "label": "fear",
+        "f1": 0.6707317073170732,
+        "support": 78
+      },
+      {
+        "label": "gratitude",
+        "f1": 0.9160530191458026,
+        "support": 352
+      },
+      {
+        "label": "grief",
+        "f1": 0.25,
+        "support": 6
+      },
+      {
+        "label": "joy",
+        "f1": 0.6066666666666667,
+        "support": 161
+      },
+      {
+        "label": "love",
+        "f1": 0.7959183673469388,
+        "support": 238
+      },
+      {
+        "label": "nervousness",
+        "f1": 0.3157894736842105,
+        "support": 23
+      },
+      {
+        "label": "optimism",
+        "f1": 0.533724340175953,
+        "support": 186
+      },
+      {
+        "label": "pride",
+        "f1": 0.48,
+        "support": 16
+      },
+      {
+        "label": "realization",
+        "f1": 0.22123893805309736,
+        "support": 145
+      },
+      {
+        "label": "relief",
+        "f1": 0.4,
+        "support": 11
+      },
+      {
+        "label": "remorse",
+        "f1": 0.6206896551724138,
+        "support": 56
+      },
+      {
+        "label": "sadness",
+        "f1": 0.5694444444444444,
+        "support": 156
+      },
+      {
+        "label": "surprise",
+        "f1": 0.5736434108527132,
+        "support": 141
+      },
+      {
+        "label": "neutral",
+        "f1": 0.6227367171267438,
+        "support": 1787
+      }
+    ]
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.12016732291803697,
+      "val_f1_micro": 0.5662810209308488,
+      "val_f1_macro": 0.4152544708412095,
+      "val_exact_match": 0.452082565425728,
+      "val_map": 0.5074063890510314
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.08117982330364872,
+      "val_f1_micro": 0.5531835901243735,
+      "val_f1_macro": 0.4525744014340713,
+      "val_exact_match": 0.41503870254331,
+      "val_map": 0.5295721637483592
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.06387844702534998,
+      "val_f1_micro": 0.5801071020981476,
+      "val_f1_macro": 0.4857937748577053,
+      "val_exact_match": 0.46332473276815334,
+      "val_map": 0.5235820789916119
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.046001633045496246,
+      "val_f1_micro": 0.5793299356671401,
+      "val_f1_macro": 0.5102526231688601,
+      "val_exact_match": 0.4585329893107261,
+      "val_map": 0.516254202044898
+    }
+  ],
+  "output_dir": "runs/distilbert_base_uncased_seed123_m1_m2_m3_nrc_es",
+  "lexicon_gate_abs": 0.03703175112605095
+}
