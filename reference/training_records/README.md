@@ -19,6 +19,8 @@ Template notebooks live in `notebooks/` (no execution outputs). Records live her
 | M1+M2 cross-attention | `step_m1_m2/` | `notebooks/m1_m2_campaign.ipynb` |
 | M1+M2+M3 (NRC) | `step_m1_m2_m3_nrc/` | `notebooks/m1_m2_m3_nrc_campaign.ipynb` |
 | M1+M2+M3 (SenticNet) | `step_m1_m2_m3_senticnet/` | `notebooks/m1_m2_m3_senticnet_campaign.ipynb` |
+| M1+M2+M3 ES (NRC, Track C) | `step_m3_es_nrc/` | `notebooks/m1_m2_m3_es_nrc_campaign.ipynb` |
+| M1+M2+M3 ES (SenticNet, Track C) | `step_m3_es_senticnet/` | `notebooks/m1_m2_m3_es_senticnet_campaign.ipynb` |
 | RoBERTa +M1 / +M1+M2 | `step_roberta_ablation/` | `notebooks/roberta_m1_m1_m2_campaign.ipynb` |
 | Error analysis (+M1+M2) | `step_error_analysis/` | `notebooks/error_analysis_m1_m2_campaign.ipynb` |
 
