@@ -16,12 +16,51 @@ méthodologique suivie tout au long du mémoire.
 \label{sec:cadre-general}
 
 Ce travail s'inscrit dans le cadre du Projet de Fin d'Études du Mastère de
-Recherche en Informatique, spécialité Sciences et Technologies de
-l'Information, réalisé à l'Institut Supérieur d'Informatique (ISI) de
+Recherche, spécialité Systèmes Intelligents en Imagerie et Vision
+Artificielle, réalisé à l'Institut Supérieur d'Informatique (ISI) de
 l'Université de Tunis El Manar, sous l'encadrement du Dr.~Sahbi Bahroun. Le
 sujet porte sur la conception d'une architecture neuronale pour la
 détection des émotions multiples dans les textes, combinant attention
-hiérarchique et connaissances sémantiques externes.
+hiérarchique et ressources lexicales externes évaluées par ablation.
+
+\section{Évolutions par rapport au sujet initial}
+\label{sec:evolution-sujet}
+
+Le sujet validé au départ visait une architecture enrichie par graphes de
+connaissances (ConceptNet, EmoNet), un raisonnement de sens commun,
+des jeux de validation complémentaires (SemEval-2018, EmoInt) et un
+benchmark élargi contre plusieurs méthodes de référence, avec un objectif
+de gain de l'ordre de 3 à 5\,\% sur l'état de l'art. Le mémoire livré
+concentre l'effort expérimental sur GoEmotions avec un protocole d'ablation
+M1 à M4 reproductible (NRC et SenticNet, deux encodeurs, trois graines).
+
+\begin{table}[H]
+\centering
+\caption{Écart entre le sujet initial et le périmètre réalisé}
+\label{tab:evolution-sujet}
+\small
+\begin{tabular}{|p{0.28\linewidth}|p{0.28\linewidth}|p{0.34\linewidth}|}
+\hline
+\textbf{Axe du sujet} & \textbf{Réalisé} & \textbf{Motivation du recentrage} \\
+\hline
+ConceptNet, EmoNet, sens commun & NRC, SenticNet & Signal lexical affectif
+implémentable et traçable dans la fenêtre PFE \\
+\hline
+SemEval-2018, EmoInt, corpus multiples & GoEmotions seul & Profondeur
+d'ablation et comparaisons internes à protocole fixe \\
+\hline
+Benchmark cinq SOTA & Ladder interne + tableau
+littérature (section~\ref{sec:etat-art-comparaison}) & Positionnement
+honnête sans confondre protocoles \\
+\hline
+Gain 3 à 5\,\% sur SOTA & Non revendiqué & Contribution : isolement des
+modules et résultats négatifs documentés \\
+\hline
+\end{tabular}
+\end{table}
+
+Les prolongements (graphes, corpus externes, comparaisons reproductibles
+supplémentaires) restent au \ChapRef{perspectives}.
 
 L'analyse automatique des émotions dans le texte s'est imposée comme un
 sous-domaine central du traitement automatique des langues, avec des

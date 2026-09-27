@@ -10,7 +10,7 @@ from transformers import AutoTokenizer
 
 from hakemer.data import GoEmotionsTorchDataset, load_go_emotions_splits, make_dataloader
 from hakemer.eval_checkpoint import config_from_run_dir
-from hakemer.metrics import go_emotions_label_names, logits_to_preds
+from hakemer.metrics import f1_by_gold_cardinality, go_emotions_label_names, logits_to_preds
 from hakemer.model import HAKEMER
 from hakemer.train import forward_batch, resolve_device, set_seed
 
@@ -130,6 +130,7 @@ def collect_test_predictions(
         "backbone": config.backbone,
         "threshold": threshold,
         "n_test": int(y_true.shape[0]),
+        "by_gold_cardinality": f1_by_gold_cardinality(y_true, y_pred),
         "top_confusion_pairs": [{"pattern": p, "count": c} for p, c in top_pairs],
         "rare_label_examples": rare_examples,
     }

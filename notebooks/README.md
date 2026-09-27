@@ -45,4 +45,12 @@ Run `roberta_m1_m1_m2_campaign.ipynb` → archive `roberta_m1_m1_m2_campaign.zip
 
 Run `error_analysis_m1_m2_campaign.ipynb` → archive `error_analysis_m1_m2.zip` and executed notebook under `reference/training_records/step_error_analysis/`.
 
+## High-impact plan (Colab only — run in order)
+
+Push `main` on GitHub first, then open each notebook (GPU runtime). After each run: download **zip** + executed **.ipynb** and send for report integration.
+
+1. **M2 control (no inter-emotion encoder)** — [Open in Colab](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_control_no_enc_campaign.ipynb) → `m1_m2_no_enc_distilbert_step0.zip`
+2. **M2 control (no phrase cross-attention)** — [Open in Colab](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_control_no_xattn_campaign.ipynb) → `m1_m2_no_xattn_distilbert_step0.zip`
+3. **H4 NRC + M4** — [Open in Colab](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_nrc_m4_campaign.ipynb) → `m1_m2_m3_nrc_m4_distilbert_step0.zip`
+
 **Training records:** archive executed Colab notebooks and manifests under [`reference/training_records/`](../reference/training_records/README.md). After updating artifacts, run `python scripts/build_step0_training_record.py` to refresh the Step 0 record notebooks from campaign JSON.

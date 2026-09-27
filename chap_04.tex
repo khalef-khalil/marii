@@ -143,8 +143,46 @@ Chaque run enregistre au minimum : identifiant de configuration,
 backbone, graine, courbes train/validation, F1-macro et F1-micro
 validation, checkpoint retenu, valeur finale de la porte $|g|$ (M3) et,
 lorsque l'export est activé, le F1 par émotion sur le test. Les
-comparaisons internes ont été interprétées uniquement \emph{à budget
-identique}.
+comparaisons internes ont été interprétées à \emph{protocole d'affinage
+identique} ; le nombre de paramètres et le coût de calcul varient
+(tableau~\ref{tab:expe-param-count}).
+
+\begin{table}[H]
+\centering
+\caption{Nombre de paramètres entraînables (DistilBERT-base, ordre de grandeur)}
+\label{tab:expe-param-count}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|p{7.2cm}|r|}
+\hline
+\textbf{Configuration} & \textbf{Paramètres} \\
+\hline
+\IfFileExists{reference/artifacts/param_counts_snippet.tex}{\input{reference/artifacts/param_counts_snippet}}{Step~0 et piles M1 à M4 (export paramètres)} \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Sélection sur validation vs F1-macro test (moyenne $\pm$ écart-type, trois graines)}
+\label{tab:expe-val-test-selection}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|p{4.8cm}|c|c|c|c|}
+\hline
+\textbf{Pile} & \multicolumn{2}{c|}{\textbf{DistilBERT}} & \multicolumn{2}{c|}{\textbf{RoBERTa}} \\
+\cline{2-5}
+ & Val. & Test & Val. & Test \\
+\hline
+\IfFileExists{reference/artifacts/val_test_selection_snippet.tex}{\input{reference/artifacts/val_test_selection_snippet}}{Lignes générées depuis les campagnes archivées} \\
+\hline
+\end{tabular}
+\end{table}
+
+La pile \textbf{M1+M2} affiche le F1-macro validation moyen le plus élevé
+parmi les étapes principales ; les scores test du ladder complet sont
+reportés de façon \emph{exploratoire} (ablation), sans choisir a posteriori
+la configuration sur le test.
 
 \subsection{Backbones}
 
@@ -474,11 +512,29 @@ l'étape M1.
 
 Le F1-macro test passe de $0{,}457$ à $0{,}505$ ($\approx 4{,}8$ points
 absolus) ; les trois graines convergent ($0{,}499$, $0{,}508$, $0{,}508$).
-\textbf{H2 est soutenue sous ce protocole} : l'attention croisée et les têtes par émotion
-améliorent nettement la détection macro par rapport à M1 seul, avec un
-F1-micro retrouvé au niveau du Step~0 flat ($0{,}582 \pm 0{,}002$).
-La hiérarchie seule (M1) reste insuffisante ; le gain provient de la
-lecture \emph{label-specific} sur les phrases. Les branches M3 et M4 vérifient si un prior lexical et une pondération
+\textbf{H2 est soutenue au niveau de la pile M1+M2} : la lecture
+\emph{label-specific} sur les phrases améliore nettement la macro par
+rapport à M1 seul ($0{,}582 \pm 0{,}002$ en F1-micro). L'ablation M1$\to$M1+M2
+change simultanément pooling documentaire, attention phrase et têtes ;
+elle n'isole pas causallement chaque sous-brique. Le
+tableau~\ref{tab:expe-m2-controls} rapporte des contrôles mécanistiques
+(DistilBERT, trois graines).
+
+\begin{table}[H]
+\centering
+\caption{Contrôles M2 (DistilBERT-base, F1-macro test, trois graines)}
+\label{tab:expe-m2-controls}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{7.5cm}|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-macro} \\
+\hline
+\IfFileExists{reference/artifacts/m2_controls_snippet.tex}{\input{reference/artifacts/m2_controls_snippet}}{Campagnes M2 en cours ou archivées} \\
+\hline
+\end{tabular}
+\end{table}
+
+Les branches M3 et M4 vérifient si un prior lexical et une pondération
 dynamique prolongent cette ligne.
 
 \subsection{Ablation M1+M2+M3 (NRC, H3)}
@@ -891,19 +947,70 @@ agrégat sur trois graines).}
 
 \IfFileExists{error_analysis_snippet.tex}{\input{error_analysis_snippet}}{}
 
+\subsection{Performance selon le nombre d'émotions gold}
+\label{sec:expe-cardinality}
+
+Pour relier la motivation « émotions multiples » aux scores agrégés,
+nous regroupons les exemples test selon le nombre d'étiquettes gold
+($1$, $2$, $3$, $4+$) et reportons le F1-macro par bucket (DistilBERT,
+trois graines).
+
+\begin{table}[H]
+\centering
+\caption{F1-macro test par cardinalité gold (DistilBERT, moyenne $\pm$ écart-type)}
+\label{tab:expe-cardinality}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Cardinalité} & \textbf{Step~0} & \textbf{+M1} & \textbf{+M1+M2} \\
+\hline
+\IfFileExists{reference/artifacts/cardinality_snippet.tex}{\input{reference/artifacts/cardinality_snippet}}{Export depuis campagnes avec checkpoints locaux} \\
+\hline
+\end{tabular}
+\end{table}
+
 Les hypothèses H1 à H4 sont récapitulées au
 tableau~\ref{tab:expe-h1-h4-summary}.
 
-\section{Retours méthodologiques}
-\label{sec:expe-lecons}
+\section{Discussion et menaces à la validité}
+\label{sec:expe-discussion}
 
-La campagne confirme l'importance de trois garde-fous, déjà respectés
-ici et développés au \ChapRef{perspectives} : (i) la
-troncature phrase reste faible aux bornes retenues
-(section~\ref{sec:expe-corpus-stats}) ; (ii) l'initialisation $g{=}0$
-et $b_2{=}+3$ pour M3/M4 évite de biaiser le départ des portes ;
-(iii) les trois graines et le budget unique rendent lisibles H1 à H4,
-avec la même discipline de protocole sur RoBERTa-base.
+\subsection{Validité interne}
+Les comparaisons M1$\to$M1+M2 modifient plusieurs mécanismes à la fois
+(pooling, attention phrase, encodeur inter-émotions, têtes). H1 compare
+une hiérarchie $4\times 32$ tokens à un flat $128$ tokens : le résultat
+négatif porte sur cette implémentation, pas sur toute forme de
+hiérarchie. Trois graines stabilisent les tendances mais ne remplacent
+ni tests statistiques ni intervalles de confiance.
+
+\subsection{Validité de construit}
+Le F1-macro à seuil $0{,}5$ peut masquer des gains de rang (mAP) lorsque
+SenticNet M3 n'améliore pas la macro. Le prior NRC \emph{document} injecte
+le même vecteur dans toutes les requêtes : il ne teste pas directement
+l'alignement taxonomique NRC$\to$GoEmotions, réservé à l'extension
+\emph{par étiquette}.
+
+\subsection{Validité externe}
+Les conclusions portent sur GoEmotions (Reddit anglais) sous le protocole
+du tableau~\ref{tab:expe-hyperparams}. La généralisation à d'autres genres
+ou langues reste ouverte (\ChapRef{perspectives}).
+
+\subsection{Validité conclusionnelle}
+Les classes à très faible support test (par exemple \emph{grief}) produisent
+des F1 instables ; les gains macro de M2 se concentrent surtout sur des
+émotions de fréquence intermédiaire. La magnitude $|g|$ des portes M3
+n'implique pas à elle seule un usage causal du lexique (ablations
+\emph{zero}/\emph{shuffle} à l'inférence lorsque les checkpoints le
+permettent).
+
+\subsection{Reproductibilité}
+Les campagnes archivées fixent graines, hyperparamètres et métriques ;
+l'implémentation repose sur PyTorch, \emph{Transformers}, NLTK Punkt,
+scikit-learn pour F1 et mAP macro par étiquette. Les versions exactes
+des bibliothèques et le matériel d'entraînement sont ceux de l'environnement
+d'exécution des notebooks de campagne. La correspondance NRC$\to$GoEmotions
+est une \emph{hypothèse de modélisation} fixée manuellement pour
+l'extension par étiquette, non apprise des données.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
@@ -913,8 +1020,9 @@ hyperparamètres communs et ladder M1 à M4 sur les deux encodeurs
 (tableau~\ref{tab:expe-baseline-step0},
 tableau~\ref{tab:expe-roberta-ablation}). H1 à H4
 sont reportées aux tableaux d'ablation et au
-tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue pour la macro test
-est M1+M2 ; M3 et M4 n'apportent pas de gain robuste au-delà de M2.
+tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue sur validation est
+M1+M2 (tableau~\ref{tab:expe-val-test-selection}) ; M3 et M4 n'apportent
+pas de gain macro robuste au-delà de M2 sur ce protocole.
 L'analyse par classe (extrait et annexe complète) et l'analyse de
 confusions (section~\ref{sec:expe-error-analysis}) complètent la macro.
 Le \ChapRef{perspectives} en tire les recommandations pratiques.

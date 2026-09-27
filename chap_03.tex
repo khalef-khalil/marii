@@ -6,8 +6,8 @@
 Le \ChapRef{etat_art} a fixé le corpus GoEmotions, une baseline
 par modèles pré-entraînés et les réponses littéraires aux limitations
 L1 à L3. Ce chapitre en déduit l'architecture \textbf{HAKE-MER}
-(\emph{Hierarchical Attention with Knowledge Enhancement for
-Multi-Emotion Recognition}) : formalisation de la tâche, description
+(\emph{Hierarchical Attention with Knowledge modules for Multi-Emotion
+Recognition}) : formalisation de la tâche, description
 des modules M1 à M4 et les hypothèses H1 à H4, évaluées par ablation au
 \ChapRef{experimentation}.
 
@@ -344,27 +344,27 @@ progressivement l'intensité de chaque émotion selon le texte.
 \label{sec:conception-hypotheses}
 
 Le \ChapRef{experimentation} évalue les hypothèses suivantes par ablation
-cumulative (tableau~\ref{tab:conception-ablation}), à budget d'affinage
-identique (epochs, early stopping, recherche d'hyperparamètres) et avec
-F1-macro comme métrique principale (écart F1 fréquent vs rare en
-complément pour H3) :
+cumulative (tableau~\ref{tab:conception-ablation}), à protocole d'affinage
+identique (quatre époques, hyperparamètres fixés au
+tableau~\ref{tab:expe-hyperparams}, meilleur checkpoint selon le
+F1-macro validation) et avec F1-macro comme métrique principale.
 
 \begin{itemize}
-\item[\textbf{H1.}] \textbf{M1 vs baseline PLM} : l'encodage
-  hiérarchique améliore le F1-macro et les F1 par émotion sur les labels
-  rares, par rapport à une représentation \texttt{[CLS]} seule à backbone
-  fixé ;
-\item[\textbf{H2.}] \textbf{M1+M2 vs M1} : l'attention croisée et
-  l'encodeur inter-émotions améliorent le F1-macro par rapport à une
-  tête multi-étiquettes indépendante sur les mêmes vecteurs de phrases ;
-\item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : l'intégration d'une
-  ressource lexicale externe (NRC ou SenticNet) améliore le F1-macro
-  et/ou réduit l'écart de F1 entre classes fréquentes et rares ; une
-  comparaison NRC \emph{vs} SenticNet sur cet écart $\Delta$ est
-  envisagée lorsque les exports F1 par classe des deux piles +M3 sont
-  disponibles ;
+\item[\textbf{H1.}] \textbf{M1 vs baseline PLM} : sous l'implémentation
+  hiérarchique retenue ($4$ phrases $\times$ $32$ tokens), M1 améliore le
+  F1-macro test par rapport au flat $128$ tokens à backbone fixé ;
+\item[\textbf{H2.}] \textbf{M1+M2 vs M1} : la pile M1+M2 (requêtes par
+  émotion, lecture phrase et têtes par étiquette) améliore le F1-macro
+  par rapport à M1 seul ; des contrôles mécanistiques (sans encodeur
+  inter-émotions ou sans attention phrase) précisent l'attribution au
+  tableau~\ref{tab:expe-m2-controls} ;
+\item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : (i) prior lexical
+  \emph{document} global (NRC ou SenticNet) ; (ii) extension exploratoire
+  prior NRC \emph{par étiquette} ; la macro et l'écart fréquent vs rare
+  sont interprétés séparément ;
 \item[\textbf{H4.}] \textbf{M1+M2+M3+M4 vs M1+M2+M3} : la pondération
-  dynamique améliore le F1-macro test, à ressource lexicale fixée.
+  dynamique améliore le F1-macro test, à ressource lexicale fixée (NRC et
+  SenticNet testés lorsque les campagnes correspondantes sont disponibles).
 \end{itemize}
 
 \section*{Conclusion}

@@ -30,8 +30,18 @@ de M2 portent surtout sur des émotions de fréquence intermédiaire
 (\ChapRef{experimentation}) ; des exemples qualitatifs
 annotés restent optionnels pour la soutenance.
 
+\ParHead{Ce que les expériences établissent :}Sous le protocole GoEmotions
+retenu, la pile M1+M2 améliore le F1-macro par rapport au flat et à M1 seul
+sur DistilBERT et RoBERTa ; l'ablation M1$\to$M1+M2 ne sépare pas
+causallement chaque sous-composant de M2 (contrôles au
+tableau~\ref{tab:expe-m2-controls}). Les priors lexicaux testés et M4
+n'ajoutent pas de gain macro robuste ; les progrès portent surtout sur
+des émotions de fréquence intermédiaire, pas sur la traîne extrême la
+plus rare. Les scores test du ladder complet sont exploratoires ; le choix
+de pile s'appuie sur la validation (tableau~\ref{tab:expe-val-test-selection}).
+
 En synthèse, HAKE-MER apporte une contribution mesurable surtout par
-M2 ; les modules lexicaux et dynamiques testés ici ne justifient pas,
+M1+M2 ; les modules lexicaux et dynamiques testés ici ne justifient pas,
 dans ce protocole, la complexité additionnelle pour la macro. Les
 prolongements (second encodeur, longue traîne, validation externe,
 modèles généralistes) sont détaillés au

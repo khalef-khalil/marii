@@ -22,7 +22,7 @@
 
 %========= Config the cover section ==========%
 
-\title{Détection des Émotions Multiples dans les Textes par Fusion d'Attentions Hiérarchiques et Connaissances Sémantiques Externes  }
+\title{Détection des émotions multiples dans les textes : architecture modulaire HAKE-MER et ablation sur GoEmotions}
 
 \author{Mariem El WEDANI}
 %%% if necessary
@@ -57,7 +57,7 @@
 
 %\proSignSentence{J'autorise l'étudiante à faire le dépôt de son rapport de stage en vue d'une soutenance.}
 
-\academicSignSentence{J'autorise l'étudiante à faire le dépôt de son rapport de stage en vue d'une soutenance.}
+\academicSignSentence{J'autorise l'étudiante à faire le dépôt de son rapport de projet de fin d'études en vue d'une soutenance.}
 
 % %%% AR
 % \arabicAbstract{}
@@ -93,12 +93,12 @@ $0{,}526$ على رُوبِرتَا و$0{,}505$ على دِسْتِلْبِرت�
 \arabicAbstractKeywords{كشف المشاعر، تعلم عميق، غو إيموشنز، انتباه هرمي، تصنيف متعدد التسميات}
 
 %%% FRENCH
-\frenchAbstract{Ce mémoire conçoit et évalue \textLR{HAKE-MER} pour la détection multi-étiquettes des émotions sur GoEmotions. À protocole constant (trois graines ; ladder M1 à M4 sur DistilBERT et RoBERTa), les ablations clarifient H1 à H4 sous ce protocole : M2 porte le gain macro (jusqu'à $\approx 0{,}526$ en RoBERTa, $\approx 0{,}505$ en DistilBERT) ; M1 seul reste sous le flat ou +M1+M2 ; M3 et M4 n'améliorent pas robustement la macro. Pile recommandée : M1+M2 (encodeur selon capacité recherchée). Analyse par classe et annexe complète sur les 28 émotions.}
+\frenchAbstract{Ce mémoire conçoit et évalue le cadre modulaire \textLR{HAKE-MER} (M1 à M4) pour la détection multi-étiquettes des émotions sur GoEmotions. À protocole d'affinage constant (trois graines ; ladder sur DistilBERT et RoBERTa), la pile M1+M2 améliore nettement le F1-macro par rapport au flat et à M1 seul ; les priors lexicaux (M3) et la pondération dynamique (M4) n'ajoutent pas de gain macro robuste. Configuration retenue sur validation : M1+M2. Contrôles mécanistiques de M2, comparaison validation/test et analyse par cardinalité gold complètent l'ablation.}
 
 \frenchAbstractKeywords{Émotions, TALN, GoEmotions, attention hiérarchique, classification multi-étiquettes}
 
 %%% ENGLISH
-\englishAbstract{This thesis designs and evaluates \textLR{HAKE-MER} for multi-label emotion detection on GoEmotions. Under a fixed protocol (three seeds; full M1 to M4 ladder on DistilBERT and RoBERTa), ablations H1 to H4 show that label-specific phrase attention (M2) drives macro F1 gains (up to $\approx 0.526$ on RoBERTa, $\approx 0.505$ on DistilBERT), M1 alone stays below flat or M1+M2, and lexicon (M3) plus dynamic scaling (M4) do not reliably beat M1+M2. Recommended stack: M1+M2 (backbone by desired model size). Per-class and full 28-label annex highlight mid-frequency gains, not the rarest tail.}
+\englishAbstract{This thesis designs and evaluates the modular \textLR{HAKE-MER} framework (M1 to M4) for multi-label emotion detection on GoEmotions. Under a fixed fine-tuning protocol (three seeds; ladder on DistilBERT and RoBERTa), the M1+M2 stack yields the main macro F1 gains over flat and M1-only baselines; lexical priors (M3) and dynamic scaling (M4) do not add robust macro improvements. The retained configuration is selected on validation: M1+M2. Mechanistic M2 controls, validation versus test reporting, and gold-label cardinality analysis complement the ablation study.}
 
 \englishAbstractKeywords{Emotion detection, NLP, GoEmotions, hierarchical attention, multi-label classification}
 

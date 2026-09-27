@@ -357,6 +357,36 @@ perspectives} (\ChapRef{perspectives}) mais hors du
 périmètre d'implémentation immédiat de HAKE-MER, qui se concentre
 sur l'injection lexicale NRC/SenticNet.
 
+\subsection{Comparaison indicative sur GoEmotions}
+\label{sec:etat-art-comparaison}
+
+Le sujet initial prévoyait un benchmark élargi ; faute de protocole
+identique aux publications, le mémoire reporte surtout une ablation
+interne et le tableau~\ref{tab:goemotions-literature} situe des
+travaux publics sur le même corpus. Les chiffres ne sont \emph{pas}
+directement comparables (split, prétraitement, seuil, graines).
+
+\begin{table}[H]
+\centering
+\caption{Références GoEmotions et positionnement (lecture indicative)}
+\label{tab:goemotions-literature}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|p{2.6cm}|c|p{2.4cm}|p{2.2cm}|c|}
+\hline
+\textbf{Travail} & \textbf{Année} & \textbf{Backbone} & \textbf{Métrique} & \textbf{Macro-F1} \\
+\hline
+GoEmotions BERT-base \cite{demszky2020} & 2020 & BERT-base & officiel & $\approx 0{,}46$ \\
+\hline
+Seq2Emo \cite{ke2021seq2emo} & 2021 & BERT/RoBERTa & split officiel & $\approx 0{,}52$ \\
+\hline
+Attention 3D multi-étiquettes \cite{li2025emotion3dattn} & 2025 & modèle dédié & GoEmotions & voir source \\
+\hline
+HAKE-MER (M1+M2, ce mémoire) & 2026 & DistilBERT/RoBERTa & protocole ch.~4 & $\approx 0{,}51$ / $0{,}53$ \\
+\hline
+\end{tabular}
+\end{table}
+
 \section{Synthèse et positionnement de HAKE-MER}
 \label{sec:etat-synthese}
 

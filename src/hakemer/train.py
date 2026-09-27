@@ -14,6 +14,7 @@ from tqdm import tqdm
 from hakemer.config import TrainConfig
 from hakemer.data import GoEmotionsTorchDataset, load_go_emotions_splits, make_dataloader
 from hakemer.metrics import (
+    f1_by_gold_cardinality,
     logits_to_preds,
     logits_to_probs,
     multilabel_scores,
@@ -61,12 +62,22 @@ def evaluate(
     *,
     threshold: float = 0.5,
     include_per_label: bool = False,
+    lexicon_ablation: str | None = None,
+    include_cardinality: bool = False,
 ) -> dict:
     model.eval()
     all_logits: list[np.ndarray] = []
     all_labels: list[np.ndarray] = []
     for batch in loader:
         labels = batch["labels"].to(device)
+        if lexicon_ablation and batch.get("lexicon_features") is not None:
+            lex = batch["lexicon_features"].clone()
+            if lexicon_ablation == "zero":
+                lex.zero_()
+            elif lexicon_ablation == "shuffle":
+                perm = torch.randperm(lex.size(0))
+                lex = lex[perm]
+            batch = {**batch, "lexicon_features": lex}
         logits = forward_batch(model, batch, device)
         all_logits.append(logits.cpu().numpy())
         all_labels.append(labels.cpu().numpy())
@@ -77,6 +88,8 @@ def evaluate(
     scores = multilabel_scores(y_true, y_pred, y_score)
     if include_per_label:
         scores["per_label"] = per_label_f1(y_true, y_pred)
+    if include_cardinality:
+        scores["by_gold_cardinality"] = f1_by_gold_cardinality(y_true, y_pred)
     return scores
 
 
@@ -187,6 +200,7 @@ def train_loop(config: TrainConfig) -> dict:
         device,
         threshold=config.decision_threshold,
         include_per_label=True,
+        include_cardinality=True,
     )
     summary = {
         "best_val_f1_macro": best_val_f1,
@@ -194,6 +208,18 @@ def train_loop(config: TrainConfig) -> dict:
         "history": history,
         "output_dir": str(out_dir),
     }
+    if config.use_m3:
+        for mode in ("zero", "shuffle"):
+            ablated = evaluate(
+                model,
+                test_loader,
+                device,
+                threshold=config.decision_threshold,
+                lexicon_ablation=mode,
+            )
+            summary[f"test_lexicon_{mode}"] = {
+                k: v for k, v in ablated.items() if k != "per_label"
+            }
     if config.use_m3 and hasattr(model, "emotion_head") and hasattr(model.emotion_head, "lexicon_gate"):
         summary["lexicon_gate_abs"] = float(abs(model.emotion_head.lexicon_gate.detach().cpu().item()))
     (out_dir / "metrics.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
@@ -239,6 +265,16 @@ def parse_args() -> TrainConfig:
         choices=["global", "emotion_specific"],
         help="M3: same document prior for all labels (global) or per-label lexicon evidence.",
     )
+    p.add_argument(
+        "--m2-no-inter-emotion-encoder",
+        action="store_true",
+        help="M2 ablation: skip Transformer over emotion representations.",
+    )
+    p.add_argument(
+        "--m2-no-phrase-cross-attention",
+        action="store_true",
+        help="M2 ablation: shared document pool + per-label heads (no phrase cross-attn).",
+    )
     args = p.parse_args()
     use_m1 = args.use_m1 or args.use_m2 or args.use_m3 or args.use_m4
     use_m2 = args.use_m2 or args.use_m3 or args.use_m4
@@ -264,6 +300,8 @@ def parse_args() -> TrainConfig:
         lexicon_fusion=args.lexicon_fusion,
         max_phrases=args.max_phrases,
         phrase_max_length=args.phrase_max_length,
+        m2_use_inter_emotion_encoder=not args.m2_no_inter_emotion_encoder,
+        m2_use_phrase_cross_attention=not args.m2_no_phrase_cross_attention,
     )
 
 

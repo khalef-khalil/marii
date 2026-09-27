@@ -27,6 +27,8 @@ class TrainConfig:
     use_m2: bool = False
     use_m3: bool = False
     use_m4: bool = False
+    m2_use_inter_emotion_encoder: bool = True
+    m2_use_phrase_cross_attention: bool = True
     lexicon_source: LexiconSource = "none"
     lexicon_fusion: LexiconFusion = "global"
     output_dir: str = "runs/baseline"
@@ -39,6 +41,12 @@ class TrainConfig:
     def validate_flags(self) -> None:
         if self.use_m2 and not self.use_m1:
             raise ValueError("Module M2 requires M1 (phrase encodings).")
+        if self.use_m2 and not (
+            self.m2_use_inter_emotion_encoder or self.m2_use_phrase_cross_attention
+        ):
+            raise ValueError(
+                "M2 requires at least one of inter-emotion encoder or phrase cross-attention."
+            )
         if self.use_m3 and not (self.use_m1 and self.use_m2):
             raise ValueError("Module M3 requires M1 and M2.")
         if self.use_m3 and self.lexicon_source == "none":
@@ -61,6 +69,10 @@ class TrainConfig:
             step = f"m1_m2_m3_{self.lexicon_source}{es}"
         elif self.use_m2:
             step = "m1_m2"
+            if not self.m2_use_inter_emotion_encoder:
+                step += "_no_enc"
+            if not self.m2_use_phrase_cross_attention:
+                step += "_no_xattn"
         elif self.use_m1:
             step = "m1"
         else:

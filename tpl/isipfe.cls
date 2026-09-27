@@ -257,7 +257,7 @@
       \endgroup
       \ChapRefReadyfalse
     \fi
-    \minitocsection
+    % Chapter minitoc disabled: avoids corrupted divider pages in some builds.
     \thispagestyle{empty}%
     \newpage
 }

@@ -63,6 +63,8 @@ class EmotionPhraseCrossAttention(nn.Module):
         use_m4: bool = False,
         lexicon_dim: int = 0,
         lexicon_fusion: str = "global",
+        m2_use_inter_emotion_encoder: bool = True,
+        m2_use_phrase_cross_attention: bool = True,
     ) -> None:
         super().__init__()
         if hidden % num_heads != 0:
@@ -71,27 +73,38 @@ class EmotionPhraseCrossAttention(nn.Module):
         self.use_m3 = use_m3
         self.use_m4 = use_m4
         self.lexicon_fusion = lexicon_fusion
+        self.m2_use_inter_emotion_encoder = m2_use_inter_emotion_encoder
+        self.m2_use_phrase_cross_attention = m2_use_phrase_cross_attention
         self.emotion_queries = nn.Parameter(torch.empty(num_labels, hidden))
         nn.init.normal_(self.emotion_queries, mean=0.0, std=0.02)
+        self.phrase_pool = (
+            AdditiveAttentionPool(hidden) if not m2_use_phrase_cross_attention else None
+        )
         if use_m3:
             if lexicon_dim < 1:
                 raise ValueError("lexicon_dim required when use_m3 is True")
             self.lexicon_proj = nn.Linear(lexicon_dim, hidden, bias=True)
             self.lexicon_gate = nn.Parameter(torch.tensor(0.0))
-        self.phrase_attention = nn.MultiheadAttention(
-            hidden, num_heads, dropout=0.1, batch_first=True
-        )
-        encoder_layer = nn.TransformerEncoderLayer(
-            d_model=hidden,
-            nhead=num_heads,
-            dim_feedforward=hidden * 4,
-            dropout=0.1,
-            batch_first=True,
-            activation="gelu",
-        )
-        self.emotion_encoder = nn.TransformerEncoder(
-            encoder_layer, num_layers=EMOTION_ENCODER_LAYERS
-        )
+        if m2_use_phrase_cross_attention:
+            self.phrase_attention = nn.MultiheadAttention(
+                hidden, num_heads, dropout=0.1, batch_first=True
+            )
+        else:
+            self.phrase_attention = None
+        if m2_use_inter_emotion_encoder:
+            encoder_layer = nn.TransformerEncoderLayer(
+                d_model=hidden,
+                nhead=num_heads,
+                dim_feedforward=hidden * 4,
+                dropout=0.1,
+                batch_first=True,
+                activation="gelu",
+            )
+            self.emotion_encoder = nn.TransformerEncoder(
+                encoder_layer, num_layers=EMOTION_ENCODER_LAYERS
+            )
+        else:
+            self.emotion_encoder = None
         self.dynamic_scale = DynamicEmotionScaling(hidden) if use_m4 else None
         self.label_weight = nn.Parameter(torch.empty(num_labels, hidden))
         self.label_bias = nn.Parameter(torch.zeros(num_labels))
@@ -121,24 +134,31 @@ class EmotionPhraseCrossAttention(nn.Module):
             else:
                 prior = torch.tanh(self.lexicon_proj(lexicon_features))
                 queries = queries + self.lexicon_gate * prior.unsqueeze(1)
-        queries = queries.reshape(batch_size * num_labels, 1, hidden)
-        keys = (
-            phrase_vecs.unsqueeze(1)
-            .expand(batch_size, num_labels, num_phrases, hidden)
-            .reshape(batch_size * num_labels, num_phrases, hidden)
-        )
-        key_padding = phrase_mask == 0
-        key_padding = key_padding.unsqueeze(1).expand(batch_size, num_labels, num_phrases)
-        key_padding = key_padding.reshape(batch_size * num_labels, num_phrases)
-        attended, _ = self.phrase_attention(
-            queries,
-            keys,
-            keys,
-            key_padding_mask=key_padding,
-            need_weights=False,
-        )
-        emotion_repr = attended.squeeze(1).view(batch_size, num_labels, hidden)
-        emotion_repr = self.emotion_encoder(emotion_repr)
+        if self.m2_use_phrase_cross_attention:
+            queries = queries.reshape(batch_size * num_labels, 1, hidden)
+            keys = (
+                phrase_vecs.unsqueeze(1)
+                .expand(batch_size, num_labels, num_phrases, hidden)
+                .reshape(batch_size * num_labels, num_phrases, hidden)
+            )
+            key_padding = phrase_mask == 0
+            key_padding = key_padding.unsqueeze(1).expand(batch_size, num_labels, num_phrases)
+            key_padding = key_padding.reshape(batch_size * num_labels, num_phrases)
+            attended, _ = self.phrase_attention(
+                queries,
+                keys,
+                keys,
+                key_padding_mask=key_padding,
+                need_weights=False,
+            )
+            emotion_repr = attended.squeeze(1).view(batch_size, num_labels, hidden)
+        else:
+            assert self.phrase_pool is not None
+            doc_vec = self.phrase_pool(phrase_vecs, phrase_mask)
+            emotion_repr = doc_vec.unsqueeze(1).expand(batch_size, num_labels, hidden)
+            emotion_repr = emotion_repr + queries
+        if self.emotion_encoder is not None:
+            emotion_repr = self.emotion_encoder(emotion_repr)
         if self.dynamic_scale is not None:
             emotion_repr = self.dynamic_scale(emotion_repr)
         logits = (emotion_repr * self.label_weight.unsqueeze(0)).sum(dim=-1) + self.label_bias
@@ -180,6 +200,8 @@ class HAKEMER(nn.Module):
                     if config.use_m3
                     else 0,
                     lexicon_fusion=config.lexicon_fusion,
+                    m2_use_inter_emotion_encoder=config.m2_use_inter_emotion_encoder,
+                    m2_use_phrase_cross_attention=config.m2_use_phrase_cross_attention,
                 )
             else:
                 self.phrase_pool = AdditiveAttentionPool(hidden)

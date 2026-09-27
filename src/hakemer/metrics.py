@@ -61,6 +61,34 @@ def per_label_f1(
     return rows
 
 
+def f1_by_gold_cardinality(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+) -> dict[str, dict[str, float | int]]:
+    """Bucket examples by number of gold emotion labels (1, 2, 3, 4+)."""
+    counts = y_true.sum(axis=1).astype(int)
+    buckets: dict[str, list[int]] = {"1": [], "2": [], "3": [], "4+": []}
+    for i, c in enumerate(counts):
+        if c <= 0:
+            continue
+        key = "4+" if c >= 4 else str(int(c))
+        buckets[key].append(i)
+    out: dict[str, dict[str, float | int]] = {}
+    for key, indices in buckets.items():
+        if not indices:
+            out[key] = {"n": 0, "f1_macro": 0.0, "exact_match": 0.0}
+            continue
+        idx = np.array(indices, dtype=int)
+        yt = y_true[idx]
+        yp = y_pred[idx]
+        out[key] = {
+            "n": int(len(indices)),
+            "f1_macro": float(f1_score(yt, yp, average="macro", zero_division=0)),
+            "exact_match": exact_match_ratio(yt, yp),
+        }
+    return out
+
+
 def multilabel_scores(
     y_true: np.ndarray,
     y_pred: np.ndarray,
