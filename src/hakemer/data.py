@@ -5,7 +5,8 @@ from datasets import load_dataset
 from torch.utils.data import DataLoader, Dataset
 from transformers import PreTrainedTokenizerBase
 
-from hakemer.lexicon import document_lexicon_vector
+from hakemer.goemotions_lexicon_map import SIMPLIFIED_GOEMOTIONS_LABELS
+from hakemer.lexicon import document_lexicon_features
 from hakemer.segmentation import split_phrases
 
 
@@ -26,6 +27,7 @@ class GoEmotionsTorchDataset(Dataset):
         use_m1: bool = False,
         use_m3: bool = False,
         lexicon_source: str = "none",
+        lexicon_fusion: str = "global",
         max_phrases: int = 4,
         phrase_max_length: int = 32,
     ):
@@ -35,7 +37,11 @@ class GoEmotionsTorchDataset(Dataset):
         self.use_m1 = use_m1
         self.use_m3 = use_m3
         self.lexicon_source = lexicon_source
+        self.lexicon_fusion = lexicon_fusion
         self.max_phrases = max_phrases
+        self._label_names: list[str] | None = None
+        if use_m3 and lexicon_fusion == "emotion_specific":
+            self._label_names = list(SIMPLIFIED_GOEMOTIONS_LABELS)
         self.phrase_max_length = phrase_max_length
         n = len(hf_split) if max_samples is None else min(max_samples, len(hf_split))
         self.rows = hf_split.select(range(n))
@@ -94,7 +100,12 @@ class GoEmotionsTorchDataset(Dataset):
             "labels": self._labels_tensor(row),
         }
         if self.use_m3:
-            vec = document_lexicon_vector(row["text"], self.lexicon_source)
+            vec = document_lexicon_features(
+                row["text"],
+                self.lexicon_source,
+                fusion=self.lexicon_fusion,  # type: ignore[arg-type]
+                label_names=self._label_names,
+            )
             item["lexicon_features"] = torch.tensor(vec, dtype=torch.float32)
         return item
 

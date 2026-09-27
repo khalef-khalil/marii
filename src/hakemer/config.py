@@ -3,6 +3,7 @@ from typing import Literal
 
 
 LexiconSource = Literal["none", "nrc", "senticnet"]
+LexiconFusion = Literal["global", "emotion_specific"]
 BackboneName = Literal["roberta-base", "distilbert-base-uncased"]
 
 
@@ -27,6 +28,7 @@ class TrainConfig:
     use_m3: bool = False
     use_m4: bool = False
     lexicon_source: LexiconSource = "none"
+    lexicon_fusion: LexiconFusion = "global"
     output_dir: str = "runs/baseline"
     max_train_samples: int | None = None
     max_eval_samples: int | None = None
@@ -52,9 +54,11 @@ class TrainConfig:
     def run_name(self) -> str:
         slug = self.backbone.split("/")[-1].replace("-", "_")
         if self.use_m4:
-            step = f"m1_m2_m3_{self.lexicon_source}_m4"
+            es = "_es" if self.lexicon_fusion == "emotion_specific" else ""
+            step = f"m1_m2_m3_{self.lexicon_source}{es}_m4"
         elif self.use_m3:
-            step = f"m1_m2_m3_{self.lexicon_source}"
+            es = "_es" if self.lexicon_fusion == "emotion_specific" else ""
+            step = f"m1_m2_m3_{self.lexicon_source}{es}"
         elif self.use_m2:
             step = "m1_m2"
         elif self.use_m1:

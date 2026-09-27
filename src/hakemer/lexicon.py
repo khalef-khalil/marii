@@ -7,6 +7,12 @@ from pathlib import Path
 
 from nrclex.core import _load_bundled_lexicon
 
+from hakemer.goemotions_lexicon_map import (
+    SIMPLIFIED_GOEMOTIONS_LABELS,
+    nrc_tags_for_label,
+)
+from hakemer.config import LexiconFusion
+
 # Plutchik 8-D (ch. 3), not NRCLex's extended EMOTION_ORDER.
 NRC_EMOTIONS = (
     "anger",
@@ -120,9 +126,102 @@ def document_lexicon_vector(text: str, source: str) -> list[float]:
     raise ValueError(f"Unknown lexicon source: {source}")
 
 
-def lexicon_dim(source: str) -> int:
+def lexicon_dim(source: str, *, fusion: LexiconFusion = "global") -> int:
+    if fusion == "emotion_specific":
+        return 1
     if source == "nrc":
         return NRC_DIM
     if source == "senticnet":
         return SENTICNET_DIM
     raise ValueError(source)
+
+
+def _label_names_for_lexicon(label_names: list[str] | None) -> list[str]:
+    if label_names is not None:
+        return label_names
+    return list(SIMPLIFIED_GOEMOTIONS_LABELS)
+
+
+def nrc_emotion_specific_vector(text: str, label_names: list[str] | None = None) -> list[float]:
+    """Per GoEmotion label: share of lexicon hits whose NRC tags align with that label."""
+    names = _label_names_for_lexicon(label_names)
+    words = word_tokens(text)
+    if not words:
+        return [0.0] * len(names)
+    lexicon = _nrc_lexicon()
+    accum = [0.0] * len(names)
+    for word in words:
+        tags = lexicon.get(word)
+        if not tags:
+            continue
+        nrc_hits = [t for t in tags if t in NRC_EMOTIONS]
+        if not nrc_hits:
+            continue
+        share = 1.0 / float(len(nrc_hits))
+        for tag in nrc_hits:
+            for idx, name in enumerate(names):
+                if name == "neutral":
+                    continue
+                if tag in nrc_tags_for_label(name):
+                    accum[idx] += share
+    total = sum(accum)
+    if total <= 0.0:
+        return [0.0] * len(names)
+    return [float(v / total) for v in accum]
+
+
+def senticnet_emotion_specific_vector(text: str, label_names: list[str] | None = None) -> list[float]:
+    """Per label: mean SenticNet polarity of tokens whose NRC tags bridge to that label."""
+    names = _label_names_for_lexicon(label_names)
+    words = word_tokens(text)
+    table = _load_sentic_polarity()
+    lexicon = _nrc_lexicon()
+    buckets: list[list[float]] = [[] for _ in names]
+    for word in words:
+        polarity = _lookup_sentic_concept(word, table)
+        if polarity is None:
+            continue
+        tags = lexicon.get(word)
+        if not tags:
+            continue
+        nrc_hits = [t for t in tags if t in NRC_EMOTIONS]
+        if not nrc_hits:
+            continue
+        scaled = (float(polarity) + 1.0) / 2.0
+        for tag in nrc_hits:
+            for idx, name in enumerate(names):
+                if name == "neutral":
+                    continue
+                if tag in nrc_tags_for_label(name):
+                    buckets[idx].append(scaled)
+    out: list[float] = []
+    for idx, name in enumerate(names):
+        if name == "neutral" or not buckets[idx]:
+            out.append(0.0)
+        else:
+            out.append(float(sum(buckets[idx]) / len(buckets[idx])))
+    return out
+
+
+def emotion_specific_lexicon_vector(
+    text: str,
+    source: str,
+    label_names: list[str] | None = None,
+) -> list[float]:
+    if source == "nrc":
+        return nrc_emotion_specific_vector(text, label_names)
+    if source == "senticnet":
+        return senticnet_emotion_specific_vector(text, label_names)
+    raise ValueError(f"Unknown lexicon source: {source}")
+
+
+def document_lexicon_features(
+    text: str,
+    source: str,
+    *,
+    fusion: LexiconFusion = "global",
+    label_names: list[str] | None = None,
+) -> list[float]:
+    if fusion == "emotion_specific":
+        return emotion_specific_lexicon_vector(text, source, label_names)
+    return document_lexicon_vector(text, source)

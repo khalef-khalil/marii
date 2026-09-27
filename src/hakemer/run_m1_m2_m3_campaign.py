@@ -60,6 +60,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-eval-samples", type=int, default=None)
     p.add_argument("--device", default="auto")
     p.add_argument("--artifact-dir", default="reference/artifacts")
+    p.add_argument(
+        "--lexicon-fusion",
+        default="global",
+        choices=["global", "emotion_specific"],
+        help="global = legacy M3; emotion_specific = per-label lexicon prior (Track C).",
+    )
     return p.parse_args()
 
 
@@ -80,6 +86,7 @@ def main() -> None:
             use_m2=True,
             use_m3=True,
             lexicon_source=args.lexicon,
+            lexicon_fusion=args.lexicon_fusion,
             max_phrases=args.max_phrases,
             phrase_max_length=args.phrase_max_length,
             output_dir=args.output_dir,
@@ -96,15 +103,17 @@ def main() -> None:
         item.pop("output_dir", None)
         runs_clean.append(item)
 
+    es_suffix = "_es" if args.lexicon_fusion == "emotion_specific" else ""
     report = {
         "backbone": args.backbone,
-        "step": f"m1_m2_m3_{args.lexicon}",
+        "step": f"m1_m2_m3_{args.lexicon}{es_suffix}",
         "modules": {
             "use_m1": True,
             "use_m2": True,
             "use_m3": True,
             "use_m4": False,
             "lexicon_source": args.lexicon,
+            "lexicon_fusion": args.lexicon_fusion,
         },
         "protocol": {
             "epochs": args.epochs,
@@ -120,7 +129,7 @@ def main() -> None:
     slug = args.backbone.replace("-", "_")
     artifact_dir = Path(args.artifact_dir)
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    out_path = artifact_dir / f"m1_m2_m3_{args.lexicon}_{slug}_campaign.json"
+    out_path = artifact_dir / f"m1_m2_m3_{args.lexicon}{es_suffix}_{slug}_campaign.json"
     out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     agg = report["test_aggregate"]
     gate_msg = ""
@@ -128,7 +137,7 @@ def main() -> None:
         g = report["lexicon_gate_abs"]
         gate_msg = f" |g|={g['mean']:.4f}±{g['std']:.4f} "
     print(
-        f"M1+M2+M3 ({args.lexicon}) done ({len(seeds)} seeds). "
+        f"M1+M2+M3 ({args.lexicon}, {args.lexicon_fusion}) done ({len(seeds)} seeds). "
         f"Test F1-macro={agg['f1_macro']['mean']:.4f}±{agg['f1_macro']['std']:.4f} "
         f"{gate_msg}-> {out_path}"
     )

@@ -1,0 +1,20 @@
+{
+  "description": "Track C: M1+M2+M3 with emotion-specific lexicon priors (per GoEmotion label).",
+  "notebook_nrc": "notebooks/m1_m2_m3_es_nrc_campaign.ipynb",
+  "notebook_senticnet": "notebooks/m1_m2_m3_es_senticnet_campaign.ipynb",
+  "runner": "run_m1_m2_m3_es_campaign.sh",
+  "ladder_vs_baseline": [
+    "Step 0 flat",
+    "M1+M2 (reference macro)",
+    "M1+M2+M3 global (legacy)",
+    "M1+M2+M3_es NRC",
+    "M1+M2+M3_es SenticNet"
+  ],
+  "metrics_to_report": [
+    "f1_macro",
+    "per_label_f1",
+    "delta_frequent_minus_rare",
+    "lexicon_gate_abs"
+  ],
+  "seeds_default": [42, 123, 456]
+}

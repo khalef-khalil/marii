@@ -98,6 +98,7 @@ def train_loop(config: TrainConfig) -> dict:
         use_m1=config.use_m1,
         use_m3=config.use_m3,
         lexicon_source=config.lexicon_source,
+        lexicon_fusion=config.lexicon_fusion,
         max_phrases=config.max_phrases,
         phrase_max_length=config.phrase_max_length,
     )
@@ -232,6 +233,12 @@ def parse_args() -> TrainConfig:
     )
     p.add_argument("--max-phrases", type=int, default=4)
     p.add_argument("--phrase-max-length", type=int, default=32)
+    p.add_argument(
+        "--lexicon-fusion",
+        default="global",
+        choices=["global", "emotion_specific"],
+        help="M3: same document prior for all labels (global) or per-label lexicon evidence.",
+    )
     args = p.parse_args()
     use_m1 = args.use_m1 or args.use_m2 or args.use_m3 or args.use_m4
     use_m2 = args.use_m2 or args.use_m3 or args.use_m4
@@ -254,6 +261,7 @@ def parse_args() -> TrainConfig:
         use_m3=use_m3,
         use_m4=args.use_m4,
         lexicon_source=args.lexicon_source,
+        lexicon_fusion=args.lexicon_fusion,
         max_phrases=args.max_phrases,
         phrase_max_length=args.phrase_max_length,
     )

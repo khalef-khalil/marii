@@ -62,6 +62,7 @@ class EmotionPhraseCrossAttention(nn.Module):
         use_m3: bool = False,
         use_m4: bool = False,
         lexicon_dim: int = 0,
+        lexicon_fusion: str = "global",
     ) -> None:
         super().__init__()
         if hidden % num_heads != 0:
@@ -69,6 +70,7 @@ class EmotionPhraseCrossAttention(nn.Module):
         self.num_labels = num_labels
         self.use_m3 = use_m3
         self.use_m4 = use_m4
+        self.lexicon_fusion = lexicon_fusion
         self.emotion_queries = nn.Parameter(torch.empty(num_labels, hidden))
         nn.init.normal_(self.emotion_queries, mean=0.0, std=0.02)
         if use_m3:
@@ -108,8 +110,17 @@ class EmotionPhraseCrossAttention(nn.Module):
         if self.use_m3:
             if lexicon_features is None:
                 raise ValueError("lexicon_features required when M3 is enabled")
-            prior = torch.tanh(self.lexicon_proj(lexicon_features))
-            queries = queries + self.lexicon_gate * prior.unsqueeze(1)
+            if self.lexicon_fusion == "emotion_specific":
+                # lexicon_features [B, K] or [B, K, 1]
+                if lexicon_features.dim() == 2:
+                    lex_in = lexicon_features.unsqueeze(-1)
+                else:
+                    lex_in = lexicon_features
+                prior = torch.tanh(self.lexicon_proj(lex_in))
+                queries = queries + self.lexicon_gate * prior
+            else:
+                prior = torch.tanh(self.lexicon_proj(lexicon_features))
+                queries = queries + self.lexicon_gate * prior.unsqueeze(1)
         queries = queries.reshape(batch_size * num_labels, 1, hidden)
         keys = (
             phrase_vecs.unsqueeze(1)
@@ -162,7 +173,13 @@ class HAKEMER(nn.Module):
                     config.num_labels,
                     use_m3=config.use_m3,
                     use_m4=config.use_m4,
-                    lexicon_dim=lexicon_dim(config.lexicon_source) if config.use_m3 else 0,
+                    lexicon_dim=lexicon_dim(
+                        config.lexicon_source,
+                        fusion=config.lexicon_fusion,
+                    )
+                    if config.use_m3
+                    else 0,
+                    lexicon_fusion=config.lexicon_fusion,
                 )
             else:
                 self.phrase_pool = AdditiveAttentionPool(hidden)

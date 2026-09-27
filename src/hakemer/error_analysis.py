@@ -33,6 +33,7 @@ def collect_test_predictions(
         use_m1=config.use_m1,
         use_m3=config.use_m3,
         lexicon_source=config.lexicon_source,
+        lexicon_fusion=config.lexicon_fusion,
         max_phrases=config.max_phrases,
         phrase_max_length=config.phrase_max_length,
     )
