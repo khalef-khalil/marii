@@ -11,7 +11,9 @@ from pathlib import Path
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Integrate roberta_m3_m4_campaign.zip from Colab")
+    p = argparse.ArgumentParser(
+        description="Integrate a RoBERTa M3/M4 Colab zip (one campaign per zip is OK)",
+    )
     p.add_argument("zip_path", type=Path, help="Downloaded zip path")
     p.add_argument(
         "--root",
@@ -50,8 +52,10 @@ def main() -> int:
                     run_dir.mkdir(parents=True, exist_ok=True)
                     (run_dir / "metrics.json").write_bytes(payload)
     missing = [s for s in expected if s not in found]
-    if missing:
-        print("Warning: expected JSON not in zip:", ", ".join(missing), file=sys.stderr)
+    if missing and found:
+        print("Note: partial zip (OK if integrating one block at a time).", file=sys.stderr)
+    elif missing and not found:
+        print("Warning: no RoBERTa campaign JSON in zip.", file=sys.stderr)
     for f in found:
         data = json.loads((art / f).read_text(encoding="utf-8"))
         m = data["test_aggregate"]["f1_macro"]
