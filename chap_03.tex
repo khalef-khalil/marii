@@ -155,7 +155,7 @@ $\gamma_k \equiv 1$.
 Le tableau~\ref{tab:conception-ablation} relie les limitations L1 à
 L3 aux modules, à la progression d'ablation prévue et aux hypothèses
 H1 à H4. Les comparaisons internes seront interprétées uniquement à
-budget d'entraînement identique (détail au
+budget d'affinage identique (détail au
 \ChapRef{experimentation}).
 
 \begin{table}[H]
@@ -345,19 +345,20 @@ complément pour H3) :
 
 \begin{itemize}
 \item[\textbf{H1.}] \textbf{M1 vs baseline PLM} : l'encodage
-  hiérarchique améliore le F1-macro, en particulier le rappel sur les
-  émotions rares, par rapport à une représentation \texttt{[CLS]} seule
-  à backbone fixé ;
+  hiérarchique améliore le F1-macro et les F1 par émotion sur les labels
+  rares, par rapport à une représentation \texttt{[CLS]} seule à backbone
+  fixé ;
 \item[\textbf{H2.}] \textbf{M1+M2 vs M1} : l'attention croisée et
   l'encodeur inter-émotions améliorent le F1-macro par rapport à une
   tête multi-étiquettes indépendante sur les mêmes vecteurs de phrases ;
-\item[\textbf{H3.}] \textbf{NRC vs SenticNet (M1+M2+M3)} : le lexique
-  \emph{catégoriel} aligné sur Plutchik/GoEmotions (NRC) réduit
-  davantage l'écart de F1 entre classes fréquentes et rares qu'un
-  vecteur \emph{conceptuel} SenticNet à $d_c{=}5$ fixé ;
+\item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : l'intégration d'une
+  ressource lexicale externe (NRC ou SenticNet) améliore le F1-macro
+  et/ou réduit l'écart de F1 entre classes fréquentes et rares ; une
+  comparaison NRC \emph{vs} SenticNet sur cet écart $\Delta$ est
+  envisagée lorsque les exports F1 par classe des deux piles +M3 sont
+  disponibles ;
 \item[\textbf{H4.}] \textbf{M1+M2+M3+M4 vs M1+M2+M3} : la pondération
-  dynamique améliore le F1-macro ou le rappel macro sur les classes
-  minoritaires, à ressource lexicale fixée.
+  dynamique améliore le F1-macro test, à ressource lexicale fixée.
 \end{itemize}
 
 \section*{Conclusion}

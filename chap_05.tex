@@ -45,15 +45,15 @@ traduisent en messages concrets pour un lecteur praticien :
 \item \textbf{H1 non soutenue} : L'encodage hiérarchique sans M2 n'est pas
       une alternative crédible au \texttt{[CLS]} flat sur GoEmotions
       sous ce protocole ; ne pas déployer M1 seul pour le F1-macro.
-\item \textbf{H2 soutenue} : M2 restaure et dépasse le flat sur les
+\item \textbf{H2 soutenue sous ce protocole} : M2 restaure et dépasse le flat sur les
       deux encodeurs ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$
       en DistilBERT ; $0{,}526 \pm 0{,}007$ en RoBERTa) : l'attention
       croisée phrase$\times$émotion est le cœur utile de HAKE-MER.
-\item \textbf{H3 non soutenue} : NRC et SenticNet n'améliorent pas
-      robustement le F1-macro vs M1+M2 ; aucune supériorité nette de NRC
-      sur SenticNet ; l'écart fréquent vs rare n'a pas été comparé
-      directement entre lexiques (exports par classe limités à Step~0
-      à +M1+M2).
+\item \textbf{H3 non démontrée sur $\Delta$ ; macro neutre} : NRC et
+      SenticNet n'améliorent pas robustement le F1-macro vs M1+M2 ; la
+      comparaison NRC \emph{vs} SenticNet sur l'écart fréquent vs rare
+      n'a pas été mesurée (exports par classe +M3 absents) ; au niveau
+      macro, aucune supériorité robuste de NRC sur SenticNet.
 \item \textbf{H4 non soutenue} : M4 n'améliore pas la macro par rapport
       à M3 SenticNet ni à M1+M2 sur les deux backbones ; la complexité
       supplémentaire n'est pas justifiée par les scores test actuels.
@@ -68,19 +68,21 @@ $0{,}505 \pm 0{,}004$ avec DistilBERT-base
 (tableau~\ref{tab:expe-roberta-ablation}, protocole du
 tableau~\ref{tab:expe-hyperparams}). Segmentation $M{=}4$, attention
 par émotion ; pas de branche M3/M4 si la macro prime sur
-l'interprétabilité lexicale. DistilBERT reste le compromis latence
-et maintenance lorsque $\approx 2$ points de macro suffisent.
+l'interprétabilité lexicale. DistilBERT reste le choix par défaut lorsque
+$\approx 2$ points de macro suffisent, en raison de sa taille plus réduite
+\cite{sanh2019distilbert} (latence non benchmarkée dans ce mémoire).
 
 \ParHead{Quand simplifier ou enrichir :}
 \begin{itemize}
-\item \textbf{Flat Step~0} : baseline légère si la latence ou la
-      maintenance prime sur $\approx 2$ points de macro ; performances
+\item \textbf{Flat Step~0} : baseline plus légère en paramètres si le
+      déploiement prime sur $\approx 2$ points de macro ; performances
       déjà solides ($0{,}486 \pm 0{,}005$).
 \item \textbf{M3 (NRC ou SenticNet)} : envisager seulement si l'on
-      expose $|g|$ ou les descripteurs documentaires à un utilisateur
-      (explication), pas pour gagner la macro dans ce cadre.
+      expose $|g|$ ou les descripteurs documentaires comme signal
+      auxiliaire d'utilisation du lexique, pas comme explication
+      token à token et pas pour gagner la macro dans ce cadre.
 \item \textbf{RoBERTa (+M1, +M1+M2)} : même profil qualitatif qu'en
-      DistilBERT (M2 confirme H2, M1 seul insuffisant) avec une macro
+      DistilBERT (M2 soutient H2 sous ce protocole, M1 seul insuffisant) avec une macro
       test plus haute sur +M1+M2 ($0{,}526 \pm 0{,}007$).
 \end{itemize}
 

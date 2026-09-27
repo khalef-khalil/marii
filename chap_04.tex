@@ -301,9 +301,10 @@ le même protocole de lookup que pour NRC (lemme puis surface).
 
 À architecture M1+M2 fixée, M3 activé et M4 désactivé, deux campagnes
 diffèrent uniquement par la ressource lexicale (NRC vs SenticNet).
-L'hypothèse H3 compare l'intégration de ces priors (alignement Plutchik
-vs signal conceptuel) sans postuler a priori la supériorité de l'une
-sur l'autre ni sur la pile M1+M2 seule.
+L'hypothèse H3 porte sur l'apport de ces priors par rapport à M1+M2
+(macro et écart fréquent vs rare) ; la comparaison NRC \emph{vs}
+SenticNet sur $\Delta$ n'est évaluable que si les F1 par classe des
+deux piles +M3 sont exportés.
 
 \section{Résultats et analyses}
 \label{sec:expe-analyses-results}
@@ -350,12 +351,15 @@ reporte les F1-macro test appariés DistilBERT/RoBERTa. Sur RoBERTa,
 $0{,}487 \pm 0{,}005$) et nettement sous +M1+M2 : M1 seul n'est pas
 une configuration à retenir. +M1+M2 atteint $0{,}526 \pm 0{,}007$,
 au-dessus du Step~0 RoBERTa et de la meilleure pile DistilBERT
-($0{,}505 \pm 0{,}004$) : H2 reste soutenue sur les deux backbones.
+($0{,}505 \pm 0{,}004$) : H2 reste soutenue sous ce protocole sur les deux backbones.
 Les lignes +M3 et +M4 du tableau complètent la ladder RoBERTa.
 +M3 SenticNet ($0{,}523 \pm 0{,}003$) reste au niveau de +M1+M2 sans gain
 macro robuste ; la branche NRC ($0{,}493 \pm 0{,}045$) est dominée par la
 graine $42$ ($0{,}430$) tandis que les graines $123$ et $456$ avoisinent
-$0{,}524$. +M4 SenticNet ($0{,}521 \pm 0{,}005$) n'améliore pas la macro
+$0{,}524$. Cette variance élevée suggère une sensibilité à
+l'initialisation ou à l'optimisation sous cette configuration, sans
+permettre d'attribuer seul le lexique NRC à l'instabilité (trois graines).
++M4 SenticNet ($0{,}521 \pm 0{,}005$) n'améliore pas la macro
 par rapport à +M3 SenticNet : H3 et H4 se lisent comme sur DistilBERT au
 regard du F1-macro test.
 
@@ -470,7 +474,7 @@ l'étape M1.
 
 Le F1-macro test passe de $0{,}457$ à $0{,}505$ ($\approx 4{,}8$ points
 absolus) ; les trois graines convergent ($0{,}499$, $0{,}508$, $0{,}508$).
-\textbf{H2 est soutenue} : l'attention croisée et les têtes par émotion
+\textbf{H2 est soutenue sous ce protocole} : l'attention croisée et les têtes par émotion
 améliorent nettement la détection macro par rapport à M1 seul, avec un
 F1-micro retrouvé au niveau du Step~0 flat ($0{,}582 \pm 0{,}002$).
 La hiérarchie seule (M1) reste insuffisante ; le gain provient de la
@@ -568,18 +572,21 @@ macro~? (ii)~SenticNet améliore-t-il M1+M2 en macro~? (iii)~NRC réduit-il
 mieux que SenticNet l'écart fréquent vs rare~? Les tableaux
 \ref{tab:expe-h3-lexicons} et \ref{tab:expe-h1-h4-summary} répondent
 (i) et (ii) par la négative : F1-macro $\approx 0{,}504$--$0{,}505$, sans
-gain robuste vs M1+M2. Pour (iii), les moyennes macro sont quasi
-identiques ; \textbf{aucune supériorité robuste de NRC sur SenticNet}
-n'est observée (SenticNet plus stable inter-graines sur DistilBERT ; NRC
-plus variable sur RoBERTa, graine $42$ sous-performante).
-\textbf{Synthèse H3 :} aucun avantage robuste de NRC ou SenticNet sur le
-F1-macro ; l'analyse par classe disponible (Step~0 à +M1+M2,
-tableaux~\ref{tab:expe-per-class-f1} et~\ref{tab:expe-freq-rare-gap})
-ne montre pas que le prior lexique affine la longue traîne, et les
-exports par classe des piles +M3 n'ont pas été produits dans cette
-campagne pour mesurer $\Delta$ fréquent vs rare sous NRC \emph{vs}
-SenticNet. Le levier principal reste M2 ; M3 n'ajoute qu'un prior appris
-modestement ($|g| \approx 0{,}03$ à $0{,}04$).
+gain robuste vs M1+M2. Pour (iii), les moyennes macro NRC et SenticNet
+sont quasi identiques, mais $\Delta$ fréquent vs rare n'a pas été calculé
+pour ces piles : la question NRC \emph{vs} SenticNet sur la longue
+traîne reste \textbf{non démontrée} (SenticNet plus stable inter-graines
+sur DistilBERT ; NRC plus variable sur RoBERTa, graine $42$
+sous-performante).
+\textbf{Synthèse H3 :} sous ce protocole, ni NRC ni SenticNet n'apportent
+un gain macro robuste vs M1+M2 (questions (i) et (ii)). La question (iii),
+comparaison NRC \emph{vs} SenticNet sur $\Delta$ fréquent vs rare, n'est
+pas démontrée faute d'exports F1 par classe pour les piles +M3. L'analyse
+disponible (Step~0 à +M1+M2, tableaux~\ref{tab:expe-per-class-f1}
+et~\ref{tab:expe-freq-rare-gap}) ne montre pas que le prior lexique global
+affine la longue traîne. Le levier principal reste M2 ; M3 n'ajoute qu'un
+prior appris modestement ($|g| \approx 0{,}03$ à $0{,}04$), sans supériorité
+robuste de NRC sur SenticNet au niveau macro.
 
 \subsection{Ablation M1+M2+M3+M4 (SenticNet, H4)}
 \label{sec:expe-m4-h4}
@@ -634,11 +641,11 @@ les piles lexicales et M4.
 \hline
 H1 & Step~0 flat vs +M1 & $0{,}486 \pm 0{,}005$ vs $0{,}457 \pm 0{,}002$ & H1 non soutenue \\
 \hline
-H2 & +M1 vs +M1+M2 & $0{,}457 \pm 0{,}002$ vs $0{,}505 \pm 0{,}004$ & H2 soutenue \\
+H2 & +M1 vs +M1+M2 & $0{,}457 \pm 0{,}002$ vs $0{,}505 \pm 0{,}004$ & H2 soutenue (protocole) \\
 \hline
 H3 & +M1+M2 vs +M3 (NRC / SenticNet) &
 $0{,}505 \pm 0{,}004$ vs $0{,}504 \pm 0{,}008$ / $0{,}504 \pm 0{,}003$ &
-macro et écart fréquent vs rare stables \\
+macro neutre ; $\Delta$ lex. non mesuré \\
 \hline
 H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ & H4 non soutenue \\
 \hline
