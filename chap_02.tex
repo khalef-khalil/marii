@@ -1,10 +1,10 @@
+\ChapRefAssign{etat_art}
 \chapter{État de l'art}
-\label{chap:etat_art}
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-Le chapitre~\ref{chap:contexte} a posé une question de recherche et
+Le \ChapRef{contexte} a posé une question de recherche et
 trois limitations (L1 à L3) auxquelles HAKE-MER doit répondre. Nous
 montrons ici comment la littérature sur la \textbf{détection
 multi-étiquettes des émotions dans le texte}
@@ -17,8 +17,8 @@ GoEmotions, puis les approches neuronales et la baseline par modèles
 pré-entraînés, ensuite les réponses hiérarchiques et lexicales aux
 limitations L2 et L3, et enfin une synthèse qui relie lacunes et
 modules M1 à M3 (le module M4 et le protocole d'évaluation complet
-sont détaillés aux chapitres~\ref{chap:conception}
-et~\ref{chap:experimentation}).
+sont détaillés aux \ChapRef{conception}
+et \ChapRef{experimentation}).
 
 \section{Tâche, jeux de données et métriques}
 \label{sec:etat-tache-donnees}
@@ -29,7 +29,7 @@ expériences.
 
 \subsection{Classification multi-étiquettes vs mono-étiquette}
 
-Comme souligné au chapitre~\ref{chap:contexte}, la détection
+Comme souligné au \ChapRef{contexte}, la détection
 d'émotions dans le texte est souvent réduite, dans les premiers
 travaux, à l'identification d'une \emph{émotion dominante}
 ou d'une polarité globale. Or, dans le langage naturel, plusieurs
@@ -46,7 +46,7 @@ probabilités $\hat{y}_k \in [0,1]$), ce qui diffère de la
 classification multi-classe où une seule classe est choisie. Cette
 distinction conditionne le choix des architectures de sortie
 (couche sigmoïde par émotion, entropie croisée binaire) décrit au
-chapitre~\ref{chap:conception}.
+\ChapRef{conception}.
 
 \subsection{Corpus de référence : GoEmotions}
 
@@ -73,7 +73,7 @@ supplémentaire et appliquent un partage aléatoire
 80\,\%/10\,\%/10\,\% train/validation/test \cite{demszky2020}. Des
 exports publics (p.\,ex.\ sur Hugging Face) peuvent différer légèrement
 des effectifs de ce protocole ; le split retenu pour HAKE-MER est
-précisé au chapitre~\ref{chap:experimentation}.
+précisé au \ChapRef{experimentation}.
 
 \begin{table}[H]
 \centering
@@ -115,7 +115,7 @@ EmoContext \cite{semeval2019emocontext}) et des représentations
 contextualisées \cite{saravia2018carer} complètent le cadre ; le bruit
 d'annotation sur GoEmotions est quantifié par \cite{demszky2020}. Une
 validation externe hors Reddit reste une perspective du
-chapitre~\ref{chap:perspectives}.
+\ChapRef{perspectives}.
 
 \subsection{Annotation, bruit et déséquilibre}
 
@@ -203,7 +203,7 @@ multi-étiquettes sigmoïde constitue aujourd'hui la \textbf{ligne de
 base} la plus répandue sur GoEmotions \cite{demszky2020}. Les pratiques
 d'affinage (warmup, têtes légères) et l'écosystème d'implémentation
 \cite{sun2019,wolf2020} influencent directement le protocole retenu au
-chapitre~\ref{chap:experimentation}. Cette configuration (encodeur
+\ChapRef{experimentation}. Cette configuration (encodeur
 contextuel + classifieur binaire par émotion) sert de point de
 comparaison obligatoire dans notre protocole d'ablation : toute
 contribution architecturale (M1, M2, M3) doit être mesurée \emph{à budget
@@ -215,7 +215,7 @@ jeu de test (précision macro 0{,}40, rappel macro 0{,}63)
 \cite{demszky2020}, avec de fortes disparités par émotion ; ordre de
 grandeur bibliographique obtenu avec leur filtrage, split 80/10/10 et
 hyperparamètres. Nos comparaisons principales restent les ablations
-internes au protocole du chapitre~\ref{chap:experimentation}.
+internes au protocole du \ChapRef{experimentation}.
 
 \subsection{Dépendances entre émotions (motivation du module M2)}
 
@@ -245,7 +245,7 @@ De nombreux textes portent des signaux affectifs \textbf{localisés}
 à l'échelle de la phrase : une phrase peut exprimer la gratitude,
 une autre la surprise. Aplatir le document en un unique vecteur
 (\texttt{[CLS]} ou pooling global) mélange ces signaux (limitation
-\textbf{L2} du chapitre~\ref{chap:conception}). Les architectures
+\textbf{L2} du \ChapRef{conception}). Les architectures
 \textbf{hiérarchiques} visent à encoder d'abord les phrases (ou
 segments), puis à agréger au niveau document avec des poids appris.
 
@@ -292,10 +292,10 @@ phrase du même commentaire.
 Le \textbf{module~1} de HAKE-MER s'inscrit dans cette lignée :
 segmentation en phrases, encodage par le backbone partagé,
 pooling par attention additive \cite{bahdanau2015} au niveau phrase,
-avec des bornes de longueur fixées au chapitre~\ref{chap:experimentation}.
+avec des bornes de longueur fixées au \ChapRef{experimentation}.
 Le schéma de la figure~\ref{fig:lit-han} en rappelle la logique à
 trois strates (sans reproduire l'empilement récurrent complet,
-détaillé au chapitre~\ref{chap:conception}) avant l'étude des
+détaillé au \ChapRef{conception}) avant l'étude des
 lexiques externes.
 
 \begin{figure}[H]
@@ -336,9 +336,12 @@ architecture fixée (M1+M2+M3) :
 \item \textbf{SenticNet} \cite{cambria2018senticnet} : ressource de
       sentiment à base de \emph{primitives conceptuelles} et
       d'embeddings contextuels, produisant des scores affectifs
-      continus, également projetés vers les 28 classes.
+      continus au niveau concept. Dans HAKE-MER, cinq descripteurs
+      documentaires (polarités et couverture) alimentent M3, distincts
+      d'une table mot-émotion alignée sur les $K{=}28$ étiquettes
+      GoEmotions comme pour NRC.
 \end{itemize}
-L'hypothèse H3 (chapitre~\ref{chap:conception}) est que
+L'hypothèse H3 (\ChapRef{conception}) est que
 l'\textbf{alignement taxonomique} entre lexique et labels cible
 conditionne l'utilité de l'enrichissement, plus que la richesse
 sémantique abstraite de la ressource.
@@ -350,7 +353,7 @@ connaissances de bon sens pour l'émotion en dialogue
 \cite{ghosal2020cosmic}, bases d'inférences
 causales (ATOMIC) ou modèles génératifs de bon sens (COMET) pour les
 émotions implicites. Ces approches sont \textbf{pertinentes pour des
-perspectives} (chapitre~\ref{chap:perspectives}) mais hors du
+perspectives} (\ChapRef{perspectives}) mais hors du
 périmètre d'implémentation immédiat de HAKE-MER, qui se concentre
 sur l'injection lexicale NRC/SenticNet.
 
@@ -363,7 +366,7 @@ littérature et la réponse modulaire proposée par HAKE-MER.
 \subsection{Limites récurrentes et modules proposés}
 
 Le tableau~\ref{tab:limites-modules} relie les limitations
-structurales identifiées au chapitre~\ref{chap:contexte} aux
+structurales identifiées au \ChapRef{contexte} aux
 composantes de HAKE-MER.
 
 \begin{table}[H]
@@ -435,7 +438,7 @@ enrichissement lexical comparé NRC/SenticNet (M3), pondération
 dynamique des intensités (M4). Ce chapitre établit le \emph{cadre
 conceptuel} et les arguments de littérature qui motivent chaque module ;
 l'évaluation quantitative est développée au
-chapitre~\ref{chap:experimentation}.
+\ChapRef{experimentation}.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}

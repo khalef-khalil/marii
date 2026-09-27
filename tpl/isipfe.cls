@@ -246,6 +246,17 @@
         \hrule
         \vskip 50\p@
     }
+    \ifChapRefReady
+      \begingroup
+        \edef\ChapRefTmpNum{\number\value{chapter}}%
+        \edef\ChapRefTmpPage{\number\value{page}}%
+        \edef\ChapRefTmpKey{chapref-\ChapRefCurrent-num}%
+        \immediate\write\@auxout{%
+          \string\newlabel{\ChapRefTmpKey}{{\ChapRefTmpNum}{\ChapRefTmpPage}{}{chapter.\ChapRefTmpNum}{}}%
+        }%
+      \endgroup
+      \ChapRefReadyfalse
+    \fi
     \minitocsection
     \thispagestyle{empty}%
     \newpage

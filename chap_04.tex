@@ -1,9 +1,9 @@
+\ChapRefAssign{experimentation}
 \chapter{Protocole expérimental et évaluation}
-\label{chap:experimentation}
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le chapitre~\ref{chap:conception} a fixé l'architecture HAKE-MER, les choix
+Le \ChapRef{conception} a fixé l'architecture HAKE-MER, les choix
 de segmentation et d'extraction lexicale, ainsi que les hypothèses H1 à
 H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
 hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
@@ -26,7 +26,7 @@ Les expériences ciblent GoEmotions (configuration \emph{simplified})
 \cite{demszky2020} : 43\,410 exemples d'entraînement, 5\,426 de
 validation et 5\,427 de test, 27 émotions plus la classe \emph{neutral}
 ($K{=}28$), en multi-étiquettes. Les propriétés du corpus documentées
-au chapitre~\ref{chap:etat_art} motivent le F1-macro, la prise en compte
+au \ChapRef{etat_art} motivent le F1-macro, la prise en compte
 du multi-étiquette et le prétraitement hiérarchique
 (section~\ref{sec:conception-choix}).
 
@@ -343,7 +343,7 @@ reporte les F1-macro test appariés DistilBERT/RoBERTa. Sur RoBERTa,
 $0{,}487 \pm 0{,}005$) et nettement sous +M1+M2 : M1 seul n'est pas
 une configuration à retenir. +M1+M2 atteint $0{,}526 \pm 0{,}007$,
 au-dessus du Step~0 RoBERTa et de la meilleure pile DistilBERT
-($0{,}505 \pm 0{,}004$) : H2 reste confirmée sur les deux backbones.
+($0{,}505 \pm 0{,}004$) : H2 reste soutenue sur les deux backbones.
 Les lignes +M3 et +M4 du tableau complètent la ladder RoBERTa.
 +M3 SenticNet ($0{,}523 \pm 0{,}003$) reste au niveau de +M1+M2 sans gain
 macro robuste ; la branche NRC ($0{,}493 \pm 0{,}045$) est dominée par la
@@ -418,13 +418,16 @@ Step~0 PLM (flat) & $0{,}582 \pm 0{,}001$ & $0{,}486 \pm 0{,}005$ & $0{,}472 \pm
 
 Le F1-macro test moyen passe de $0{,}486$ à $0{,}457$ ($\approx 2{,}9$
 points absolus) ; les trois graines restent alignées (test macro
-$0{,}457$, $0{,}454$, $0{,}459$). \textbf{H1 n'est pas confirmée} sous ce
+$0{,}457$, $0{,}454$, $0{,}459$). \textbf{H1 n'est pas soutenue} sous ce
 protocole : l'encodage hiérarchique n'améliore pas la détection
 multi-étiquettes macro par rapport au PLM document à encodeur fixé.
 L'écart concerne aussi le F1-micro et l'exact match ; seule la lecture
 flat avec troncature globale et pooling [CLS] performe mieux ici.
 Cette observation motive la suite de l'ablation (M2 : attention
 émotion vers phrases) plutôt qu'un prolongement direct de M1 seul.
+Rappel méthodologique : +M1 emploie une tête document intermédiaire
+absente de +M1+M2 ; H1 oppose Step~0 flat à cette pile, sans confondre
+M1 seul avec la chaîne complète M1+M2.
 
 \subsection{Ablation M1+M2 (attention par émotion, H2)}
 \label{sec:expe-m1-m2-h2}
@@ -454,7 +457,7 @@ l'étape M1.
 
 Le F1-macro test passe de $0{,}457$ à $0{,}505$ ($\approx 4{,}8$ points
 absolus) ; les trois graines convergent ($0{,}499$, $0{,}508$, $0{,}508$).
-\textbf{H2 est confirmée} : l'attention croisée et les têtes par émotion
+\textbf{H2 est soutenue} : l'attention croisée et les têtes par émotion
 améliorent nettement la détection macro par rapport à M1 seul, avec un
 F1-micro retrouvé au niveau du Step~0 flat ($0{,}582 \pm 0{,}002$).
 La hiérarchie seule (M1) reste insuffisante ; le gain provient de la
@@ -547,7 +550,8 @@ par rapport à M1+M2 sans traduction nette en F1-macro.
 \end{tabular}
 \end{table}
 
-\textbf{H3 est tranchée sur le plan comparatif} : ni NRC ni SenticNet
+\textbf{Sous ce protocole, H3 n'est pas soutenue sur le volet macro ni
+sur la réduction de l'écart entre classes fréquentes et rares} : ni NRC ni SenticNet
 n'améliorent de façon robuste le F1-macro par rapport à M1+M2 ; les
 moyennes sur trois graines coïncident à $\approx 0{,}504$--$0{,}505$.
 SenticNet présente une variance inter-graines plus faible ; NRC peut
@@ -595,7 +599,7 @@ Le F1-macro test moyen passe de $0{,}504$ à $0{,}499$ ($\pm 0{,}006$) :
 une graine atteint $0{,}507$ (seed $42$) mais les deux autres restent sous
 $0{,}496$, d'où une moyenne inférieure à M3 SenticNet et à M1+M2
 ($0{,}505 \pm 0{,}004$). Le F1-micro et le mAP reculent légèrement.
-\textbf{H4 n'est pas confirmée} : la pondération dynamique n'améliore pas
+\textbf{H4 n'est pas soutenue} : la pondération dynamique n'améliore pas
 robustement la macro sur GoEmotions dans ce cadre. Sur RoBERTa-base,
 +M4 SenticNet ($0{,}521 \pm 0{,}005$) reste sous +M3 SenticNet et au
 niveau de +M1+M2 sans gain net. La configuration la plus efficace en
@@ -617,15 +621,15 @@ les piles lexicales et M4.
 \hline
 \textbf{Hyp.} & \textbf{Comparaison} & \textbf{F1-macro test} & \textbf{Lecture} \\
 \hline
-H1 & Step~0 flat vs +M1 & $0{,}486 \pm 0{,}005$ vs $0{,}457 \pm 0{,}002$ & H1 rejetée \\
+H1 & Step~0 flat vs +M1 & $0{,}486 \pm 0{,}005$ vs $0{,}457 \pm 0{,}002$ & H1 non soutenue \\
 \hline
-H2 & +M1 vs +M1+M2 & $0{,}457 \pm 0{,}002$ vs $0{,}505 \pm 0{,}004$ & H2 confirmée \\
+H2 & +M1 vs +M1+M2 & $0{,}457 \pm 0{,}002$ vs $0{,}505 \pm 0{,}004$ & H2 soutenue \\
 \hline
 H3 & +M1+M2 vs +M3 (NRC / SenticNet) &
 $0{,}505 \pm 0{,}004$ vs $0{,}504 \pm 0{,}008$ / $0{,}504 \pm 0{,}003$ &
-macro stable \\
+macro et écart fréquent vs rare stables \\
 \hline
-H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ & H4 non confirmée \\
+H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ & H4 non soutenue \\
 \hline
 \end{tabular}
 \end{table}
@@ -801,7 +805,7 @@ tableau~\ref{tab:expe-h1-h4-summary}.
 \label{sec:expe-lecons}
 
 La campagne confirme l'importance de trois garde-fous, déjà respectés
-ici et développés au chapitre~\ref{chap:perspectives} : (i) la
+ici et développés au \ChapRef{perspectives} : (i) la
 troncature phrase reste faible aux bornes retenues
 (section~\ref{sec:expe-corpus-stats}) ; (ii) l'initialisation $g{=}0$
 et $b_2{=}+3$ pour M3/M4 évite de biaiser le départ des portes ;
@@ -820,4 +824,4 @@ tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue pour la macro test
 est M1+M2 ; M3 et M4 n'apportent pas de gain robuste au-delà de M2.
 L'analyse par classe (extrait et annexe complète) et l'analyse de
 confusions (section~\ref{sec:expe-error-analysis}) complètent la macro.
-Le chapitre~\ref{chap:perspectives} en tire les recommandations pratiques.
+Le \ChapRef{perspectives} en tire les recommandations pratiques.

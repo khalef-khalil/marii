@@ -1,15 +1,15 @@
+\ChapRefAssign{conception}
 \chapter{Conception de l'approche HAKE-MER}
-\label{chap:conception}
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le chapitre~\ref{chap:etat_art} a fixé le corpus GoEmotions, une baseline
+Le \ChapRef{etat_art} a fixé le corpus GoEmotions, une baseline
 par modèles pré-entraînés et les réponses littéraires aux limitations
 L1 à L3. Ce chapitre en déduit l'architecture \textbf{HAKE-MER}
 (\emph{Hierarchical Attention with Knowledge Enhancement for
 Multi-Emotion Recognition}) : formalisation de la tâche, description
 des modules M1 à M4 et hypothèses H1 à H4 que le
-chapitre~\ref{chap:experimentation} fera trancher par ablation.
+\ChapRef{experimentation} testera ces hypothèses par ablation.
 
 \section{Formulation du problème et limites existantes}
 \label{sec:conception-formulation}
@@ -67,7 +67,7 @@ l'intensité de chaque représentation émotionnelle selon le contexte
 global (complément de M3 sur la longue traîne). Chaque module s'active
 par un indicateur de configuration, ce qui permet l'ablation cumulative
 décrite au tableau~\ref{tab:conception-ablation} et au
-chapitre~\ref{chap:experimentation}.
+\ChapRef{experimentation}.
 
 \begin{figure}[H]
 \centering
@@ -156,7 +156,7 @@ Le tableau~\ref{tab:conception-ablation} relie les limitations L1 à
 L3 aux modules, à la progression d'ablation prévue et aux hypothèses
 H1 à H4. Les comparaisons internes seront interprétées uniquement à
 budget d'entraînement identique (détail au
-chapitre~\ref{chap:experimentation}).
+\ChapRef{experimentation}).
 
 \begin{table}[H]
 \centering
@@ -192,7 +192,7 @@ standard, ordre conservé), tronqués à $M{=}4$ phrases et 32 tokens
 sous-mots par phrase avant encodage. Les phrases excédentaires sont
 ignorées ; les phrases courtes sont complétées par padding masqué.
 Une étiquette est prédite si $\hat{y}_k > 0{,}5$ ; un seuil appris sur
-validation pourra être testé au chapitre~\ref{chap:experimentation},
+validation pourra être testé au \ChapRef{experimentation},
 sans changer l'architecture.
 
 \subsection{Extraction NRC et correspondance GoEmotions}
@@ -234,7 +234,7 @@ la ressource affective et la dimension $d_c$ avant projection.
 \label{sec:conception-m1}
 
 Le module~1 matérialise la réponse à la limitation L2 identifiée au
-chapitre~\ref{chap:etat_art} : conserver une représentation par phrase
+\ChapRef{etat_art} : conserver une représentation par phrase
 avant toute décision multi-étiquettes. Le texte est segmenté comme en
 section~\ref{sec:conception-choix}, puis encodé par le backbone en un
 seul appel vectorisé sur l'ensemble des phrases du mini-batch (tokens
@@ -256,7 +256,11 @@ actif, d'agrégation des phrases au niveau document : M2 remplace ce
 pooling global par une lecture \emph{par émotion}. En configuration M1
 seul (ablation), une seconde attention agrège les phrases au niveau
 document et une tête linéaire partagée sert de ligne intermédiaire
-avant la comparaison M1+M2.
+avant la comparaison M1+M2. Cette tête document intermédiaire n'existe
+pas dans la pile M1+M2 (M2 remplace le pooling global). L'hypothèse H1
+reste la comparaison Step~0 flat vs +M1 ; interpréter M1 seul comme
+« hiérarchie sans attention par émotion » ne doit pas occulter cet
+artefact de tête lorsque l'on discute des écarts avec +M1+M2.
 
 \section{Module 2 : Attention Croisée Multi-Émotions}
 \label{sec:conception-m2}
@@ -302,6 +306,12 @@ injecter. La valeur apprise de $|g|$ sert de sonde d'utilisation du
 lexique (comparaison NRC vs SenticNet sous H3). Les commentaires sans
 couverture lexicale ($c{=}0$) n'ajoutent aucun signal ; la performance
 sur la longue traîne dépend alors du reste de l'architecture.
+\textbf{Limitation.} Le même $\mathrm{prior}$ est ajouté à toutes les
+requêtes $Q_k$ : NRC et SenticNet résument le document en vecteurs
+globaux ($d_c{=}8$ ou $5$) avant projection, sans profils lexicaux
+distincts par émotion. Ce choix facilite la comparaison NRC vs
+SenticNet à architecture fixée, mais peut sous-exploiter la structure
+catégorielle du NRC par rapport à une injection mot-émotion plus fine.
 
 \section{Module 4 : Pondération Dynamique}
 \label{sec:conception-m4}
@@ -326,11 +336,12 @@ progressivement l'intensité de chaque émotion selon le texte.
 \section{Hypothèses de recherche}
 \label{sec:conception-hypotheses}
 
-Le protocole du chapitre~\ref{chap:experimentation} testera les
+Le protocole du \ChapRef{experimentation} testera les
 hypothèses suivantes par ablation cumulative
-(tableau~\ref{tab:conception-ablation}), à budget d'entraînement
-identique et avec F1-macro comme métrique principale (analyse par
-classe en complément) :
+(tableau~\ref{tab:conception-ablation}), à budget d'affinage
+identique (epochs, early stopping, recherche d'hyperparamètres) et avec
+F1-macro comme métrique principale (écart F1 fréquent vs rare en
+complément pour H3) :
 
 \begin{itemize}
 \item[\textbf{H1.}] \textbf{M1 vs baseline PLM} : l'encodage
@@ -353,7 +364,7 @@ classe en complément) :
 \addcontentsline{toc}{section}{Conclusion}
 Ce chapitre a formalisé la tâche, enchaîné les modules M1 à M4, fixé
 les choix de segmentation et d'extraction NRC/SenticNet, et relié
-limites, ablation et hypothèses H1 à H4. Le chapitre~\ref{chap:experimentation} reporte l'exécution du protocole :
+limites, ablation et hypothèses H1 à H4. Le \ChapRef{experimentation} reporte l'exécution du protocole :
 baselines PLM Step~0 sur DistilBERT et RoBERTa, ablations M1 à M4 sur
-chaque backbone (H1 à H4 tranchées, tableau récapitulatif au
-chapitre~\ref{chap:experimentation}).
+chaque backbone (H1 à H4 évaluées sous ce protocole, tableau récapitulatif au
+\ChapRef{experimentation}).

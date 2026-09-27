@@ -19,6 +19,16 @@
 
 \makeatletter
 
+% Chapter refs: minitoc before body breaks plain \label{chap:*} (see isipfe @makechapterhead)
+\newif\ifChapRefReady
+\ChapRefReadyfalse
+\def\ChapRefCurrent{}
+\newcommand{\ChapRefAssign}[1]{%
+  \gdef\ChapRefCurrent{#1}%
+  \ChapRefReadytrue
+}
+\newcommand{\ChapRef}[1]{chapitre~\ref{chapref-#1-num}}%
+
 %================= front cover variables =================%
 
 \newcommand{\secondAuthor}[1]{\gdef\@secondAuthor{#1}}%

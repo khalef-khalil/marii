@@ -24,11 +24,11 @@ SenticNet), au-dessus d'encodeurs contextuels affinés
 \cite{howard2018ulmfit,devlin2019}. Les expériences portent sur
 GoEmotions \cite{demszky2020}, dans le cadre de la détection
 multi-étiquettes en texte \cite{zhang2014multilabel,mohammad2020sentiment},
-avec un protocole d'ablation à budget constant, le \textbf{F1-macro} comme
+avec un protocole d'ablation à budget d'affinage identique, le \textbf{F1-macro} comme
 métrique principale \cite{bond2022multilabel,wu2021multilabelranking} et
 trois graines aléatoires. Le Step~0 compare DistilBERT-base et
 RoBERTa-base en encodage document flat ; la ladder M1 à M4 est menée sur
-les deux encodeurs (chapitre~\ref{chap:experimentation}).
+les deux encodeurs (\ChapRef{experimentation}).
 
 \textbf{Résultat principal.} L'attention label-specific sur les phrases
 (module M2) apporte le gain net en F1-macro test sur les deux encodeurs
@@ -45,20 +45,20 @@ fréquence intermédiaire, pas sur la longue traîne la plus rare.
 \begin{itemize}[noitemsep]
 \item une architecture HAKE-MER en quatre modules cumulables (M1 à M4)
       et quatre hypothèses H1 à H4 testées par ablation ;
-\item un protocole expérimental reproductible (campagnes archivées,
-      Step~0 sur deux encodeurs, comparaison NRC / SenticNet, synthèse
-      H1 à H4 et F1 par émotion sur le test) ;
+\item un protocole expérimental documenté (graines, hyperparamètres et
+      campagnes archivées, Step~0 sur deux encodeurs, comparaison NRC /
+      SenticNet, synthèse H1 à H4 et F1 par émotion sur le test) ;
 \item des recommandations de déploiement et des perspectives ancrées
-      sur les résultats obtenus (chapitre~\ref{chap:perspectives}).
+      sur les résultats obtenus (\ChapRef{perspectives}).
 \end{itemize}
 
 \paragraph{Organisation du mémoire.}
-Le chapitre~\ref{chap:contexte} présente le contexte, la problématique et
-les objectifs. Le chapitre~\ref{chap:etat_art} situe HAKE-MER par rapport
+Le \ChapRef{contexte} présente le contexte, la problématique et
+les objectifs. Le \ChapRef{etat_art} situe HAKE-MER par rapport
 à la littérature sur les émotions multiples, l'attention hiérarchique et
-l'intégration de connaissances. Le chapitre~\ref{chap:conception} détaille
+l'intégration de connaissances. Le \ChapRef{conception} détaille
 l'architecture et les hypothèses de recherche. Le
-chapitre~\ref{chap:experimentation} décrit le protocole, reporte les
-métriques test et tranche H1 à H4. Le chapitre~\ref{chap:perspectives}
+\ChapRef{experimentation} décrit le protocole, reporte les
+métriques test et évalue H1 à H4. Le \ChapRef{perspectives}
 formule recommandations pratiques et prolongements de recherche. Une
 conclusion générale clôt le document.

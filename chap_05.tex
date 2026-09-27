@@ -1,10 +1,10 @@
+\ChapRefAssign{perspectives}
 \chapter{Recommandations et perspectives}
-\label{chap:perspectives}
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le chapitre~\ref{chap:experimentation} a exécuté la ladder d'ablation
-sur GoEmotions et tranché H1 à H4. Ce chapitre en extrait des
+Le \ChapRef{experimentation} a exécuté la ladder d'ablation
+sur GoEmotions et évalué H1 à H4. Ce chapitre en extrait des
 \textbf{enseignements opérationnels} pour la détection multi-étiquettes
 des émotions, formule des \textbf{recommandations de déploiement} à
 partir des métriques obtenues, puis ouvre des \textbf{perspectives}
@@ -42,10 +42,10 @@ delà de HAKE-MER :
 Les hypothèses H1 à H4 (chapitre~\ref{sec:conception-hypotheses}) se
 traduisent en messages concrets pour un lecteur praticien :
 \begin{itemize}
-\item \textbf{H1 rejetée.} L'encodage hiérarchique sans M2 n'est pas
+\item \textbf{H1 non soutenue.} L'encodage hiérarchique sans M2 n'est pas
       une alternative crédible au \texttt{[CLS]} flat sur GoEmotions
       sous ce protocole ; ne pas déployer M1 seul pour le F1-macro.
-\item \textbf{H2 confirmée.} M2 restaure et dépasse le flat sur les
+\item \textbf{H2 soutenue.} M2 restaure et dépasse le flat sur les
       deux encodeurs ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$
       en DistilBERT ; $0{,}526 \pm 0{,}007$ en RoBERTa) : l'attention
       croisée phrase$\times$émotion est le cœur utile de HAKE-MER.
@@ -53,7 +53,7 @@ traduisent en messages concrets pour un lecteur praticien :
       pas de surplus stable sur DistilBERT ni RoBERTa ; le prior lexique
       est appris faiblement ($|g| \approx 0{,}03$--$0{,}04$) et n'affine
       pas la longue traîne.
-\item \textbf{H4 non confirmée.} M4 n'améliore pas la macro par rapport
+\item \textbf{H4 non soutenue.} M4 n'améliore pas la macro par rapport
       à M3 SenticNet ni à M1+M2 sur les deux backbones ; la complexité
       supplémentaire n'est pas justifiée par les scores test actuels.
 \end{itemize}
@@ -95,7 +95,7 @@ l'analyse de troncature (section~\ref{sec:expe-corpus-stats}).
 \label{sec:persp-recherche}
 
 Les prolongements suivants ciblent les limites observées au
-chapitre~\ref{chap:experimentation}, sans remettre en cause les
+\ChapRef{experimentation}, sans remettre en cause les
 résultats déjà archivés :
 \begin{itemize}
 \item \textbf{Déséquilibre et longue traîne.} Pertes repondérées
