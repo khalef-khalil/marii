@@ -257,7 +257,7 @@
 
 %%%%% Fancyhdr stuff
 % define how headers are marked, for details, see fancyhdr docs
-%\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\chaptermark}[1]{\markboth{\@chapapp~\thechapter}{}}
 %\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
 % define where sections, chapters and pagenumbers are put
 % see fancyhdr docs for details
