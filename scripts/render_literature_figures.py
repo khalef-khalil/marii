@@ -42,7 +42,7 @@ def fig_transformer_encoder() -> None:
 
 
 def fig_han() -> None:
-    fig, ax = plt.subplots(figsize=(7.2, 3.4))
+    fig, ax = plt.subplots(figsize=(6.4, 2.85))
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 6)
     ax.axis("off")
@@ -67,9 +67,8 @@ def fig_han() -> None:
         if y > 1:
             ax.annotate("", xy=(5, y), xytext=(5, y - 0.8), arrowprops=dict(arrowstyle="->", lw=1.2))
     ax.set_title("Attention hiérarchique (mot, phrase, document)", fontsize=10)
-    fig.tight_layout(pad=0.15)
-    fig.savefig(OUT / "lit_han_schematic.pdf", bbox_inches="tight", pad_inches=0.08)
-    fig.savefig(OUT / "lit_han_schematic.png", bbox_inches="tight", pad_inches=0.08)
+    fig.savefig(OUT / "lit_han_schematic.pdf")
+    fig.savefig(OUT / "lit_han_schematic.png")
     plt.close(fig)
 
 

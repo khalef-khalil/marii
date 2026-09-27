@@ -257,7 +257,7 @@
 
 %%%%% Fancyhdr stuff
 % define how headers are marked, for details, see fancyhdr docs
-\renewcommand{\chaptermark}[1]{\markboth{\@chapapp~\thechapter}{}}
+%\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 %\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
 % define where sections, chapters and pagenumbers are put
 % see fancyhdr docs for details
@@ -269,8 +269,8 @@
 \fancyhf{}
 %\fancyhead[LE,RO]{\nouppercase{\thepage}}
 %\fancyhead[L]{\nouppercase{\leftmark}}
-\renewcommand{\headrulewidth}{0.3pt}
-\renewcommand{\footrulewidth}{0.3pt}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
 \setlength{\headwidth}{\textwidth}
 \fancyheadoffset[L,R]{0pt}
 \pagestyle{fancy}
