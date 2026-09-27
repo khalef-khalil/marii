@@ -1,40 +1,65 @@
 #!/usr/bin/env python3
-"""LaTeX rows for lexicon zero/shuffle ablation from campaign run summaries."""
+"""LaTeX rows for lexicon zero/shuffle ablation (mean F1-macro over seeds)."""
 
 from __future__ import annotations
 
 import json
+import statistics
 from pathlib import Path
 
 
-def fmt(m: float) -> str:
+def fmt(m: float, s: float = 0.0) -> str:
+    if s > 0:
+        return f"${m:.3f} \\pm {s:.3f}$".replace(".", "{,}")
     return f"${m:.3f}$".replace(".", "{,}")
+
+
+def aggregate_mode(runs: list[dict], mode: str) -> tuple[float, float] | None:
+    key = "test" if mode == "normal" else f"test_lexicon_{mode}"
+    vals: list[float] = []
+    for run in runs:
+        if key == "test":
+            block = run.get("test")
+        else:
+            block = run.get(key)
+        if block and "f1_macro" in block:
+            vals.append(float(block["f1_macro"]))
+    if not vals:
+        return None
+    m = float(statistics.mean(vals))
+    s = float(statistics.pstdev(vals)) if len(vals) > 1 else 0.0
+    return m, s
 
 
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
-    path = root / "reference" / "artifacts" / "m1_m2_m3_senticnet_distilbert_base_uncased_campaign.json"
-    if not path.is_file():
-        print("Missing SenticNet M3 campaign JSON")
-        return
-    data = json.loads(path.read_text(encoding="utf-8"))
-    run = data["runs"][0]
-    normal = run["test"]
+    art = root / "reference" / "artifacts"
+    specs = [
+        ("M3 SenticNet", "m1_m2_m3_senticnet_distilbert_base_uncased_campaign.json"),
+        ("M3 NRC", "m1_m2_m3_nrc_distilbert_base_uncased_campaign.json"),
+        ("M3+M4 NRC", "m1_m2_m3_nrc_m4_distilbert_base_uncased_campaign.json"),
+    ]
     lines: list[str] = []
-    lines.append(
-        f"Normal & {fmt(normal['f1_macro'])} & {fmt(normal['map'])} \\\\"
-    )
-    lines.append("\\hline")
-    for mode, label in (("test_lexicon_zero", "Lexique nul"), ("test_lexicon_shuffle", "Lexique permuté")):
-        if mode in run:
-            block = run[mode]
-            lines.append(f"{label} & {fmt(block['f1_macro'])} & {fmt(block['map'])} \\\\")
+    for stack_label, fname in specs:
+        path = art / fname
+        if not path.is_file():
+            continue
+        runs = json.loads(path.read_text(encoding="utf-8")).get("runs", [])
+        for mode, row_label in (
+            ("normal", "Normal"),
+            ("zero", "Lexique nul"),
+            ("shuffle", "Lexique permuté"),
+        ):
+            agg = aggregate_mode(runs, mode)
+            label = f"{stack_label} ({row_label})"
+            if agg is None:
+                lines.append(f"{label} & {{---}} \\\\")
+            else:
+                m, s = agg
+                lines.append(f"{label} & {fmt(m, s)} \\\\")
             lines.append("\\hline")
-        else:
-            lines.append(f"{label} & {{---}} & {{---}} \\\\")
-            lines.append("\\hline")
-    out = root / "reference" / "artifacts" / "lexicon_ablation_snippet.tex"
-    body = "\n".join(lines)
+    out = art / "lexicon_ablation_snippet.tex"
+    body = "\n".join(lines) if lines else "% no lexicon ablation data yet\n"
     out.write_text(body + "\n", encoding="utf-8")
     print(body)
 

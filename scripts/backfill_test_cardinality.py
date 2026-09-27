@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
+
+root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(root / "src"))
 
 from hakemer.eval_checkpoint import config_from_run_dir
 from hakemer.data import GoEmotionsTorchDataset, load_go_emotions_splits, make_dataloader
@@ -87,11 +91,21 @@ def patch_campaign(path: Path, root: Path) -> bool:
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[1]
+    import os
+
+    if os.environ.get("ALLOW_EVAL") != "1":
+        print("Skipping checkpoint eval: set ALLOW_EVAL=1 (Colab/CUDA).")
+        print("Run scripts/merge_archived_metrics_into_campaigns.py after Colab eval.")
+        return
     art = root / "reference" / "artifacts"
     for path in sorted(art.glob("*_campaign.json")):
         patch_campaign(path, root)
-    print("Done. Run scripts/render_cardinality_tex.py")
+    merge = root / "scripts" / "merge_archived_metrics_into_campaigns.py"
+    import subprocess
+
+    subprocess.run([sys.executable, str(merge)], check=True, cwd=root)
+    subprocess.run([sys.executable, str(root / "scripts" / "render_cardinality_tex.py")], check=True, cwd=root)
+    print("Done.")
 
 
 if __name__ == "__main__":

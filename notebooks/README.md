@@ -53,4 +53,10 @@ Push `main` on GitHub first, then open each notebook (GPU runtime). After each r
 2. **M2 control (no phrase cross-attention)** — [Open in Colab](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_control_no_xattn_campaign.ipynb) → `m1_m2_no_xattn_distilbert_step0.zip`
 3. **H4 NRC + M4** — [Open in Colab](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_nrc_m4_campaign.ipynb) → `m1_m2_m3_nrc_m4_distilbert_step0.zip`
 
+## Eval supplements (cardinality + lexicon ablation, eval-only)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/eval_supplements_campaign.ipynb)
+
+Trains **only missing** Step~0 / M1 / M1+M2 / M3 checkpoints, then runs `run_eval_supplements.sh` → download `eval_supplements_distilbert.zip` (updated campaigns + `cardinality_snippet.tex` + `lexicon_ablation_snippet.tex`).
+
 **Training records:** archive executed Colab notebooks and manifests under [`reference/training_records/`](../reference/training_records/README.md). After updating artifacts, run `python scripts/build_step0_training_record.py` to refresh the Step 0 record notebooks from campaign JSON.

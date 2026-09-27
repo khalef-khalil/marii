@@ -1,0 +1,11 @@
+{
+  "step": "eval_supplements",
+  "template_notebook": "notebooks/eval_supplements_campaign.ipynb",
+  "protocol_anchor": "Eval-only: by_gold_cardinality + M3 lexicon zero/shuffle; train missing ladder checkpoints only",
+  "scripts": ["run_eval_supplements.sh", "scripts/merge_archived_metrics_into_campaigns.py"],
+  "outputs": [
+    "reference/artifacts/cardinality_snippet.tex",
+    "reference/artifacts/lexicon_ablation_snippet.tex"
+  ],
+  "colab_open_url": "https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/eval_supplements_campaign.ipynb"
+}

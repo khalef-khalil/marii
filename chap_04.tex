@@ -1009,6 +1009,10 @@ trois graines).
 \end{tabular}
 \end{table}
 
+Lorsque les checkpoints le permettent, des passes test avec lexique
+nul ou permuté (\SecRef{sec:expe-discussion}) complètent la lecture
+des portes $|g|$.
+
 Les hypothèses H1 à H4 sont récapitulées au
 tableau~\ref{tab:expe-h1-h4-summary}.
 
@@ -1039,9 +1043,34 @@ ou langues reste ouverte (\ChapRef{perspectives}).
 Les classes à très faible support test (par exemple \emph{grief}) produisent
 des F1 instables ; les gains macro de M2 se concentrent surtout sur des
 émotions de fréquence intermédiaire. La magnitude $|g|$ des portes M3
-n'implique pas à elle seule un usage causal du lexique (ablations
-\emph{zero}/\emph{shuffle} à l'inférence lorsque les checkpoints le
-permettent).
+n'implique pas à elle seule un usage causal du lexique : le
+tableau~\ref{tab:expe-lexicon-ablation} reporte des ablations
+\emph{zero}/\emph{shuffle} à l'inférence lorsque les métriques archivées
+les incluent.
+
+\begin{table}[H]
+\centering
+\caption{F1-macro test : inférence normale vs lexique nul ou permuté (DistilBERT)}
+\label{tab:expe-lexicon-ablation}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\small
+\begin{tabular}{|>{\raggedright\arraybackslash}p{6.2cm}|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-macro} \\
+\hline
+\IfFileExists{reference/artifacts/lexicon_ablation_snippet.tex}{\input{reference/artifacts/lexicon_ablation_snippet}}{Campagnes M3 avec ablation à l'inférence en cours} \\
+\hline
+\end{tabular}
+\end{table}
+
+Sur la pile M3+M4 NRC (trois graines), le F1-macro reste à
+$0{,}510 \pm 0{,}003$ que le vecteur NRCLex soit normal, nul ou permuté :
+sous ce protocole, la macro ne dépend pas de manière visible du contenu
+lexical à l'inférence, malgré une porte $|g|$ non nulle en entraînement.
+Les campagnes M3 SenticNet et M3 NRC document restent à compléter de la
+même façon lorsque les checkpoints sont disponibles (notebook d'évaluation
+supplémentaire, sans réentraînement si les poids sont déjà présents).
 
 \subsection{Reproductibilité}
 Les campagnes archivées fixent graines, hyperparamètres et métriques ;
