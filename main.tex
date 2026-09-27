@@ -34,6 +34,7 @@
   xrightmargin=0.5cm
 }
 \usepackage{array}
+\usepackage{needspace}
 \usepackage{enumitem}
 % French babel uses em-dash itemize labels by default; project rule forbids dash markers.
 \setlist[itemize]{label=\textbullet}
@@ -51,6 +52,16 @@
 \setlength{\emergencystretch}{2.5em}
 \tolerance=3500
 \hbadness=10000
+
+\setlength{\headwidth}{\textwidth}
+\fancyheadoffset[L,R]{0pt}
+\AtBeginDocument{%
+  \lhead{\parbox[t]{\dimexpr\headwidth-2pt\relax}{\raggedright\small\nouppercase{\leftmark}}}%
+  \renewcommand{\headrule}{%
+    \hrule width\headwidth height\headrulewidth \vskip-\headrulewidth
+  }%
+}
+\captionsetup[figure]{width=\linewidth}
 
 \begin{document}
     \input{global_config}
