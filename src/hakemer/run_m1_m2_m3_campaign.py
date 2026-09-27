@@ -64,7 +64,7 @@ def parse_args() -> argparse.Namespace:
         "--lexicon-fusion",
         default="global",
         choices=["global", "emotion_specific"],
-        help="global = legacy M3; emotion_specific = per-label lexicon prior (Track C).",
+        help="global = document-level M3 prior; emotion_specific = per-label lexicon prior.",
     )
     return p.parse_args()
 

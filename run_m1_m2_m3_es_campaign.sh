@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Track C: M1+M2+M3 with emotion-specific lexicon priors (NRC or SenticNet).
+# M1+M2+M3 with emotion-specific lexicon priors (NRC or SenticNet).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 export PYTHONPATH="${ROOT}/src${PYTHONPATH:+:$PYTHONPATH}"
