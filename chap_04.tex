@@ -997,7 +997,7 @@ trois graines).
 
 \begin{table}[H]
 \centering
-\caption{F1-macro test par cardinalité gold (DistilBERT, moyenne $\pm$ écart-type)}
+\caption{F1-macro test par cardinalité gold (DistilBERT, moyenne $\pm$ écart-type ; +M1 et +M1+M2 : passe d'évaluation supplémentaire, même protocole, checkpoints Colab distincts des JSON de campagne principaux)}
 \label{tab:expe-cardinality}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|c|c|c|c|}
@@ -1008,6 +1008,14 @@ trois graines).
 \hline
 \end{tabular}
 \end{table}
+
+Sur les exemples à une seule étiquette gold, +M1+M2 ($0{,}506 \pm 0{,}003$)
+dépasse +M1 ($0{,}490 \pm 0{,}007$) ; l'écart se maintient sur les buckets
+à deux ou trois étiquettes ($0{,}488$ vs $0{,}361$ pour deux labels).
+Le Step~0 n'a pas été réévalué dans cette passe (absence de checkpoint
+archivé). Les scores par bucket ne recopient pas les F1-macro globaux
+du tableau~\ref{tab:expe-h1-h4-summary}, calculés sur d'autres tirages
+de graines pour les campagnes principales.
 
 Lorsque les checkpoints le permettent, des passes test avec lexique
 nul ou permuté (\SecRef{sec:expe-discussion}) complètent la lecture
@@ -1064,13 +1072,17 @@ les incluent.
 \end{tabular}
 \end{table}
 
-Sur la pile M3+M4 NRC (trois graines), le F1-macro reste à
-$0{,}510 \pm 0{,}003$ que le vecteur NRCLex soit normal, nul ou permuté :
-sous ce protocole, la macro ne dépend pas de manière visible du contenu
-lexical à l'inférence, malgré une porte $|g|$ non nulle en entraînement.
-Les campagnes M3 SenticNet et M3 NRC document restent à compléter de la
-même façon lorsque les checkpoints sont disponibles (notebook d'évaluation
-supplémentaire, sans réentraînement si les poids sont déjà présents).
+Sur M3 SenticNet (passe supplémentaire), le lexique nul fait tomber la
+macro à $0{,}484 \pm 0{,}004$ (contre $0{,}503 \pm 0{,}003$ en inférence
+normale) : une part du score s'appuie alors sur le prior documentaire.
+Sur M3 NRC, les trois modes restent autour de $0{,}507$--$0{,}508$.
+Sur M3+M4 NRC (campagne principale), normal, nul et permuté restent à
+$0{,}510 \pm 0{,}003$ : la macro ne réagit pas visiblement à l'ablation
+lexicale à l'inférence malgré $|g| \approx 0{,}041$.
+Les lignes M3 proviennent de checkpoints Colab distincts des JSON
+archivés pour les tableaux d'ablation principaux ; seule la cohérence
+\emph{normal}/\emph{zero}/\emph{shuffle} au sein de chaque ligne est
+interprétée ici.
 
 \subsection{Reproductibilité}
 Les campagnes archivées fixent graines, hyperparamètres et métriques ;

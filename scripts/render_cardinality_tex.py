@@ -38,6 +38,18 @@ def fmt(m: float, s: float) -> str:
     return f"${m:.3f} \\pm {s:.3f}$".replace(".", "{,}")
 
 
+def campaign_path(art: Path, fname: str) -> Path | None:
+    primary = art / fname
+    supplement = art / "step_eval_supplements_distilbert" / "campaigns" / fname
+    for path in (primary, supplement):
+        if not path.is_file():
+            continue
+        runs = json.loads(path.read_text(encoding="utf-8")).get("runs", [])
+        if any(r.get("test", {}).get("by_gold_cardinality") for r in runs):
+            return path
+    return primary if primary.is_file() else (supplement if supplement.is_file() else None)
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
     art = root / "reference" / "artifacts"
@@ -51,8 +63,8 @@ def main() -> None:
     for bucket in ("1", "2", "3", "4+"):
         row = [bucket]
         for _label, fname in configs:
-            path = art / fname
-            if not path.is_file():
+            path = campaign_path(art, fname)
+            if path is None:
                 row.append("{---}")
                 continue
             data = json.loads(path.read_text(encoding="utf-8"))

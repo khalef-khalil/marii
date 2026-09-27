@@ -31,6 +31,23 @@ def aggregate_mode(runs: list[dict], mode: str) -> tuple[float, float] | None:
     return m, s
 
 
+def resolve_campaign(art: Path, fname: str) -> Path | None:
+    candidates = (
+        art / fname,
+        art / "step_eval_supplements_distilbert" / "campaigns" / fname,
+    )
+    for path in candidates:
+        if not path.is_file():
+            continue
+        runs = json.loads(path.read_text(encoding="utf-8")).get("runs", [])
+        if any("test_lexicon_zero" in r for r in runs):
+            return path
+    for path in candidates:
+        if path.is_file():
+            return path
+    return None
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
     art = root / "reference" / "artifacts"
@@ -41,8 +58,8 @@ def main() -> None:
     ]
     lines: list[str] = []
     for stack_label, fname in specs:
-        path = art / fname
-        if not path.is_file():
+        path = resolve_campaign(art, fname)
+        if path is None:
             continue
         runs = json.loads(path.read_text(encoding="utf-8")).get("runs", [])
         for mode, row_label in (

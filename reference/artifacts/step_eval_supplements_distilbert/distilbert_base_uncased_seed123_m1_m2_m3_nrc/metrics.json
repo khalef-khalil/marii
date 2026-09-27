@@ -1,0 +1,221 @@
+{
+  "best_val_f1_macro": 0.5049374557314318,
+  "test": {
+    "f1_micro": 0.5746469401479489,
+    "f1_macro": 0.5087159231914928,
+    "exact_match": 0.449235304956698,
+    "map": 0.5029392813206623,
+    "per_label": [
+      {
+        "label": "admiration",
+        "f1": 0.6821705426356589,
+        "support": 504
+      },
+      {
+        "label": "amusement",
+        "f1": 0.8186714542190305,
+        "support": 264
+      },
+      {
+        "label": "anger",
+        "f1": 0.4891304347826087,
+        "support": 198
+      },
+      {
+        "label": "annoyance",
+        "f1": 0.3443223443223443,
+        "support": 320
+      },
+      {
+        "label": "approval",
+        "f1": 0.38095238095238093,
+        "support": 351
+      },
+      {
+        "label": "caring",
+        "f1": 0.42016806722689076,
+        "support": 135
+      },
+      {
+        "label": "confusion",
+        "f1": 0.43448275862068964,
+        "support": 153
+      },
+      {
+        "label": "curiosity",
+        "f1": 0.5185185185185185,
+        "support": 284
+      },
+      {
+        "label": "desire",
+        "f1": 0.48175182481751827,
+        "support": 83
+      },
+      {
+        "label": "disappointment",
+        "f1": 0.2530612244897959,
+        "support": 151
+      },
+      {
+        "label": "disapproval",
+        "f1": 0.3333333333333333,
+        "support": 267
+      },
+      {
+        "label": "disgust",
+        "f1": 0.45320197044334976,
+        "support": 123
+      },
+      {
+        "label": "embarrassment",
+        "f1": 0.4,
+        "support": 37
+      },
+      {
+        "label": "excitement",
+        "f1": 0.4270833333333333,
+        "support": 103
+      },
+      {
+        "label": "fear",
+        "f1": 0.68,
+        "support": 78
+      },
+      {
+        "label": "gratitude",
+        "f1": 0.9205882352941176,
+        "support": 352
+      },
+      {
+        "label": "grief",
+        "f1": 0.4444444444444444,
+        "support": 6
+      },
+      {
+        "label": "joy",
+        "f1": 0.6026490066225165,
+        "support": 161
+      },
+      {
+        "label": "love",
+        "f1": 0.8008213552361396,
+        "support": 238
+      },
+      {
+        "label": "nervousness",
+        "f1": 0.3157894736842105,
+        "support": 23
+      },
+      {
+        "label": "optimism",
+        "f1": 0.5465116279069767,
+        "support": 186
+      },
+      {
+        "label": "pride",
+        "f1": 0.5217391304347826,
+        "support": 16
+      },
+      {
+        "label": "realization",
+        "f1": 0.23893805309734514,
+        "support": 145
+      },
+      {
+        "label": "relief",
+        "f1": 0.375,
+        "support": 11
+      },
+      {
+        "label": "remorse",
+        "f1": 0.6557377049180327,
+        "support": 56
+      },
+      {
+        "label": "sadness",
+        "f1": 0.5597269624573379,
+        "support": 156
+      },
+      {
+        "label": "surprise",
+        "f1": 0.5239852398523985,
+        "support": 141
+      },
+      {
+        "label": "neutral",
+        "f1": 0.6212664277180406,
+        "support": 1787
+      }
+    ],
+    "by_gold_cardinality": {
+      "1": {
+        "n": 4590,
+        "f1_macro": 0.5036984935470062,
+        "exact_match": 0.5074074074074074
+      },
+      "2": {
+        "n": 774,
+        "f1_macro": 0.4893341133746826,
+        "exact_match": 0.14082687338501293
+      },
+      "3": {
+        "n": 61,
+        "f1_macro": 0.286088421382539,
+        "exact_match": 0.0
+      },
+      "4+": {
+        "n": 2,
+        "f1_macro": 0.047619047619047616,
+        "exact_match": 0.0
+      }
+    }
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.11704985205257036,
+      "val_f1_micro": 0.5733715103793844,
+      "val_f1_macro": 0.3903981151363492,
+      "val_exact_match": 0.4489495023958717,
+      "val_map": 0.495942450487267
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.08087697339312132,
+      "val_f1_micro": 0.5476828801225584,
+      "val_f1_macro": 0.4295688605521479,
+      "val_exact_match": 0.41467010689273864,
+      "val_map": 0.5320976023775753
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.0639951578451234,
+      "val_f1_micro": 0.5774855066193649,
+      "val_f1_macro": 0.4856291128619605,
+      "val_exact_match": 0.4511610762992997,
+      "val_map": 0.5260551001106281
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.04601128886000157,
+      "val_f1_micro": 0.5831735178854331,
+      "val_f1_macro": 0.5049374557314318,
+      "val_exact_match": 0.45798009583486915,
+      "val_map": 0.5154269544562889
+    }
+  ],
+  "output_dir": "runs/distilbert_base_uncased_seed123_m1_m2_m3_nrc",
+  "test_lexicon_zero": {
+    "f1_micro": 0.5744555620953502,
+    "f1_macro": 0.5082617056378248,
+    "exact_match": 0.4488667772249862,
+    "map": 0.5030398964274992
+  },
+  "test_lexicon_shuffle": {
+    "f1_micro": 0.5746952501050862,
+    "f1_macro": 0.5085801252236158,
+    "exact_match": 0.4494195688225539,
+    "map": 0.5030360620712252
+  },
+  "lexicon_gate_abs": 0.04042084887623787
+}

@@ -1,11 +1,20 @@
 {
   "step": "eval_supplements",
   "template_notebook": "notebooks/eval_supplements_campaign.ipynb",
-  "protocol_anchor": "Eval-only: by_gold_cardinality + M3 lexicon zero/shuffle; train missing ladder checkpoints only",
-  "scripts": ["run_eval_supplements.sh", "scripts/merge_archived_metrics_into_campaigns.py"],
+  "protocol_anchor": "Eval-only: by_gold_cardinality + M3 lexicon zero/shuffle; retrain missing stacks on Colab if no checkpoint",
+  "artifact_zip": "reference/artifacts/eval_supplements_distilbert.zip",
+  "supplement_campaigns": "reference/artifacts/step_eval_supplements_distilbert/campaigns/",
+  "note": "Canonical reference/artifacts/*_campaign.json scores unchanged; bucket and M3 lexicon ablations read from supplement copies.",
   "outputs": [
     "reference/artifacts/cardinality_snippet.tex",
     "reference/artifacts/lexicon_ablation_snippet.tex"
+  ],
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_eval_supplements/colab/20250927_eval_supplements_campaign_executed.ipynb",
+      "description": "Colab eval supplements (DistilBERT)",
+      "runtime_gpu": "T4"
+    }
   ],
   "colab_open_url": "https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/eval_supplements_campaign.ipynb"
 }
