@@ -997,7 +997,7 @@ trois graines).
 
 \begin{table}[H]
 \centering
-\caption{F1-macro test par cardinalité gold (DistilBERT, moyenne $\pm$ écart-type ; +M1 et +M1+M2 : passe d'évaluation supplémentaire, même protocole, checkpoints Colab distincts des JSON de campagne principaux)}
+\caption{F1-macro test par cardinalité gold (DistilBERT, moyenne $\pm$ écart-type ; Step~0 : buckets sur les checkpoints de la campagne principale ; +M1 et +M1+M2 : passe d'évaluation supplémentaire, même protocole)}
 \label{tab:expe-cardinality}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|c|c|c|c|}
@@ -1009,13 +1009,15 @@ trois graines).
 \end{tabular}
 \end{table}
 
-Sur les exemples à une seule étiquette gold, +M1+M2 ($0{,}506 \pm 0{,}003$)
-dépasse +M1 ($0{,}490 \pm 0{,}007$) ; l'écart se maintient sur les buckets
-à deux ou trois étiquettes ($0{,}488$ vs $0{,}361$ pour deux labels).
-Le Step~0 n'a pas été réévalué dans cette passe (absence de checkpoint
-archivé). Les scores par bucket ne recopient pas les F1-macro globaux
-du tableau~\ref{tab:expe-h1-h4-summary}, calculés sur d'autres tirages
-de graines pour les campagnes principales.
+Sur les exemples à une seule étiquette gold, le Step~0 ($0{,}502 \pm 0{,}007$)
+reste au-dessus de +M1 ($0{,}490 \pm 0{,}007$) mais sous +M1+M2
+($0{,}506 \pm 0{,}003$). L'écart se renforce avec plusieurs étiquettes
+gold (deux labels : $0{,}437$ vs $0{,}361$ vs $0{,}488$ ; trois labels :
+$0{,}315$ vs $0{,}288$ vs $0{,}320$), ce qui corrobore le rôle de M2
+sur les cas multi-émotions. Les F1-macro \emph{globaux} du
+tableau~\ref{tab:expe-h1-h4-summary} restent la référence pour les
+campagnes principales ; ce tableau isole la dépendance au nombre
+d'étiquettes gold par bucket.
 
 Lorsque les checkpoints le permettent, des passes test avec lexique
 nul ou permuté (\SecRef{sec:expe-discussion}) complètent la lecture

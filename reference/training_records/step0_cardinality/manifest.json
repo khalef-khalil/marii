@@ -1,0 +1,15 @@
+{
+  "step": "step0_cardinality",
+  "template_notebook": "notebooks/step0_cardinality_campaign.ipynb",
+  "protocol_anchor": "Full GoEmotions test split; by_gold_cardinality on canonical Step~0 checkpoints (F1-macro global unchanged)",
+  "artifact_zip": "reference/artifacts/step0_cardinality_distilbert.zip",
+  "supplement_campaign": "reference/artifacts/step_eval_supplements_distilbert/campaigns/baseline_plm_distilbert_base_uncased_campaign.json",
+  "canonical_campaign": "reference/artifacts/baseline_plm_distilbert_base_uncased_campaign.json",
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step0_cardinality/colab/20250927_step0_cardinality_campaign_executed.ipynb",
+      "description": "Colab Step~0 cardinality (DistilBERT, 3 seeds)",
+      "runtime_gpu": "T4"
+    }
+  ]
+}
