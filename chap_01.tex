@@ -4,37 +4,31 @@
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-Ce chapitre introduit le contexte scientifique et les motivations du présent
-travail sur la détection des émotions multiples dans les textes. Il commence
-par situer le cadre institutionnel du projet, avant de formuler la
-problématique de recherche. Les objectifs et les questions de recherche qui
-en découlent sont ensuite présentés, puis le chapitre se conclut par la
-description du plan de travail adopté, qui structure la démarche
-méthodologique suivie tout au long du mémoire.
+Ce chapitre présente le contexte et les motivations du travail sur la
+détection de plusieurs émotions dans un texte. Nous situons d'abord le
+projet, puis la problématique, les objectifs et le plan de travail du
+mémoire.
 
 \section{Cadre général du projet}
 \label{sec:cadre-general}
 
-Ce travail s'inscrit dans le cadre du Projet de Fin d'Études du Mastère de
-Recherche, spécialité Systèmes Intelligents en Imagerie et Vision
-Artificielle (mention administrative et grade d'encadrement alignés sur
-le dossier d'inscription et la fiche d'encadrement en vigueur au dépôt),
-réalisé à l'Institut Supérieur d'Informatique (ISI) de l'Université de
-Tunis El Manar, sous l'encadrement du Dr.~Sahbi Bahroun. Le
-sujet porte sur la conception d'une architecture neuronale pour la
-détection des émotions multiples dans les textes, combinant attention
-hiérarchique et ressources lexicales externes évaluées par ablation.
+Ce travail est un Projet de Fin d'Études du Mastère de Recherche,
+spécialité Systèmes Intelligents en Imagerie et Vision Artificielle
+(mention et grade d'encadrement selon le dossier officiel au dépôt),
+à l'Institut Supérieur d'Informatique (ISI), Université de Tunis El
+Manar, sous l'encadrement du Dr.~Sahbi Bahroun. Le sujet est une
+architecture neuronale pour détecter plusieurs émotions dans un texte,
+avec attention hiérarchique et lexiques externes (NRC, SenticNet),
+évalués par ablation.
 
 \section{Évolutions par rapport au sujet initial}
 \label{sec:evolution-sujet}
 
-Le sujet validé au départ visait une architecture enrichie par graphes de
-connaissances (ConceptNet, EmoNet), un raisonnement de sens commun,
-des jeux de validation complémentaires (SemEval-2018, EmoInt) et un
-benchmark élargi contre plusieurs méthodes de référence, avec un objectif
-de gain de l'ordre de 3 à 5\,\% sur l'état de l'art. Le mémoire livré
-concentre l'effort expérimental sur GoEmotions avec un protocole d'ablation
-M1 à M4 reproductible (NRC et SenticNet, deux encodeurs, trois graines).
+Le sujet initial prévoyait ConceptNet, EmoNet, du sens commun, d'autres
+corpus (SemEval-2018, EmoInt) et plusieurs méthodes de référence, avec
+un objectif de gain d'environ 3 à 5\,\% sur l'état de l'art. Le mémoire
+final se concentre sur GoEmotions et une ablation M1 à M4 reproductible
+(NRC et SenticNet, deux encodeurs, trois graines).
 
 \begin{table}[H]
 \centering
@@ -43,7 +37,7 @@ M1 à M4 reproductible (NRC et SenticNet, deux encodeurs, trois graines).
 \small
 \begin{tabular}{|p{0.28\linewidth}|p{0.28\linewidth}|p{0.34\linewidth}|}
 \hline
-\textbf{Axe du sujet} & \textbf{Réalisé} & \textbf{Motivation du recentrage} \\
+\textbf{Axe du sujet} & \textbf{Réalisé} & \textbf{Pourquoi ce choix} \\
 \hline
 ConceptNet, EmoNet, sens commun & NRC, SenticNet & Signal lexical affectif
 implémentable et traçable dans la fenêtre PFE \\
@@ -64,30 +58,21 @@ modules et résultats négatifs documentés \\
 Les prolongements (graphes, corpus externes, comparaisons reproductibles
 supplémentaires) restent au \ChapRef{perspectives}.
 
-L'analyse automatique des émotions dans le texte s'est imposée comme un
-sous-domaine central du traitement automatique des langues, avec des
-applications directes en modération de contenu, en analyse de l'expérience
-client, en santé mentale numérique et en systèmes conversationnels
-affectifs \cite{minaee2021textcls,mohammad2020sentiment}. Contrairement à
-l'analyse de sentiment classique, qui réduit un texte à une polarité
-(positif, négatif, neutre) \cite{pang2008},
-la détection d'émotions vise à identifier des catégories affectives fines
-(joie, colère, tristesse, surprise, etc.), souvent multiples et simultanées
-au sein d'un même énoncé.
+La détection d'émotions en texte est un sujet important du TALN, utile
+par exemple pour la modération, l'analyse client ou les chatbots
+\cite{minaee2021textcls,mohammad2020sentiment}. Contrairement au sentiment
+(positif, négatif, neutre) \cite{pang2008}, on cherche ici des émotions
+plus fines (joie, colère, etc.), souvent plusieurs en même temps dans le
+même texte.
 
 \section{Problématique}
 \label{sec:problematique}
 
-La plupart des travaux en classification des émotions textuelles reposent
-sur l'hypothèse simplificatrice qu'un texte exprime une émotion dominante
-unique \cite{seyeditabari2018}. Cette hypothèse ne reflète pas la réalité des
-états affectifs humains, qui se manifestent fréquemment sous forme de
-mélanges d'émotions coexistant dans un même énoncé, par exemple
-l'expression simultanée de la surprise et de la joie, ou de la déception et
-de la colère. Les jeux de données récents à annotation multi-étiquettes,
-tels que GoEmotions \cite{demszky2020}, montrent qu'environ 17\,\% des
-textes portent au moins deux émotions simultanées, ce qui invalide
-l'approche mono-étiquette pour un grand nombre de cas réels
+Beaucoup de travaux supposent une seule émotion dominante par texte
+\cite{seyeditabari2018}. Or les affects se mélangent souvent (surprise et
+joie, déception et colère, etc.). Sur GoEmotions \cite{demszky2020},
+environ 17\,\% des textes ont au moins deux émotions. L'approche
+mono-étiquette ne suffit donc pas pour une grande partie des cas
 \cite{zhang2014multilabel,read2019classifier}.
 
 Trois limites structurelles freinent les approches existantes de
@@ -114,12 +99,11 @@ détection multi-émotions, détaillées et documentées au chapitre~2 :
   \cite{lin2017focal,chawla2002smote}.
 \end{itemize}
 
-Ces limites motivent la question de recherche centrale de ce mémoire :
-\textit{dans quelle mesure une architecture combinant encodage
-hiérarchique, attention croisée entre émotions et enrichissement par
-connaissances sémantiques externes peut-elle améliorer la détection des
-émotions rares et multiples dans le texte, par rapport à un modèle
-pré-entraîné affiné de façon standard ?}
+Ces limites mènent à la question centrale de ce mémoire :
+\textit{une architecture avec encodage hiérarchique, attention entre
+émotions et lexiques externes peut-elle mieux détecter les émotions
+multiples et rares qu'un modèle pré-entraîné affiné de façon standard
+?}
 
 \section{Objectifs de recherche}
 \label{sec:objectifs}
@@ -193,11 +177,7 @@ l'art en survey autonome en vue d'une valorisation après soutenance. \\
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-Ce premier chapitre a présenté le cadre général du projet, formulé la
-problématique de la détection des émotions multiples dans les textes et
-défini les objectifs de recherche qui en découlent, ainsi que le plan de
-travail du mémoire. Pour rendre la question centrale opérationnelle, il
-reste à fixer la tâche et le corpus de référence, à identifier une
-baseline crédible et à examiner comment la littérature répond aux
-limitations L1 à L3 (étiquettes, structure du texte, classes rares) avant
-de positionner HAKE-MER ; c'est l'objet du chapitre~2.
+Ce chapitre a présenté le cadre du projet, la problématique, les objectifs
+et le plan de travail. Le chapitre~2 fixe la tâche, le corpus, une baseline
+et la littérature sur les limites L1 à L3 (étiquettes, structure du texte,
+classes rares), avant de situer HAKE-MER.

@@ -2,56 +2,41 @@
 \addcontentsline{toc}{chapter}{Conclusion générale et Perspectives}
 \markboth{Conclusion générale et Perspectives}{}
 
-Ce mémoire vise la détection des émotions multiples dans les textes,
-une tâche où les approches mono-étiquette et les représentations
-textuelles plates peinent à refléter la cooccurrence des affects et
-le déséquilibre sévère des classes sur des corpus tels que
-GoEmotions \cite{demszky2020}, au regard des synthèses récentes sur la
-détection d'émotions en texte \cite{seyeditabari2018,mohammad2020sentiment}
-et sur l'apprentissage profond multi-étiquettes
-\cite{sharma2024deeplearningmlc,minaee2021textcls}.
+Ce mémoire traite la détection de plusieurs émotions dans un même texte.
+Les approches mono-étiquette et les représentations plates peinent à
+suivre la cooccurrence des affects et le déséquilibre des classes sur
+GoEmotions \cite{demszky2020}, comme le rappellent les travaux récents
+\cite{seyeditabari2018,mohammad2020sentiment,sharma2024deeplearningmlc,minaee2021textcls}.
 
-L'architecture HAKE-MER a été conçue de manière modulaire
-afin de mesurer, à protocole constant sur GoEmotions, l'apport de
-chaque brique. Les expériences menées sur DistilBERT-base et RoBERTa-base,
-trois graines et protocole identique, montrent que la pile M1+M2 (M2 et têtes par émotion, avec encodeur
-inter-émotions comme levier principal selon les contrôles mécanistiques)
-porte le gain principal en F1-macro test, DistilBERT
-$\approx 0{,}505$ et RoBERTa $\approx 0{,}526$,
-que M1 seul sous-performe une baseline PLM flat
-($\approx 0{,}486$), et que M3 à prior \emph{document} n'améliore pas robustement la macro ;
-une extension à prior par étiquette n'ajoute qu'un gain macro marginal
-sur DistilBERT ($\approx +0{,}003$, NRC $0{,}508 \pm 0{,}001$ vs M1+M2
-$0{,}505 \pm 0{,}004$) avec $\Delta$ fréquent vs rare encore élevé
-(H3 prudente au \ChapRef{experimentation}). H4 reste prudente :
-+M4 SenticNet recule ($0{,}499 \pm 0{,}006$) ; NRC+M4
-($0{,}510 \pm 0{,}003$) ne dépasse M1+M2 que marginalement
-($0{,}505 \pm 0{,}004$) : la pile retenue en macro reste M1+M2.
-L'analyse par classe (Step~0, +M1, +M1+M2) confirme que les gains macro
-de M2 portent surtout sur des émotions de fréquence intermédiaire
-(\ChapRef{experimentation}) ; des exemples qualitatifs
-annotés restent optionnels pour la soutenance.
+HAKE-MER a été conçu de façon modulaire pour mesurer, à protocole
+constant, l'apport de chaque brique. Sur DistilBERT-base et RoBERTa-base,
+avec trois graines, la pile M1+M2 apporte le principal gain en F1-macro
+test (DistilBERT $\approx 0{,}505$, RoBERTa $\approx 0{,}526$). M1 seul
+reste sous une baseline PLM flat ($\approx 0{,}486$). M3 à prior
+\emph{document} n'améliore pas de façon stable la macro. L'extension NRC
+\emph{par étiquette} n'ajoute qu'un petit gain sur DistilBERT ($\approx
++0{,}003$). H4 reste prudente : +M4 SenticNet recule ; NRC+M4
+($0{,}510 \pm 0{,}003$) ne dépasse M1+M2 que légèrement
+($0{,}505 \pm 0{,}004$). La pile retenue reste donc M1+M2. L'analyse par
+classe montre que M2 aide surtout des émotions de fréquence intermédiaire,
+pas la traîne la plus rare (\ChapRef{experimentation}).
 
-\ParHead{Ce que les expériences établissent :}Sous le protocole GoEmotions
-retenu, la pile M1+M2 améliore le F1-macro par rapport au flat et à M1 seul
-sur DistilBERT et RoBERTa ; l'ablation M1$\to$M1+M2 ne sépare pas
-causalement chaque sous-composant de M2 (contrôles au
-tableau~\ref{tab:expe-m2-controls}). Les priors lexicaux testés et M4 SenticNet n'ajoutent pas de gain macro
-robuste (NRC+M4 reste marginal) ; les progrès portent surtout sur
-des émotions de fréquence intermédiaire, pas sur la traîne extrême la
-plus rare. Les scores test du ladder complet sont exploratoires ; le choix
-de pile s'appuie sur la validation selon la règle du
-tableau~\ref{tab:expe-val-test-selection} (ladder principale, deux
-backbones lorsque disponible).
+\ParHead{Ce que les expériences montrent :}Avec le protocole GoEmotions
+retenu, M1+M2 améliore le F1-macro par rapport au flat et à M1 seul sur
+DistilBERT et RoBERTa. L'ablation M1$\to$M1+M2 ne sépare pas toutes les
+causes internes de M2 ; les contrôles sont au
+tableau~\ref{tab:expe-m2-controls}. Les priors lexicaux et M4 SenticNet
+n'ajoutent pas de gain macro robuste (NRC+M4 reste marginal). Les scores
+test du ladder complet sont exploratoires. Le choix de pile suit la
+validation (tableau~\ref{tab:expe-val-test-selection}, ladder principale,
+deux backbones quand c'est possible).
 
-En synthèse, HAKE-MER apporte une contribution mesurable surtout par
-M1+M2 ; les modules lexicaux et dynamiques testés ici ne justifient pas,
-dans ce protocole, la complexité additionnelle pour la macro. Les
-prolongements (second encodeur, longue traîne, validation externe,
-modèles généralistes) sont détaillés au
-\ChapRef{perspectives}.
+En synthèse, la contribution mesurable de HAKE-MER vient surtout de
+M1+M2. Les modules lexicaux et dynamiques testés ici ne justifient pas,
+dans ce protocole, la complexité en plus pour la macro. Les prolongements
+sont détaillés au \ChapRef{perspectives}.
 
-Sur le plan personnel, ce mémoire m'a permis de consolider une démarche
-expérimentale complète (protocole, ablations, traçabilité des campagnes)
-et de mieux apprécier l'écart entre gains agrégés et comportement par
-classe sur un corpus déséquilibré.
+Sur le plan personnel, ce travail m'a permis de mettre en place un
+protocole complet (ablations, campagnes archivées) et de voir l'écart
+entre la macro globale et le comportement par classe sur un corpus
+déséquilibré.

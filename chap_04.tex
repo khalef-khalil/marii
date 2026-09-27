@@ -3,15 +3,13 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le \ChapRef{conception} a fixé l'architecture HAKE-MER, les choix
-de segmentation et d'extraction lexicale, ainsi que les hypothèses H1 à
-H4. Ce chapitre en déduit le \textbf{contrat expérimental} : données,
-hyperparamètres communs, drapeaux d'ablation, correspondance NRC et
-statistiques de corpus \emph{mesurées} avant entraînement. Le protocole d'affinage est fixé (tableau~\ref{tab:expe-hyperparams}) ;
-le Step~0 et les modules M1 à M4 sont évalués sous ce même contrat.
-Les baselines PLM et les ablations +M1 à +M4 (H1 à H4) disposent de scores
-test sur DistilBERT-base et RoBERTa-base sous le même contrat
-(section~\ref{sec:expe-roberta-ablation}).
+Le \ChapRef{conception} a décrit HAKE-MER, la segmentation, les lexiques
+et les hypothèses H1 à H4. Ce chapitre présente le \textbf{protocole
+expérimental} : données, hyperparamètres, ablations, correspondance NRC
+et statistiques du corpus avant entraînement. Le protocole d'affinage est
+fixé (tableau~\ref{tab:expe-hyperparams}). Step~0 et modules M1 à M4 sont
+évalués de la même façon. Les scores test sont sur DistilBERT-base et
+RoBERTa-base (section~\ref{sec:expe-roberta-ablation}).
 
 \ParHead{Synthèse des scores test :}Sous ce protocole, le Step~0 flat atteint environ $0{,}486$ à $0{,}487$ de
 F1-macro ; +M1 seul recule nettement ; +M1+M2 devient la meilleure pile
@@ -26,9 +24,8 @@ puis les ablations et l'analyse par classe qui motivent cette lecture.
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
 
-Cette section fixe le corpus, les règles communes d'entraînement et les
-encodeurs retenus pour que toutes les comparaisons ultérieures
-portent sur le même cadre.
+Cette section fixe le corpus, l'entraînement et les encodeurs pour que
+toutes les comparaisons suivantes restent équitables.
 
 \subsection{Jeu de données}
 
@@ -43,14 +40,10 @@ du multi-étiquette et le prétraitement hiérarchique
 \subsection{Analyse de corpus sous le protocole de segmentation}
 \label{sec:expe-corpus-stats}
 
-Avant tout entraînement, nous avons mesuré l'impact du découpage retenu
-($M{=}4$ phrases, 32 tokens RoBERTa par phrase, segmentation NLTK
-Punkt) sur les trois splits. Une analyse automatique du corpus,
-menée avec exactement ces règles avant entraînement, fournit les
-ordres de grandeur suivants.
-
-Sur l'ensemble d'entraînement (même ordre de grandeur sur validation et
-test) :
+Avant l'entraînement, nous avons mesuré l'effet du découpage ($M{=}4$
+phrases, 32 tokens par phrase, NLTK Punkt) sur train, validation et
+test. Résultats approximatifs sur l'ensemble d'entraînement (validation
+et test sont du même ordre) :
 \begin{itemize}
 \item environ \textbf{42\,\%} des commentaires comportent plus d'une
       phrase, ce qui justifie M1 ;
@@ -63,10 +56,9 @@ test) :
 \item environ \textbf{73\,\%} des documents contiennent au moins un
       token couvert par le NRC.
 \end{itemize}
-Ces ordres de grandeur indiquent que la troncature phrase n'est pas
-dominante à ces bornes, tandis que la couverture lexicale laisse une
-part non triviale d'exemples sans signal NRC au niveau token (d'où
-l'intérêt de M3 et de l'analyse de $|g|$).
+La troncature par phrase reste rare à ces limites. En revanche, une part
+des textes n'a aucun token couvert par NRC, ce qui limite l'intérêt de M3
+(et motive le suivi de la porte $|g|$).
 
 \begin{figure}[H]
 \centering
@@ -79,19 +71,15 @@ logarithmique), mesurés lors de l'export F1 par classe.}
 \subsection{Hyperparamètres communs}
 \label{sec:expe-hyperparams}
 
-Toutes les configurations comparées ont partagé le même budget
-d'entraînement et la même métrique de validation (F1-macro sur le split
-de validation). Pour l'affinage des encodeurs, nous avons ancré le cœur du
-budget sur la recette GoEmotions \cite{demszky2020} : lot
-$16$, taux d'apprentissage $5\times 10^{-5}$, quatre époques d'entraînement
-(la configuration officielle du jeu et le code associé retiennent
-quatre époques pour BERT-base sur ce corpus). L'implémentation utilise
-AdamW \cite{kingma2015adam,loshchilov2019adamw} et un planificateur
-linéaire avec warmup (\emph{Transformers} \cite{wolf2020}, pratique
-usuelle \cite{sun2019,devlin2019}) ; seuls
-l'encodeur (DistilBERT-base, RoBERTa-base) et les modules M1 à M4
-varient entre runs d'ablation. Le tableau~\ref{tab:expe-hyperparams}
-a fixé ces valeurs \emph{a priori} pour toutes les étapes.
+Toutes les configurations partagent le même budget d'entraînement et le
+même critère de validation (F1-macro sur validation). Nous suivons la
+recette GoEmotions \cite{demszky2020} : lot $16$, taux
+$5\times 10^{-5}$, quatre époques. L'optimiseur est AdamW
+\cite{kingma2015adam,loshchilov2019adamw} avec planificateur linéaire et
+warmup (\cite{wolf2020,sun2019,devlin2019}). Seuls l'encodeur
+(DistilBERT-base, RoBERTa-base) et les modules M1 à M4 changent entre
+runs. Le tableau~\ref{tab:expe-hyperparams} résume ces choix, fixés
+avant les campagnes.
 
 \begin{table}[H]
 \centering
@@ -120,7 +108,7 @@ Sélection de modèle & Meilleur F1-macro validation sur les quatre époques \\
 \hline
 Graines & $42$, $123$, $456$ (trois répétitions, intervalles de confiance non reportés) \\
 \hline
-Troncature (Step~0) & $128$ tokens document ($4$ phrases $\times$ $32$ tokens, soit $128$, ch.~\ref{sec:conception-choix}) \\
+Troncature (Step~0) & $128$ tokens document (quatre phrases de $32$ tokens, ch.~\ref{sec:conception-choix}) \\
 \hline
 Segmentation (M1+) & $M{=}4$ phrases, $32$ tokens/phrase \\
 \hline
@@ -182,19 +170,17 @@ identique} ; le nombre de paramètres et le coût de calcul varient
 \end{tabular}
 \end{table}
 
-La règle de rétention est : \textbf{maximiser le F1-macro validation
-moyen} sur la ladder \emph{principale} (Step~0, +M1, +M1+M2, +M3, +M4
-SenticNet), \textbf{sur les deux backbones} lorsque la campagne existe,
-en excluant les contrôles mécanistiques M2 et la branche NRC+M4 testée
-seulement sur DistilBERT. Sous cette règle, \textbf{M1+M2} est retenu
-($0{,}506 \pm 0{,}003$ val. DistilBERT ; $0{,}524 \pm 0{,}004$ val.
-RoBERTa). NRC+M4 ($0{,}508 \pm 0{,}002$ val.) et M1+M2 sans attention
-phrase ($0{,}507 \pm 0{,}006$) dépassent légèrement M1+M2 sur DistilBERT
-seul : gains inférieurs à l'écart-type inter-graines, non répliqués sur
-RoBERTa pour NRC+M4, et écartés au profit de la pile la plus simple et
-la plus stable sur les deux encodeurs. Les scores \emph{test} du ladder
-complet restent \emph{exploratoires}, sans sélection a posteriori sur le
-test.
+Pour retenir une pile, nous \textbf{maximisons le F1-macro validation
+moyen} sur la ladder principale (Step~0, +M1, +M1+M2, +M3, +M4
+SenticNet), \textbf{sur les deux backbones} quand la campagne existe.
+Nous excluons les contrôles M2 et NRC+M4 (testé seulement sur
+DistilBERT). Avec cette règle, \textbf{M1+M2} est retenu ($0{,}506 \pm
+0{,}003$ val. DistilBERT ; $0{,}524 \pm 0{,}004$ val. RoBERTa). NRC+M4
+et M1+M2 sans attention phrase font un peu mieux sur DistilBERT seul,
+mais l'écart est petit, NRC+M4 n'est pas testé sur RoBERTa, et nous
+privilégions la pile la plus simple stable sur les deux encodeurs. Les
+scores \emph{test} du ladder complet sont \emph{exploratoires} : le
+modèle n'est pas choisi sur le test.
 
 \subsection{Backbones}
 
@@ -1046,34 +1032,30 @@ tableau~\ref{tab:expe-h1-h4-summary}.
 \label{sec:expe-discussion}
 
 \subsection{Validité interne}
-Les comparaisons M1$\to$M1+M2 modifient plusieurs mécanismes à la fois
-(pooling, attention phrase, encodeur inter-émotions, têtes). H1 compare
-une hiérarchie en quatre segments de $32$ tokens (budget nominal $128$
-tokens) à un encodage flat plafonné à $128$ tokens : le résultat
-négatif porte sur cette implémentation, pas sur toute forme de
-hiérarchie. Trois graines stabilisent les tendances mais ne remplacent
-ni tests statistiques ni intervalles de confiance.
+Passer de M1 à M1+M2 change plusieurs choses en même temps (pooling,
+attention phrase, encodeur inter-émotions, têtes). H1 compare une
+hiérarchie en quatre segments de $32$ tokens (128 tokens au total) à un
+flat limité à $128$ tokens : le résultat négatif concerne cette
+implémentation, pas toute hiérarchie possible. Trois graines aident à
+voir les tendances, mais ce n'est pas un test statistique formel.
 
 \subsection{Validité de construit}
-Le F1-macro à seuil $0{,}5$ peut masquer des gains de rang (mAP) lorsque
-SenticNet M3 n'améliore pas la macro. Le prior NRC \emph{document} injecte
-le même vecteur dans toutes les requêtes : il ne teste pas directement
-l'alignement taxonomique NRC$\to$GoEmotions, réservé à l'extension
-\emph{par étiquette}.
+Le F1-macro à seuil $0{,}5$ peut cacher des gains de rang (mAP) quand M3
+SenticNet n'améliore pas la macro. Le prior NRC \emph{document} met le
+même vecteur pour toutes les émotions : il ne teste pas bien l'alignement
+NRC / GoEmotions, réservé à l'extension \emph{par étiquette}.
 
 \subsection{Validité externe}
-Les conclusions portent sur GoEmotions (Reddit anglais) sous le protocole
-du tableau~\ref{tab:expe-hyperparams}. La généralisation à d'autres genres
-ou langues reste ouverte (\ChapRef{perspectives}).
+Les résultats concernent GoEmotions (Reddit, anglais) avec le protocole
+du tableau~\ref{tab:expe-hyperparams}. On ne sait pas s'ils tiennent sur
+d'autres types de textes ou d'autres langues (\ChapRef{perspectives}).
 
 \subsection{Validité conclusionnelle}
-Les classes à très faible support test (par exemple \emph{grief}) produisent
-des F1 instables ; les gains macro de M2 se concentrent surtout sur des
-émotions de fréquence intermédiaire. La magnitude $|g|$ des portes M3
-n'implique pas à elle seule un usage causal du lexique : le
-tableau~\ref{tab:expe-lexicon-ablation} reporte des ablations
-\emph{zero}/\emph{shuffle} à l'inférence lorsque les métriques archivées
-les incluent.
+Les classes très rares (par ex. \emph{grief}) donnent des F1 instables.
+Les gains de M2 portent surtout sur des émotions de fréquence moyenne. Une
+porte $|g|$ élevée ne prouve pas que le lexique est utilisé de façon
+causale : le tableau~\ref{tab:expe-lexicon-ablation} montre des tests
+\emph{zero}/\emph{shuffle} à l'inférence quand les métriques existent.
 
 \begin{table}[H]
 \centering
@@ -1091,40 +1073,30 @@ les incluent.
 \end{tabular}
 \end{table}
 
-Sur M3 SenticNet (passe supplémentaire), le lexique nul fait tomber la
-macro à $0{,}484 \pm 0{,}004$ (contre $0{,}503 \pm 0{,}003$ en inférence
-normale) : une part du score s'appuie alors sur le prior documentaire.
-Sur M3 NRC, les trois modes restent autour de $0{,}507$--$0{,}508$.
-Sur M3+M4 NRC (campagne principale), normal, nul et permuté restent à
-$0{,}510 \pm 0{,}003$ : la macro ne réagit pas visiblement à l'ablation
-lexicale à l'inférence malgré $|g| \approx 0{,}041$.
-Les lignes M3 proviennent de checkpoints Colab distincts des JSON
-archivés pour les tableaux d'ablation principaux ; seule la cohérence
-\emph{normal}/\emph{zero}/\emph{shuffle} au sein de chaque ligne est
-interprétée ici.
+Sur M3 SenticNet, un lexique nul fait baisser la macro à $0{,}484 \pm
+0{,}004$ (contre $0{,}503 \pm 0{,}003$ en normal) : une partie du score
+vient du prior documentaire. Sur M3 NRC, normal, nul et permuté restent
+autour de $0{,}507$--$0{,}508$. Sur M3+M4 NRC, l'ablation lexicale ne
+change presque pas la macro ($0{,}510 \pm 0{,}003$) malgré $|g| \approx
+0{,}041$. Certaines lignes M3 viennent de checkpoints Colab séparés ; on
+compare seulement normal / zero / shuffle \emph{dans la même ligne}.
 
 \subsection{Reproductibilité}
-Les campagnes archivées fixent graines, hyperparamètres et métriques ;
-l'implémentation repose sur PyTorch, \emph{Transformers}, NLTK Punkt,
-scikit-learn pour F1 et mAP macro par étiquette. Les versions exactes
-des bibliothèques et le matériel d'entraînement sont ceux de l'environnement
-d'exécution des notebooks de campagne. La correspondance NRC$\to$GoEmotions
-est une \emph{hypothèse de modélisation} fixée manuellement pour
-l'extension par étiquette, non apprise des données.
+Les campagnes archivées fixent graines, hyperparamètres et métriques.
+Le code utilise PyTorch, \emph{Transformers}, NLTK Punkt et scikit-learn
+pour F1 et mAP. Les versions exactes et le GPU sont ceux des notebooks
+Colab (annexe B). La table NRC / GoEmotions est fixée à la main pour
+l'extension par étiquette, elle n'est pas apprise.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Le protocole expérimental est spécifié et exécuté sur GoEmotions avec
-DistilBERT-base et RoBERTa-base : statistiques de segmentation,
-hyperparamètres communs et ladder M1 à M4 sur les deux encodeurs
-(tableau~\ref{tab:expe-baseline-step0},
-tableau~\ref{tab:expe-roberta-ablation}). H1 à H4
-sont reportées aux tableaux d'ablation et au
-tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue sur validation est
-M1+M2 (tableau~\ref{tab:expe-val-test-selection}) ; M3 document et M4
-SenticNet n'apportent pas de gain macro robuste ; NRC+M4 reste marginal
-(tableau~\ref{tab:expe-m4-nrc-distilbert}). Les tableaux par cardinalité
-gold et les contrôles mécanistiques de M2 complètent cette lecture.
-L'analyse par classe (extrait et annexe complète) et l'analyse de
-confusions (section~\ref{sec:expe-error-analysis}) complètent la macro.
-Le \ChapRef{perspectives} en tire les recommandations pratiques.
+Ce chapitre a décrit et mené le protocole sur GoEmotions avec
+DistilBERT-base et RoBERTa-base (segmentation, hyperparamètres, ladder
+M1 à M4, tableaux~\ref{tab:expe-baseline-step0} et
+\ref{tab:expe-roberta-ablation}). H1 à H4 sont dans les tableaux
+d'ablation et au tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue
+sur validation est M1+M2 ; M3 document et M4 SenticNet n'ajoutent pas de
+gain macro stable ; NRC+M4 reste marginal. Les tableaux par cardinalité
+gold et les contrôles M2 complètent la lecture, ainsi que l'analyse par
+classe et les confusions. Le \ChapRef{perspectives} en déduit des
+recommandations pratiques.

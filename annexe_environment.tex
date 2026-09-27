@@ -1,15 +1,15 @@
 \section*{Annexe B.~Environnement d'exécution (campagnes Colab)}
 \addcontentsline{toc}{section}{Annexe B.~Environnement d'exécution}
 
-Les campagnes archivées ont été exécutées sur \textbf{Google Colab} (GPU
-T4 ou équivalent, CUDA). Versions \emph{minimal} déclarées dans le dépôt
-(\texttt{requirements-train.txt}, \texttt{scripts/requirements.txt}) :
+Les campagnes ont été lancées sur \textbf{Google Colab} (GPU T4 ou
+équivalent, CUDA). Le tableau reprend les versions minimales indiquées
+dans les fichiers de dépendances du projet :
 
 {\small
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|l|l|}
 \hline
-\textbf{Composant} & \textbf{Version (borne inférieure)} \\
+\textbf{Composant} & \textbf{Version (minimum)} \\
 \hline
 Python & 3.10+ (runtime Colab) \\
 \hline
@@ -30,7 +30,5 @@ GoEmotions & jeu \texttt{go\_emotions} (split officiel via \texttt{datasets}) \\
 \end{tabular}
 }
 
-Les notebooks exécutés sous \texttt{reference/training\_records/} fixent
-le commit Git et les sorties \texttt{metrics.json} ; pour une reproduction
-bit-à-bit, réutiliser le même runtime Colab et le même commit indiqué dans
-chaque manifeste de campagne.
+Pour reproduire les chiffres, utiliser le même commit Git et le même
+type de runtime que les notebooks de campagne archivés.

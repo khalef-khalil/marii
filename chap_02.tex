@@ -4,28 +4,21 @@
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-Le \ChapRef{contexte} a posé une question de recherche et
-trois limitations (L1 à L3) auxquelles HAKE-MER doit répondre. Nous
-montrons ici comment la littérature sur la \textbf{détection
-multi-étiquettes des émotions dans le texte}
-\cite{mohammad2020sentiment,pang2008,seyeditabari2018} éclaire ces points et justifie
-les choix de corpus, de métriques et de familles de modèles retenus
-pour la suite.
+Le \ChapRef{contexte} a posé la question de recherche et trois limites
+(L1 à L3). Ce chapitre rappelle la littérature sur la \textbf{détection
+multi-étiquettes des émotions en texte}
+\cite{mohammad2020sentiment,pang2008,seyeditabari2018} et justifie le
+corpus, les métriques et les familles de modèles retenus.
 
-La progression suit le fil de la preuve : d'abord la tâche et
-GoEmotions, puis les approches neuronales et la baseline par modèles
-pré-entraînés, ensuite les réponses hiérarchiques et lexicales aux
-limitations L2 et L3, et enfin une synthèse qui relie lacunes et
-modules M1 à M3 (le module M4 et le protocole d'évaluation complet
-sont détaillés aux \ChapRef{conception}
-et \ChapRef{experimentation}).
+Nous commençons par la tâche et GoEmotions, puis les modèles neuronaux
+et la baseline PLM, ensuite la hiérarchie et les lexiques (L2, L3), et
+enfin une synthèse vers les modules M1 à M3 (M4 et le protocole complet
+sont aux \ChapRef{conception} et \ChapRef{experimentation}).
 
 \section{Tâche, jeux de données et métriques}
 \label{sec:etat-tache-donnees}
 
-Nous commençons par la formulation de la tâche, le corpus retenu pour
-l'évaluation et les métriques qui guideront l'interprétation des
-expériences.
+Nous commençons par la tâche, le corpus et les métriques d'évaluation.
 
 \subsection{Classification multi-étiquettes vs mono-étiquette}
 
@@ -119,22 +112,16 @@ validation externe hors Reddit reste une perspective du
 
 \subsection{Annotation, bruit et déséquilibre}
 
-La construction de jeux multi-émotions souffre de \textbf{labels
-partiels} (émotions faibles non annotées) et de \textbf{subjectivité
-inter-annotateurs}. Sur GoEmotions, seulement 31\,\% des exemples
-obtiennent un accord d'au moins une étiquette entre trois annotateurs
-ou plus \cite{demszky2020} ; 1{,}6\,\% sont explicitement jugés difficiles
-à étiqueter. Ces biais compliquent l'apprentissage et
-l'interprétation des erreurs. Le \textbf{déséquilibre extrême}
-(quelques classes très fréquentes, dont \emph{neutral}, face à des
-émotions rares, certaines avec un rappel quasi nul dans la ligne de
-base BERT des auteurs) fait que les métriques globales favorisant
-les classes majoritaires peuvent masquer un échec sur les classes
-minoritaires, pourtant centrales pour la problématique de ce mémoire.
-Le rééchantillonnage synthétique \cite{chawla2002smote} et des pertes
-pondérées (par exemple \emph{focal loss} \cite{lin2017focal}) existent
-pour le déséquilibre, mais restent hors du périmètre immédiat du
-protocole retenu.
+Les corpus multi-émotions ont des \textbf{annotations partielles} et des
+\textbf{désaccords entre annotateurs}. Sur GoEmotions, seulement 31\,\%
+des exemples ont un accord d'au moins une étiquette entre trois
+annotateurs ou plus \cite{demszky2020} ; 1{,}6\,\% sont jugés difficiles.
+Le \textbf{déséquilibre} est fort : \emph{neutral} et quelques émotions
+dominent, d'autres sont très rares. Le F1-macro peut alors cacher un
+mauvais score sur les classes minoritaires, pourtant importantes pour ce
+mémoire. Le rééchantillonnage \cite{chawla2002smote} et la \emph{focal
+loss} \cite{lin2017focal} existent, mais ne font pas partie de notre
+protocole immédiat.
 
 \subsection{Métriques d'évaluation}
 
@@ -360,11 +347,11 @@ sur l'injection lexicale NRC/SenticNet.
 \subsection{Comparaison indicative sur GoEmotions}
 \label{sec:etat-art-comparaison}
 
-Le sujet initial prévoyait un benchmark élargi ; faute de protocole
-identique aux publications, le mémoire reporte surtout une ablation
-interne et le tableau~\ref{tab:goemotions-literature} situe des
-travaux publics sur le même corpus. Les chiffres ne sont \emph{pas}
-directement comparables (split, prétraitement, seuil, graines).
+Le sujet initial prévoyait plus de benchmarks. Comme les protocoles
+publics diffèrent, ce mémoire insiste sur l'ablation interne. Le
+tableau~\ref{tab:goemotions-literature} situe quelques travaux sur
+GoEmotions ; les chiffres ne sont \emph{pas} directement comparables
+(split, prétraitement, seuil, graines).
 
 \begin{table}[H]
 \centering
@@ -462,20 +449,15 @@ structure, connaissances externes).
     \end{tabular}
 \end{table}
 
-HAKE-MER réunit ces axes dans une architecture \textbf{unifiée et
-ablatable} : hiérarchie (M1), interactions inter-émotions (M2),
-enrichissement lexical comparé NRC/SenticNet (M3), pondération
-dynamique des intensités (M4). Ce chapitre établit le \emph{cadre
-conceptuel} et les arguments de littérature qui motivent chaque module ;
-l'évaluation quantitative est développée au
-\ChapRef{experimentation}.
+HAKE-MER regroupe ces idées dans une architecture \textbf{modulaire} :
+hiérarchie (M1), interactions entre émotions (M2), lexiques NRC/SenticNet
+(M3), pondération dynamique (M4). Ce chapitre pose le cadre théorique ;
+les chiffres sont au \ChapRef{experimentation}.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-Nous disposons désormais d'un corpus et de métriques justifiés, d'une
-baseline PLM de référence sur GoEmotions et d'arguments littéraires
-pour traiter séparément les interactions entre émotions, la structure
-multi-phrases et l'enrichissement lexical. Le chapitre~3 transforme
-cette synthèse en architecture HAKE-MER et en hypothèses H1 à H4
-testables par ablation.
+Nous avons maintenant un corpus, des métriques, une baseline PLM sur
+GoEmotions et des arguments pour traiter les interactions entre émotions,
+la structure multi-phrases et les lexiques. Le chapitre~3 décrit
+HAKE-MER et les hypothèses H1 à H4 testées par ablation.

@@ -2,66 +2,60 @@
 \addcontentsline{toc}{chapter}{Introduction générale}
 \markboth{Introduction générale}{}
 
-Les textes produits en ligne, commentaires, messages ou avis, véhiculent
-des états affectifs qui dépassent souvent une simple polarité positive ou
-négative. La détection d'émotions vise à identifier des catégories
-affectives fines, joie, colère, tristesse, peur, etc., souvent
-plusieurs à la fois dans un même énoncé. Cette tâche relève de la
-classification \emph{multi-étiquettes} : chaque émotion est une décision
-binaire, et les cooccurrences ainsi que le déséquilibre marqué des classes
-compliquent l'apprentissage et l'évaluation.
+Les textes en ligne (commentaires, messages, avis) expriment souvent
+plusieurs émotions à la fois, et pas seulement une polarité positive ou
+négative. La détection d'émotions cherche à repérer des catégories
+affectives fines (joie, colère, tristesse, peur, etc.), parfois
+plusieurs dans le même texte. Il s'agit d'une classification
+\emph{multi-étiquettes} : chaque émotion est une décision binaire. Les
+cooccurrences et le fort déséquilibre entre classes rendent
+l'apprentissage et l'évaluation difficiles.
 
-Ce mémoire s'inscrit dans le Mastère de Recherche à l'Institut Supérieur
-d'Informatique (ISI), sous l'encadrement de M.~Sahbi Bahroun. Il porte sur
-la conception et l'évaluation de HAKE-MER (\emph{Hierarchical
-Attention with Knowledge modules for Multi-Emotion
-Recognition}), cadre modulaire M1 à M4 pour la détection multi-émotions.
-La configuration retenue après ablation est la sous-pile \textbf{M1+M2}
-(sans prior lexical ni pondération dynamique).
+Ce mémoire est réalisé dans le Mastère de Recherche à l'Institut
+Supérieur d'Informatique (ISI), sous l'encadrement de M.~Sahbi Bahroun.
+Il présente HAKE-MER (\emph{Hierarchical Attention with Knowledge modules
+for Multi-Emotion Recognition}), un cadre modulaire M1 à M4 pour la
+détection multi-émotions. Après ablation, la configuration retenue est
+\textbf{M1+M2} (sans prior lexical ni pondération dynamique).
 
-L'architecture combine encodage hiérarchique du texte, attention
-croisée entre émotions et enrichissement par lexiques affectifs NRC et
-SenticNet, au-dessus d'encodeurs contextuels affinés
+L'architecture combine un encodage hiérarchique du texte, une attention
+croisée entre émotions et des lexiques NRC et SenticNet, au-dessus
+d'encodeurs contextuels affinés
 \cite{howard2018ulmfit,devlin2019}. Les expériences portent sur
-GoEmotions \cite{demszky2020}, dans le cadre de la détection
-multi-étiquettes en texte \cite{zhang2014multilabel,mohammad2020sentiment},
-avec un protocole d'ablation à budget d'affinage identique, le F1-macro comme
-métrique principale \cite{bond2022multilabel,wu2021multilabelranking} et
-trois graines aléatoires. Le Step~0 compare DistilBERT-base et
-RoBERTa-base en encodage document flat ; la ladder M1 à M4 est menée sur
-les deux encodeurs ; le détail des scores test est reporté au
-\ChapRef{experimentation}.
+GoEmotions \cite{demszky2020}, avec un protocole d'ablation à budget
+d'affinage identique, le F1-macro comme métrique principale
+\cite{bond2022multilabel,wu2021multilabelranking,mohammad2020sentiment,zhang2014multilabel}
+et trois graines. Le Step~0 compare DistilBERT-base et RoBERTa-base en
+encodage document flat ; la ladder M1 à M4 est menée sur les deux
+encodeurs. Les scores test détaillés sont au \ChapRef{experimentation}.
 
-\ParHead{Orientation des résultats :}Les campagnes montrent que la pile M1+M2 (module M2 inclus)
-concentre l'essentiel du gain en F1-macro par rapport à une baseline PLM
-plate et à la hiérarchie seule, module M1 ; les contrôles mécanistiques
-attribuent surtout ce gain à l'encodeur inter-émotions. Les priors
-lexicaux et la pondération dynamique, modules M3 et M4, n'apportent pas
-d'amélioration macro robuste par rapport à la pile M1+M2 sur les deux
-encodeurs testés. L'analyse par classe indique des progrès surtout sur
-des émotions de fréquence intermédiaire, plutôt que sur la longue traîne
-la plus rare. Les chiffres, tableaux d'ablation et synthèse H1 à H4
-figurent au \ChapRef{experimentation} ; le résumé en tête de volume en
-donne une vue condensée pour le lecteur pressé.
+\ParHead{Orientation des résultats :}Les campagnes montrent que la pile
+M1+M2 apporte la plus grande part du gain en F1-macro, par rapport au
+flat et à M1 seul. Les contrôles mécanistiques montrent surtout le rôle
+de l'encodeur inter-émotions. Les modules M3 (priors lexicaux) et M4
+(pondération dynamique) n'améliorent pas de façon stable la macro sur
+les deux encodeurs testés. L'analyse par classe montre des progrès surtout
+sur des émotions de fréquence moyenne, moins sur les classes très rares.
+Les chiffres, tableaux d'ablation et synthèse H1 à H4 sont au
+\ChapRef{experimentation} ; le résumé en tête de volume en donne une
+version courte.
 
 \ParHead{Contributions :}
 \begin{itemize}[noitemsep]
-\item une architecture HAKE-MER en quatre modules cumulables M1 à M4
-      et quatre hypothèses H1 à H4 testées par ablation ;
-\item un protocole expérimental documenté, graines, hyperparamètres et
-      campagnes archivées, Step~0 sur deux encodeurs, comparaison NRC et
-      SenticNet, contrôles mécanistiques M2, analyse par cardinalité gold,
-      synthèse H1 à H4 et F1 par émotion sur le test ;
-\item des recommandations de déploiement et des perspectives ancrées
-      sur les résultats obtenus (\ChapRef{perspectives}).
+\item une architecture HAKE-MER en quatre modules M1 à M4 et quatre
+      hypothèses H1 à H4 testées par ablation ;
+\item un protocole documenté (graines, hyperparamètres, campagnes
+      archivées), Step~0 sur deux encodeurs, NRC et SenticNet, contrôles
+      M2, analyse par cardinalité gold, synthèse H1 à H4 et F1 par
+      émotion sur le test ;
+\item des recommandations et des perspectives basées sur les résultats
+      (\ChapRef{perspectives}).
 \end{itemize}
 
-\ParHead{Organisation du mémoire :}Le \ChapRef{contexte} présente le contexte, la problématique et
-les objectifs. Le \ChapRef{etat_art} situe HAKE-MER par rapport
-à la littérature sur les émotions multiples, l'attention hiérarchique et
-l'intégration de connaissances. Le \ChapRef{conception} détaille
-l'architecture et les hypothèses de recherche. Le
-\ChapRef{experimentation} décrit le protocole, reporte les
-métriques test et évalue H1 à H4. Le \ChapRef{perspectives}
-formule recommandations pratiques et prolongements de recherche. Une
-conclusion générale clôt le document.
+\ParHead{Organisation du mémoire :}Le \ChapRef{contexte} présente le
+contexte, la problématique et les objectifs. Le \ChapRef{etat_art} situe
+HAKE-MER dans la littérature. Le \ChapRef{conception} décrit
+l'architecture et les hypothèses. Le \ChapRef{experimentation} présente
+le protocole, les résultats test et l'évaluation de H1 à H4. Le
+\ChapRef{perspectives} propose des recommandations et des prolongements.
+Une conclusion générale clôt le document.

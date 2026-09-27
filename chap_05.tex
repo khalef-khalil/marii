@@ -3,142 +3,117 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le \ChapRef{experimentation} a exécuté la ladder d'ablation
-sur GoEmotions et évalué H1 à H4. Ce chapitre en extrait des
-\textbf{enseignements opérationnels} pour la détection multi-étiquettes
-des émotions, formule des \textbf{recommandations de déploiement} à
-partir des métriques obtenues, puis ouvre des \textbf{perspectives}
-de recherche là où les résultats restent ouverts (encodeur, longue
-traîne, validation externe).
+Le \ChapRef{experimentation} a mené la ladder d'ablation sur
+GoEmotions et testé H1 à H4. Ce chapitre en tire des
+\textbf{enseignements pratiques}, des \textbf{recommandations} pour
+un usage possible du modèle, puis des \textbf{perspectives} là où les
+résultats restent ouverts (encodeur, classes rares, autres corpus).
 
 \section{Principes méthodologiques}
 \label{sec:persp-enseignements}
 
-Quatre principes ont structuré la campagne et restent pertinents au
-delà de HAKE-MER :
+Quatre idées ont guidé la campagne :
 \begin{itemize}
-\item \textbf{Multi-backbone} : Step~0 sur DistilBERT et RoBERTa a montré
-      des F1-macro test voisins ($0{,}486 \pm 0{,}005$ vs
-      $0{,}487 \pm 0{,}005$) ; la ladder M1 à M4 est reproduite sur
-      les deux encodeurs (tableau~\ref{tab:expe-roberta-ablation}) pour
-      comparer H1 à H4 à protocole identique.
-\item \textbf{Contrôle du prétraitement} : M1 seul sous-performe le flat
-      à budget token comparable : une hiérarchie naïve peut \emph{perdre}
-      du contexte utile. Les gains viennent surtout de la pile M1+M2 ;
-      les contrôles M2 imputent l'essentiel du gain à l'encodeur
-      inter-émotions plutôt qu'à l'attention croisée phrase seule.
-\item \textbf{Métriques par classe} : Le F1-macro masque des profils
-      hétérogènes (tableau~\ref{tab:expe-per-class-f1}) : M2 améliore
-      surtout des émotions de fréquence intermédiaire, pas la longue
-      traîne (\emph{grief}, \emph{relief}).
-\item \textbf{Comparaisons externes prudentes} : Le dépassement du
-      $0{,}46$ macro de BERT-base \cite{demszky2020} reste indicatif
-      (encodeur, fenêtre, budget) ; l'argument principal repose sur
-      les comparaisons internes à budget fixe.
+\item \textbf{Multi-backbone} : Step~0 sur DistilBERT et RoBERTa donne
+      des F1-macro test proches ($0{,}486 \pm 0{,}005$ vs
+      $0{,}487 \pm 0{,}005$). La ladder M1 à M4 est refaite sur les deux
+      encodeurs (tableau~\ref{tab:expe-roberta-ablation}) pour comparer
+      H1 à H4 au même protocole.
+\item \textbf{Prétraitement} : M1 seul fait moins bien que le flat à
+      budget token comparable. Une hiérarchie simple peut faire perdre du
+      contexte. Les gains viennent surtout de M1+M2 ; les contrôles M2
+      montrent que l'encodeur inter-émotions compte plus que l'attention
+      phrase seule.
+\item \textbf{Métriques par classe} : Le F1-macro cache des différences
+      fortes (tableau~\ref{tab:expe-per-class-f1}). M2 aide surtout des
+      émotions de fréquence moyenne, pas les plus rares (\emph{grief},
+      \emph{relief}).
+\item \textbf{Comparaisons externes} : Dépasser le $0{,}46$ macro de
+      BERT-base \cite{demszky2020} reste indicatif (encodeur, fenêtre,
+      budget). L'argument principal reste les comparaisons internes à
+      budget fixe.
 \end{itemize}
 
 \section{Enseignements de la campagne HAKE-MER}
 \label{sec:persp-enseignements-campagne}
 
-Les hypothèses H1 à H4 (\SecRef{sec:conception-hypotheses}) se
-traduisent en messages concrets pour un lecteur praticien :
+Les hypothèses H1 à H4 (\SecRef{sec:conception-hypotheses}) se résument
+ainsi :
 \begin{itemize}
-\item \textbf{H1 non soutenue} : L'encodage hiérarchique sans M2 n'est pas
-      une alternative crédible au \texttt{[CLS]} flat sur GoEmotions
-      sous ce protocole ; M1 seul n'est pas recommandé dans le cadre
-      évalué ici pour le F1-macro.
-\item \textbf{H2 soutenue sous ce protocole} : M2 restaure et dépasse le flat sur les
-      deux encodeurs ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$
-      en DistilBERT ; $0{,}526 \pm 0{,}007$ en RoBERTa) : l'attention
-      interaction entre les représentations d'émotion (encodeur M2) est
-      le levier identifiable le plus net dans ce protocole.
+\item \textbf{H1 non soutenue} : L'encodage hiérarchique sans M2 ne
+      remplace pas le \texttt{[CLS]} flat sur GoEmotions dans ce
+      protocole. M1 seul n'est pas conseillé ici pour le F1-macro.
+\item \textbf{H2 soutenue} : M2 rattrape et dépasse le flat sur les deux
+      encodeurs ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$ en
+      DistilBERT ; $0{,}526 \pm 0{,}007$ en RoBERTa). L'interaction
+      entre représentations d'émotion (encodeur M2) est le levier le
+      plus clair dans ce protocole.
 \item \textbf{H3 prudente} : prior \emph{document} neutre en macro ;
       prior par étiquette : NRC gagne au plus $\approx 0{,}003$ de macro
-      ($0{,}508 \pm 0{,}001$ vs $0{,}505 \pm 0{,}004$), SenticNet neutre ;
-      $\Delta$ fréquent vs rare
-      mesuré seulement sur cette extension (NRC $0{,}280$, SenticNet
-      $0{,}290$, M1+M2 $0{,}296$).
+      ($0{,}508 \pm 0{,}001$ vs $0{,}505 \pm 0{,}004$), SenticNet neutre.
 \item \textbf{H4 prudente} : +M4 SenticNet recule sur DistilBERT ;
-      NRC+M4 ($0{,}510 \pm 0{,}003$) n'offre qu'un gain marginal vs M1+M2,
-      sans campagne RoBERTa ; la complexité M4 n'est pas retenue.
+      NRC+M4 ($0{,}510 \pm 0{,}003$) n'apporte qu'un petit gain vs M1+M2,
+      sans campagne RoBERTa. M4 n'est pas retenu.
 \end{itemize}
 
 \section{Recommandations pratiques}
 \label{sec:persp-recommandations}
 
-\ParHead{Configuration retenue :}Sur la base du F1-macro \emph{validation} moyen (trois graines) et de l'hypothèse H2, la pile de référence est \textbf{M1+M2} :
-$0{,}526 \pm 0{,}007$ avec RoBERTa-base,
-$0{,}505 \pm 0{,}004$ avec DistilBERT-base
-(tableau~\ref{tab:expe-roberta-ablation}, protocole du
-tableau~\ref{tab:expe-hyperparams}). Segmentation $M{=}4$, attention
-par émotion ; pas de branche M3/M4 si la macro prime sur
-l'interprétabilité lexicale. DistilBERT reste le choix par défaut lorsque
-$\approx 2$ points de macro suffisent, en raison de sa taille plus réduite
-\cite{sanh2019distilbert} (latence non benchmarkée dans ce mémoire).
+\ParHead{Configuration retenue :}D'après le F1-macro \emph{validation}
+moyen (trois graines) et H2, la pile de référence est \textbf{M1+M2} :
+$0{,}526 \pm 0{,}007$ avec RoBERTa-base, $0{,}505 \pm 0{,}004$ avec
+DistilBERT-base (tableau~\ref{tab:expe-roberta-ablation}, protocole du
+tableau~\ref{tab:expe-hyperparams}). Segmentation $M{=}4$, attention par
+émotion ; pas de M3/M4 si la macro prime. DistilBERT convient si
+$\approx 2$ points de macro suffisent, avec un modèle plus léger
+\cite{sanh2019distilbert}.
 
 \ParHead{Quand simplifier ou enrichir :}
 \begin{itemize}
-\item \textbf{Flat Step~0} : baseline plus légère en paramètres si le
-      déploiement prime sur $\approx 2$ points de macro ; performances
-      déjà solides ($0{,}486 \pm 0{,}005$).
+\item \textbf{Flat Step~0} : baseline plus légère si le déploiement
+      compte plus que $\approx 2$ points de macro ($0{,}486 \pm 0{,}005$).
 \item \textbf{M3 (NRC ou SenticNet)} : prior \emph{document} sans gain
-      macro robuste ; le prior NRC \emph{par étiquette} n'ajoute qu'un gain macro marginal
-      sur DistilBERT ($\approx +0{,}003$) ; M2 reste la configuration par défaut.
-      Envisager M3 surtout si l'on expose $|g|$ ou les scores $c_k$ comme
-      signal auxiliaire, pas comme explication token à token.
-\item \textbf{RoBERTa (+M1, +M1+M2)} : même profil qualitatif qu'en
-      DistilBERT (M2 soutient H2 sous ce protocole, M1 seul insuffisant) avec une macro
-      test plus haute sur +M1+M2 ($0{,}526 \pm 0{,}007$).
+      macro stable ; NRC \emph{par étiquette} : gain marginal sur
+      DistilBERT ($\approx +0{,}003$). M2 reste le choix par défaut.
+\item \textbf{RoBERTa} : même tendance qu'en DistilBERT (M2 utile, M1
+      seul insuffisant), avec une macro test plus haute sur M1+M2
+      ($0{,}526 \pm 0{,}007$).
 \end{itemize}
 
-\ParHead{Coût et risques :}M1+M2 encode jusqu'à quatre phrases par commentaire : le surcoût
-reste modéré face à un forward document unique, mais la segmentation
-NLTK et les têtes multi-émotions augmentent la surface de bug et de
-réglage. Toute réduction de $M$ ou de 32 tokens impose de refaire
+\ParHead{Coût et risques :}M1+M2 encode jusqu'à quatre phrases par
+commentaire. Le coût reste modéré par rapport à un forward document
+unique, mais la segmentation NLTK et les têtes multi-émotions ajoutent
+des réglages. Changer $M$ ou la limite de 32 tokens impose de refaire
 l'analyse de troncature (section~\ref{sec:expe-corpus-stats}).
 
 \section{Perspectives de recherche}
 \label{sec:persp-recherche}
 
-Les prolongements suivants ciblent les limites observées au
-\ChapRef{experimentation}, sans remettre en cause les
-résultats déjà archivés :
+Pistes possibles sans remettre en cause les campagnes déjà archivées :
 \begin{itemize}
-\item \textbf{Déséquilibre et longue traîne} : Pertes repondérées
+\item \textbf{Déséquilibre et classes rares} : pertes repondérées
       \cite{lin2017focal}, rééchantillonnage \cite{chawla2002smote},
-      seuils par émotion, ou entraînement ciblé sur les labels à
-      très faible support (\emph{grief}, \emph{relief}) où le F1
-      reste instable.
-\item \textbf{Lexique et connaissances} : Fusion par émotion (non
-      un vecteur document partagé), graphes type ConceptNet
-      \cite{speer2017}, injection de connaissances de bon sens
-      \cite{ghosal2020cosmic}, ou alignement fin entre Plutchik et
-      GoEmotions au-delà du gate global M3 testé ici.
-\item \textbf{Autres lexiques} : Tester d'autres ressources affectives ou
-      des fusions par émotion sur la pile M1+M2 déjà validée sur les
-      deux backbones.
-\item \textbf{Validation externe} : Campagnes SemEval (p.ex. affect in
-      tweets \cite{mohammad2018semeval}, EmoContext
-      \cite{semeval2019emocontext}) ou corpus hors Reddit pour tester
-      la robustesse du choix M1+M2.
-\item \textbf{Modèles généralistes} : Comparer M1+M2 à des LLM
-      instructs, à des encodeurs de phrase spécialisés
-      \cite{reimers2019sentence}, ou à des modèles affectifs lorsque
-      des protocoles reproductibles et comparables existent
-      \cite{sharma2024deeplearningmlc}.
-\item \textbf{Interprétabilité} : Compléter l'analyse de confusions
-      par des explications locales ou l'analyse d'attention
-      \cite{ribeiro2016lime,clark2019bert} pour documenter le rôle de
-      \emph{neutral} et des labels rares.
+      seuils par émotion, ou entraînement ciblé sur \emph{grief},
+      \emph{relief}, etc.
+\item \textbf{Lexique et connaissances} : fusion par émotion, graphes
+      type ConceptNet \cite{speer2017}, bon sens \cite{ghosal2020cosmic},
+      ou meilleur alignement Plutchik / GoEmotions que le gate global M3.
+\item \textbf{Autres lexiques} : tester d'autres ressources sur la pile
+      M1+M2 déjà validée.
+\item \textbf{Validation externe} : SemEval \cite{mohammad2018semeval},
+      EmoContext \cite{semeval2019emocontext}, ou corpus hors Reddit.
+\item \textbf{Modèles généralistes} : comparer M1+M2 à des LLM ou
+      encodeurs de phrase \cite{reimers2019sentence} quand le protocole
+      est comparable \cite{sharma2024deeplearningmlc}.
+\item \textbf{Interprétabilité} : explications locales ou attention
+      \cite{ribeiro2016lime,clark2019bert} pour \emph{neutral} et les
+      labels rares.
 \end{itemize}
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-La campagne GoEmotions montre que HAKE-MER apporte une valeur nette
-via \textbf{M2}, tandis que hiérarchie seule, lexiques externes et
-pondération M4 n'améliorent pas robustement la macro dans le protocole
-retenu. Les recommandations ci-dessus visent un déploiement réaliste
-(M1+M2, DistilBERT) et des prolongements ciblés (classes rares,
-second encodeur, autres corpus). La conclusion générale du mémoire
-reprend cette synthèse et situe la contribution dans le paysage
-multi-étiquettes des émotions.
+La campagne GoEmotions montre une valeur nette surtout via \textbf{M2}.
+M1 seul, les lexiques et M4 n'améliorent pas de façon stable la macro
+dans le protocole retenu. Les recommandations ci-dessus visent un usage
+réaliste (M1+M2, DistilBERT) et des prolongements (classes rares, autres
+corpus). La conclusion générale reprend cette synthèse.

@@ -3,13 +3,11 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le \ChapRef{etat_art} a fixé le corpus GoEmotions, une baseline
-par modèles pré-entraînés et les réponses littéraires aux limitations
-L1 à L3. Ce chapitre en déduit l'architecture \textbf{HAKE-MER}
+Le \ChapRef{etat_art} a fixé GoEmotions, la baseline PLM et les réponses
+aux limites L1 à L3. Ce chapitre présente \textbf{HAKE-MER}
 (\emph{Hierarchical Attention with Knowledge modules for Multi-Emotion
-Recognition}) : formalisation de la tâche, description
-des modules M1 à M4 et les hypothèses H1 à H4, évaluées par ablation au
-\ChapRef{experimentation}.
+Recognition}) : la tâche, les modules M1 à M4 et les hypothèses H1 à H4,
+testées au \ChapRef{experimentation}.
 
 \section{Formulation du problème et limites existantes}
 \label{sec:conception-formulation}
@@ -52,22 +50,14 @@ Trois limites des approches standards motivent la conception :
 \section{Vue d'ensemble de l'architecture}
 \label{sec:conception-vue}
 
-HAKE-MER répond à ces limites par quatre modules composables,
-construits au-dessus d'un backbone pré-entraîné partagé (RoBERTa-base
-et DistilBERT-base \cite{liu2019roberta,sanh2019distilbert}, avec
-affinage calqué sur les pratiques BERT \cite{devlin2019,sun2019} et
-une lecture par couches des abstractions linguistiques apprises
-\cite{tenney2019bert}, figure~\ref{fig:hakemer-archi}) : le \textbf{Module 1 (Encodage
-Hiérarchique)} préserve la structure du texte (L2) ; le
-\textbf{Module 2 (Attention Croisée Multi-Émotions)} modélise les
-interactions entre émotions (L1) ; le \textbf{Module 3
-(Enrichissement Sémantique)} injecte une connaissance affective
-externe (L3) ; le \textbf{Module 4 (Pondération Dynamique)} module
-l'intensité de chaque représentation émotionnelle selon le contexte
-global (complément de M3 sur la longue traîne). Chaque module s'active
-par un indicateur de configuration, ce qui permet l'ablation cumulative
-décrite au tableau~\ref{tab:conception-ablation} et au
-\ChapRef{experimentation}.
+HAKE-MER ajoute quatre modules optionnels sur un backbone partagé
+(RoBERTa-base et DistilBERT-base \cite{liu2019roberta,sanh2019distilbert},
+affinage type BERT \cite{devlin2019,sun2019}, figure~\ref{fig:hakemer-archi}) :
+\textbf{M1} garde la structure par phrases (L2) ; \textbf{M2} modélise
+les interactions entre émotions (L1) ; \textbf{M3} injecte NRC ou
+SenticNet (L3) ; \textbf{M4} pondère chaque émotion selon le contexte.
+Chaque module s'active par un drapeau, ce qui permet l'ablation du
+tableau~\ref{tab:conception-ablation} et du \ChapRef{experimentation}.
 
 \begin{figure}[H]
 \centering
@@ -181,9 +171,8 @@ L3 & M4 & Pondération dynamique des $r_k$ & M1+M2+M3+M4 & H4 \\
 \section{Choix de conception communs}
 \label{sec:conception-choix}
 
-Cette section fixe les choix partagés par tous les modules afin que la
-description des blocs M1 à M4 reste complète sans renvoyer systématiquement
-au chapitre expérimental pour la définition du modèle.
+Cette section fixe les choix communs à tous les modules (segmentation,
+lexiques), avant le détail de M1 à M4.
 
 \subsection{Segmentation et décision}
 
@@ -370,9 +359,7 @@ F1-macro validation) et avec F1-macro comme métrique principale.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Ce chapitre a formalisé la tâche, enchaîné les modules M1 à M4, fixé
-les choix de segmentation et d'extraction NRC/SenticNet, et relié
-limites, ablation et hypothèses H1 à H4. Le \ChapRef{experimentation} reporte l'exécution du protocole :
-baselines PLM Step~0 sur DistilBERT et RoBERTa, ablations M1 à M4 sur
-chaque backbone (H1 à H4 évaluées sous ce protocole, tableau récapitulatif au
-\ChapRef{experimentation}).
+Ce chapitre a décrit la tâche, les modules M1 à M4, la segmentation et
+NRC/SenticNet, puis les hypothèses H1 à H4. Le \ChapRef{experimentation}
+présente le protocole et les résultats (Step~0, ablations M1 à M4 sur
+DistilBERT et RoBERTa).
