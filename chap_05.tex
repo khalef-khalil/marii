@@ -62,7 +62,7 @@ traduisent en messages concrets pour un lecteur praticien :
 \section{Recommandations pratiques}
 \label{sec:persp-recommandations}
 
-\paragraph{Configuration retenue.}
+\paragraph{Configuration retenue :}
 Pour maximiser le F1-macro test mesuré, la pile est \textbf{M1+M2} :
 $0{,}526 \pm 0{,}007$ avec RoBERTa-base,
 $0{,}505 \pm 0{,}004$ avec DistilBERT-base
@@ -72,7 +72,7 @@ par émotion ; pas de branche M3/M4 si la macro prime sur
 l'interprétabilité lexicale. DistilBERT reste le compromis latence
 et maintenance lorsque $\approx 2$ points de macro suffisent.
 
-\paragraph{Quand simplifier ou enrichir.}
+\paragraph{Quand simplifier ou enrichir :}
 \begin{itemize}
 \item \textbf{Flat Step~0} : baseline légère si la latence ou la
       maintenance prime sur $\approx 2$ points de macro ; performances
@@ -85,7 +85,7 @@ et maintenance lorsque $\approx 2$ points de macro suffisent.
       test plus haute sur +M1+M2 ($0{,}526 \pm 0{,}007$).
 \end{itemize}
 
-\paragraph{Coût et risques.}
+\paragraph{Coût et risques :}
 M1+M2 encode jusqu'à quatre phrases par commentaire : le surcoût
 reste modéré face à un forward document unique, mais la segmentation
 NLTK et les têtes multi-émotions augmentent la surface de bug et de
