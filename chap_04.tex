@@ -561,9 +561,16 @@ Sur DistilBERT, sans encodeur inter-émotions, le F1-macro test tombe à
 $0{,}476 \pm 0{,}013$ (contre $0{,}505 \pm 0{,}004$ pour M1+M2 complet) :
 l'interaction entre les $28$ vecteurs d'émotion contribue nettement au gain.
 Retirer l'attention croisée phrase laisse le F1-macro à
-$0{,}504 \pm 0{,}004$, proche de la référence M1+M2. Les lignes RoBERTa du
-tableau~\ref{tab:expe-m2-controls-roberta} vérifient si le même schéma
-se reproduit sur le second backbone.
+$0{,}504 \pm 0{,}004$, proche de la référence M1+M2.
+
+Sur RoBERTa (tableau~\ref{tab:expe-m2-controls-roberta}), sans encodeur
+inter-émotions, la macro passe à $0{,}507 \pm 0{,}011$ (référence
+$0{,}526 \pm 0{,}007$) : la baisse est nette mais plus faible qu'en
+DistilBERT. Sans attention phrase, la macro reste à $0{,}524 \pm 0{,}020$,
+proche de la référence, avec un écart-type inter-graines plus élevé. Les
+deux backbones concordent donc : l'encodeur inter-émotions apporte une
+part mesurable du gain M1+M2 ; le bloc d'attention phrase seul, retiré
+isolément, ne suffit pas à expliquer l'écart M1 versus M1+M2.
 
 Les branches M3 et M4 vérifient si un prior lexical et une pondération
 dynamique prolongent cette ligne.

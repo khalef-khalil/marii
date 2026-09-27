@@ -1,0 +1,16 @@
+{
+  "step": "roberta_m2_controls",
+  "backbone": "roberta-base",
+  "variants": ["no_enc", "no_xattn"],
+  "seeds": [42, 123, 456],
+  "artifacts": [
+    "reference/artifacts/m1_m2_no_enc_roberta_base_campaign.json",
+    "reference/artifacts/m1_m2_no_xattn_roberta_base_campaign.json"
+  ],
+  "colab_notebook": "reference/training_records/step_roberta_m2_controls/colab/20250927_roberta_m2_controls_campaign_executed.ipynb",
+  "test_aggregate_f1_macro": {
+    "no_enc": { "mean": 0.5067, "std": 0.0109 },
+    "no_xattn": { "mean": 0.5236, "std": 0.0200 },
+    "reference_m1_m2": { "mean": 0.526, "note": "m1_m2_roberta_base_campaign.json" }
+  }
+}
