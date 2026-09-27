@@ -3,11 +3,10 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le \ChapRef{etat_art} a fixé GoEmotions, la baseline PLM et les réponses
-aux limites L1 à L3. Ce chapitre présente \textbf{HAKE-MER}
+Après le \ChapRef{etat_art}, on formalise ici \textbf{HAKE-MER}
 (\emph{Hierarchical Attention with Knowledge modules for Multi-Emotion
-Recognition}) : la tâche, les modules M1 à M4 et les hypothèses H1 à H4,
-testées au \ChapRef{experimentation}.
+Recognition}) : tâche, modules M1 à M4 et hypothèses H1 à H4, évaluées
+au \ChapRef{experimentation}.
 
 \section{Formulation du problème et limites existantes}
 \label{sec:conception-formulation}
@@ -171,8 +170,8 @@ L3 & M4 & Pondération dynamique des $r_k$ & M1+M2+M3+M4 & H4 \\
 \section{Choix de conception communs}
 \label{sec:conception-choix}
 
-Cette section fixe les choix communs à tous les modules (segmentation,
-lexiques), avant le détail de M1 à M4.
+Segmentation et lexiques (NRC, SenticNet) sont communs à tous les modules ;
+les sous-sections suivantes détaillent M1 à M4.
 
 \subsection{Segmentation et décision}
 
@@ -359,7 +358,6 @@ F1-macro validation) et avec F1-macro comme métrique principale.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Ce chapitre a décrit la tâche, les modules M1 à M4, la segmentation et
-NRC/SenticNet, puis les hypothèses H1 à H4. Le \ChapRef{experimentation}
-présente le protocole et les résultats (Step~0, ablations M1 à M4 sur
-DistilBERT et RoBERTa).
+Tâche, modules, segmentation et hypothèses H1 à H4 sont fixés. Le
+\ChapRef{experimentation} reporte protocole et résultats (Step~0, ladder
+M1 à M4, DistilBERT et RoBERTa).

@@ -3,12 +3,11 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le \ChapRef{conception} a décrit HAKE-MER, la segmentation, les lexiques
-et les hypothèses H1 à H4. Ce chapitre présente le \textbf{protocole
-expérimental} : données, hyperparamètres, ablations, correspondance NRC
-et statistiques du corpus avant entraînement. Le protocole d'affinage est
-fixé (tableau~\ref{tab:expe-hyperparams}). Step~0 et modules M1 à M4 sont
-évalués de la même façon. Les scores test sont sur DistilBERT-base et
+On part de HAKE-MER et des hypothèses H1 à H4 (\ChapRef{conception}) pour
+fixer le \textbf{protocole expérimental} : données, hyperparamètres,
+ablations, correspondance NRC et statistiques de corpus. L'affinage suit
+le tableau~\ref{tab:expe-hyperparams} ; Step~0 et M1 à M4 partagent ce
+cadre. Les scores test principaux comparent DistilBERT-base et
 RoBERTa-base (section~\ref{sec:expe-roberta-ablation}).
 
 \ParHead{Synthèse des scores test :}Sous ce protocole, le Step~0 flat atteint environ $0{,}486$ à $0{,}487$ de
@@ -18,14 +17,14 @@ Les variantes +M3 (prior \emph{document}) restent au niveau de M1+M2 ;
 +M4 SenticNet recule légèrement ; seule la branche NRC+M4
 ($0{,}510 \pm 0{,}003$) dépasse marginalement M1+M2
 ($0{,}505 \pm 0{,}004$) sans écart net suffisant pour modifier la pile
-retenue. Les sections suivantes détaillent le cadre,
-puis les ablations et l'analyse par classe qui motivent cette lecture.
+retenue. Le reste du chapitre déroule le cadre, les ablations et
+l'analyse par classe.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
 
-Cette section fixe le corpus, l'entraînement et les encodeurs pour que
-toutes les comparaisons suivantes restent équitables.
+Corpus, entraînement et encodeurs sont choisis une fois pour toutes ;
+les comparaisons suivantes s'appuient sur ce même cadre.
 
 \subsection{Jeu de données}
 
@@ -357,9 +356,9 @@ sont donc \emph{diagnostiques pour DistilBERT} : elles complètent, sans
 les remplacer, les comparaisons inter-encodeurs du tableau
 synthétique.
 
-Cette section reporte les métriques test : baselines PLM, ladder sur
-DistilBERT (détail), synthèse H1 à H4 et analyse par classe sur les
-émotions rares et \emph{neutral}.
+Viennent ensuite les métriques test : baselines PLM, ladder DistilBERT
+(détail), synthèse H1 à H4, puis analyse par classe (émotions rares et
+\emph{neutral}).
 
 \subsection{Baseline PLM (étape 0, protocole définitif)}
 \label{sec:expe-baseline-distilbert}
@@ -903,7 +902,8 @@ automatique des F1 par classe dans les journaux d'entraînement ; les
 moyennes inter-graines sont agrégées en un rapport JSON archivé avec
 les autres campagnes.
 
-\ParHead{Résultats par classe (Step~0 vs +M1 vs +M1+M2) :}Le tableau~\ref{tab:expe-per-class-f1} confirme le macro global :
+\ParHead{Résultats par classe (Step~0 vs +M1 vs +M1+M2) :}
+Le tableau~\ref{tab:expe-per-class-f1} reprend le macro global :
 +M1 seul dégrade la plupart des F1 par rapport au Step~0 flat (p.ex.
 \emph{approval}, \emph{annoyance}, \emph{gratitude}), tandis que +M1+M2
 rattrape ou dépasse le flat sur les labels \emph{moyens} (\emph{curiosity}
@@ -1122,13 +1122,11 @@ l'extension par étiquette, elle n'est pas apprise.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Ce chapitre a décrit et mené le protocole sur GoEmotions avec
-DistilBERT-base et RoBERTa-base (segmentation, hyperparamètres, ladder
-M1 à M4, tableaux~\ref{tab:expe-baseline-step0} et
-\ref{tab:expe-roberta-ablation}). H1 à H4 sont dans les tableaux
-d'ablation et au tableau~\ref{tab:expe-h1-h4-summary}. La pile retenue
-sur validation est M1+M2 ; M3 document et M4 SenticNet n'ajoutent pas de
-gain macro stable ; NRC+M4 reste marginal. Les tableaux par cardinalité
-gold et les contrôles M2 complètent la lecture, ainsi que l'analyse par
-classe et les confusions. Le \ChapRef{perspectives} en déduit des
-recommandations pratiques.
+GoEmotions a été évalué sous protocole fixe (DistilBERT et RoBERTa,
+tableaux~\ref{tab:expe-baseline-step0} et~\ref{tab:expe-roberta-ablation}).
+H1 à H4 sont reportées aux tableaux d'ablation et au
+tableau~\ref{tab:expe-h1-h4-summary} ; pile retenue sur validation :
+M1+M2. M3 document et M4 SenticNet n'ajoutent pas de gain macro stable ;
+NRC+M4 reste marginal. Cardinalité gold, contrôles M2 (deux backbones),
+analyse par classe et confusions complètent la macro. Le
+\ChapRef{perspectives} en tire des recommandations pratiques.

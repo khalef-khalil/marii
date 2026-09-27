@@ -4,9 +4,9 @@
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-Le \ChapRef{contexte} a posé la question de recherche et trois limites
-(L1 à L3). Ce chapitre rappelle la littérature sur la \textbf{détection
-multi-étiquettes des émotions en texte}
+En lien avec la question du \ChapRef{contexte} et les limites L1 à L3,
+on revoit la littérature sur la \textbf{détection multi-étiquettes des
+émotions en texte}
 \cite{mohammad2020sentiment,pang2008,seyeditabari2018} et justifie le
 corpus, les métriques et les familles de modèles retenus.
 
@@ -18,11 +18,9 @@ sont aux \ChapRef{conception} et \ChapRef{experimentation}).
 \section{Tâche, jeux de données et métriques}
 \label{sec:etat-tache-donnees}
 
-Nous commençons par la tâche, le corpus et les métriques d'évaluation.
-
 \subsection{Classification multi-étiquettes vs mono-étiquette}
 
-Comme souligné au \ChapRef{contexte}, la détection
+Au \ChapRef{contexte}, la détection
 d'émotions dans le texte est souvent réduite, dans les premiers
 travaux, à l'identification d'une \emph{émotion dominante}
 ou d'une polarité globale. Or, dans le langage naturel, plusieurs
@@ -451,13 +449,12 @@ structure, connaissances externes).
 
 HAKE-MER regroupe ces idées dans une architecture \textbf{modulaire} :
 hiérarchie (M1), interactions entre émotions (M2), lexiques NRC/SenticNet
-(M3), pondération dynamique (M4). Ce chapitre pose le cadre théorique ;
-les chiffres sont au \ChapRef{experimentation}.
+(M3), pondération dynamique (M4). Les chiffres viennent au
+\ChapRef{experimentation}.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-Nous avons maintenant un corpus, des métriques, une baseline PLM sur
-GoEmotions et des arguments pour traiter les interactions entre émotions,
-la structure multi-phrases et les lexiques. Le chapitre~3 décrit
-HAKE-MER et les hypothèses H1 à H4 testées par ablation.
+Corpus, métriques, baseline PLM et arguments pour les interactions entre
+émotions, la structure multi-phrases et les lexiques sont en place.
+Le chapitre~3 formalise HAKE-MER et les hypothèses H1 à H4.
