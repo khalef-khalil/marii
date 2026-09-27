@@ -1,0 +1,19 @@
+{
+  "step": "m1_m2_no_enc_distilbert",
+  "template_notebook": "notebooks/m1_m2_control_no_enc_campaign.ipynb",
+  "protocol_anchor": "Same as M1+M2: batch 16, LR 5e-5, 4 epochs; M2 without inter-emotion Transformer",
+  "campaign_json": "reference/artifacts/m1_m2_no_enc_distilbert_base_uncased_campaign.json",
+  "artifact_zip": "reference/artifacts/m1_m2_no_enc_distilbert_step0.zip",
+  "m1_m2_reference": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
+  "test_aggregate": {
+    "f1_macro": { "mean": 0.47608251369580573, "std": 0.013184432504238008 },
+    "f1_micro": { "mean": 0.5735448319306647, "std": 0.0024246359279126305 }
+  },
+  "colab_executed_notebooks": [
+    {
+      "path": "reference/training_records/step_m2_no_enc/colab/20250927_m1_m2_control_no_enc_campaign_executed.ipynb",
+      "description": "Colab M2 control no_enc (DistilBERT, 3 seeds)",
+      "runtime_gpu": "G4"
+    }
+  ]
+}
