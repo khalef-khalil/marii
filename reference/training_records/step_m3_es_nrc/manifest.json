@@ -1,11 +1,11 @@
 {
   "step": "m1_m2_m3_nrc_es",
-  "template_notebook": "notebooks/m1_m2_m3_es_nrc_campaign.ipynb",
+  "template_notebook": "notebooks/m1_m2_m3_nrc_emotion_specific_campaign.ipynb",
   "protocol_anchor": "Same as global M3 NRC; lexicon_fusion emotion_specific (per GoEmotion NRC bridge)",
   "campaign_json": "reference/artifacts/m1_m2_m3_nrc_es_distilbert_base_uncased_campaign.json",
   "artifact_zip": "reference/artifacts/m1_m2_m3_nrc_es_distilbert_step0.zip",
   "m1_m2_reference": "reference/artifacts/m1_m2_distilbert_base_uncased_campaign.json",
   "global_m3_nrc_reference": "reference/artifacts/m1_m2_m3_nrc_distilbert_base_uncased_campaign.json",
-  "colab_open_url": "https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_es_nrc_campaign.ipynb",
+  "colab_open_url": "https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_nrc_emotion_specific_campaign.ipynb",
   "colab_executed_notebooks": []
 }
