@@ -601,17 +601,21 @@ les piles lexicales et M4.
 \caption{DistilBERT-base, F1-macro test (moyenne $\pm$ écart-type, 3 graines)}
 \label{tab:expe-h1-h4-summary}
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|c|c|}
+\setlength{\tabcolsep}{4pt}
+\small
+\begin{tabular}{|>{\raggedright\arraybackslash}p{0.07\linewidth}|>{\raggedright\arraybackslash}p{0.28\linewidth}|>{\raggedright\arraybackslash}p{0.42\linewidth}|>{\raggedright\arraybackslash}p{0.15\linewidth}|}
 \hline
-\textbf{Hypothèse} & \textbf{Comparaison} & \textbf{F1-macro test} \\
+\textbf{Hyp.} & \textbf{Comparaison} & \textbf{F1-macro test} & \textbf{Lecture} \\
 \hline
-H1 & Step~0 flat vs +M1 & $0{,}486 \pm 0{,}005$ vs $0{,}457 \pm 0{,}002$ (H1 rejetée) \\
+H1 & Step~0 flat vs +M1 & $0{,}486 \pm 0{,}005$ vs $0{,}457 \pm 0{,}002$ & H1 rejetée \\
 \hline
-H2 & +M1 vs +M1+M2 & $0{,}457 \pm 0{,}002$ vs $0{,}505 \pm 0{,}004$ (H2 confirmée) \\
+H2 & +M1 vs +M1+M2 & $0{,}457 \pm 0{,}002$ vs $0{,}505 \pm 0{,}004$ & H2 confirmée \\
 \hline
-H3 & +M1+M2 vs M3 (NRC / SenticNet) & $0{,}505 \pm 0{,}004$ vs $0{,}504 \pm 0{,}008$ / $0{,}504 \pm 0{,}003$ (pas de gain macro robuste) \\
+H3 & +M1+M2 vs +M3 (NRC / SenticNet) &
+$0{,}505 \pm 0{,}004$ vs $0{,}504 \pm 0{,}008$ / $0{,}504 \pm 0{,}003$ &
+macro stable \\
 \hline
-H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ (H4 non confirmée) \\
+H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ & H4 non confirmée \\
 \hline
 \end{tabular}
 \end{table}
