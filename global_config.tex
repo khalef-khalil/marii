@@ -79,9 +79,18 @@
 % \englishAbstractKeywords{}
 
 %%% ARABIC
-\arabicAbstract{يهدف هذا البحث إلى الكشف عن عدة مشاعر في النصوص (تصنيف متعدد التسميات) عبر بنية \textLR{HAKE-MER} (ترميز هرمي، انتباه بين المشاعر، \textLR{NRC}/\textLR{SenticNet}، وزن ديناميكي). على \textLR{GoEmotions} وبروتوكول ثابت (ثلاث بذور؛ سلم \textLR{M1} إلى \textLR{M4} على \textLR{DistilBERT} و\textLR{RoBERTa})، \textLR{M2} يحقق أعلى \textLR{F1-macro} (حتى $\approx 0{,}526$ على \textLR{RoBERTa}، $\approx 0{,}505$ على \textLR{DistilBERT})؛ \textLR{M1} وحده دون \textLR{M1+M2}؛ \textLR{M3} و\textLR{M4} دون تحسين macro مستقر. التكوين الموصى به: \textLR{M1+M2}. التحليل حسب الصنف يبرز مكاسب على فئات متوسطة التكرار لا على الذيل النادر.}
+\arabicAbstract{يهدف هذا البحث إلى الكشف عن عدة مشاعر في النصوص ضمن تصنيف متعدد
+التسميات، ببنية هيك-مير التي تجمع الترميز الهرمي للنص، والانتباه المتقاطع
+بين المشاعر، وحقن المعرفة العاطفية من معجمَي إن آر سي وسينتكنت، مع وزن
+ديناميكي. تُنفَّذ التجارب على مجموعة غو إيموشنز ببروتوكول ثابت وثلاث
+بذور، عبر سلم وحدات من م1 إلى م4 على نموذجَي دِسْتِلْبِرت ورُوبِرتَا.
+يحقق الانتباه المخصص للعبارات في م2 أعلى مؤشر F1 الكلي، بنحو
+$0{,}526$ على رُوبِرتَا و$0{,}505$ على دِسْتِلْبِرت، بينما لا يكفي
+م1 وحده دون م2، ولا تُحدِث م3 و م4 تحسينًا مستقرًا على المؤشر الكلي.
+التكوين الموصى به م1+م2. يُظهر التحليل حسب الصنف مكاسب على فئات
+متوسطة التكرار أكثر من الذيل النادر.}
 
-\arabicAbstractKeywords{كشف المشاعر، تعلم عميق، \textLR{GoEmotions}، انتباه هرمي، تصنيف متعدد التسميات}
+\arabicAbstractKeywords{كشف المشاعر، تعلم عميق، غو إيموشنز، انتباه هرمي، تصنيف متعدد التسميات}
 
 %%% FRENCH
 \frenchAbstract{Ce mémoire conçoit et évalue \textLR{HAKE-MER} pour la détection multi-étiquettes des émotions sur GoEmotions. À protocole constant (trois graines ; ladder M1 à M4 sur DistilBERT et RoBERTa), les ablations tranchent H1 à H4 : M2 porte le gain macro (jusqu'à $\approx 0{,}526$ en RoBERTa, $\approx 0{,}505$ en DistilBERT) ; M1 seul reste sous le flat ou +M1+M2 ; M3 et M4 n'améliorent pas robustement la macro. Pile recommandée : M1+M2 (encodeur selon budget latence). Analyse par classe et annexe complète sur les 28 émotions.}
