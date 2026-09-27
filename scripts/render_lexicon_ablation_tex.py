@@ -5,7 +5,11 @@ from __future__ import annotations
 
 import json
 import statistics
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tex_tabular_snippet import join_tabular_rows
 
 
 def fmt(m: float, s: float = 0.0) -> str:
@@ -56,7 +60,7 @@ def main() -> None:
         ("M3 NRC", "m1_m2_m3_nrc_distilbert_base_uncased_campaign.json"),
         ("M3+M4 NRC", "m1_m2_m3_nrc_m4_distilbert_base_uncased_campaign.json"),
     ]
-    lines: list[str] = []
+    row_lines: list[str] = []
     for stack_label, fname in specs:
         path = resolve_campaign(art, fname)
         if path is None:
@@ -70,13 +74,12 @@ def main() -> None:
             agg = aggregate_mode(runs, mode)
             label = f"{stack_label} ({row_label})"
             if agg is None:
-                lines.append(f"{label} & {{---}} \\\\")
+                row_lines.append(f"{label} & {{---}} \\\\")
             else:
                 m, s = agg
-                lines.append(f"{label} & {fmt(m, s)} \\\\")
-            lines.append("\\hline")
+                row_lines.append(f"{label} & {fmt(m, s)} \\\\")
     out = art / "lexicon_ablation_snippet.tex"
-    body = "\n".join(lines) if lines else "% no lexicon ablation data yet\n"
+    body = join_tabular_rows(row_lines) if row_lines else "% no lexicon ablation data yet\n"
     out.write_text(body + "\n", encoding="utf-8")
     print(body)
 

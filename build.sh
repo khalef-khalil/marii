@@ -42,6 +42,13 @@ build() {
     "${MAIN}.tex"
 
   cp "$BUILD_DIR/${MAIN}.pdf" "$PDF_OUT"
+  if [[ -f "$BUILD_DIR/${MAIN}.log" ]]; then
+    overfull="$(rg -c 'Overfull \\hbox' "$BUILD_DIR/${MAIN}.log" 2>/dev/null || true)"
+    if [[ -n "${overfull:-}" && "${overfull:-0}" -gt 0 ]]; then
+      echo "LaTeX: ${overfull} Overfull \\\\hbox warning(s) (first lines below)." >&2
+      rg 'Overfull \\hbox' "$BUILD_DIR/${MAIN}.log" | head -5 >&2 || true
+    fi
+  fi
   clean_aux
 
   echo "Built: $PDF_OUT"

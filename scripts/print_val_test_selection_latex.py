@@ -5,7 +5,11 @@ from __future__ import annotations
 
 import json
 import statistics
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tex_tabular_snippet import join_tabular_rows
 
 
 def mean_std(values: list[float]) -> tuple[float, float]:
@@ -67,7 +71,7 @@ def main() -> None:
             None,
         ),
     ]
-    lines: list[str] = []
+    row_lines: list[str] = []
     for label, dist_name, rob_name in rows_spec:
         dist_p = art / dist_name
         if not dist_p.is_file():
@@ -79,17 +83,16 @@ def main() -> None:
             rv, rt = load_campaign(art / rob_name)
             rvm, rvs = mean_std(rv)
             rtm, rts = mean_std(rt)
-            lines.append(
+            row_lines.append(
                 f"{label} & {fmt(dvm, dvs)} & {fmt(dtm, dts)} & "
                 f"{fmt(rvm, rvs)} & {fmt(rtm, rts)} \\\\"
             )
         else:
-            lines.append(
+            row_lines.append(
                 f"{label} & {fmt(dvm, dvs)} & {fmt(dtm, dts)} & {{---}} & {{---}} \\\\"
             )
-        lines.append("\\hline")
     out = root / "reference" / "artifacts" / "val_test_selection_snippet.tex"
-    body = "\n".join(lines)
+    body = join_tabular_rows(row_lines).rstrip("\n")
     out.write_text(body + "\n", encoding="utf-8")
     print(f"Wrote {out}\n")
     print(body)

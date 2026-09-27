@@ -44,13 +44,18 @@ def main() -> None:
             ),
         ),
     ]
-    lines: list[str] = []
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from tex_tabular_snippet import join_tabular_rows
+
+    row_lines: list[str] = []
     for label, cfg in variants:
         model = HAKEMER(cfg)
         n = count_trainable(model)
-        lines.append(f"{label} & {n:,} \\\\".replace(",", "{,}"))
-        lines.append("\\hline")
-    text = "\n".join(lines)
+        row_lines.append(f"{label} & {n:,} \\\\".replace(",", "{,}"))
+    text = join_tabular_rows(row_lines).rstrip("\n")
     out = __import__("pathlib").Path(__file__).resolve().parents[1] / "reference" / "artifacts" / "param_counts_snippet.tex"
     out.write_text(text + "\n", encoding="utf-8")
     print(text)

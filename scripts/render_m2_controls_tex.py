@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tex_tabular_snippet import join_tabular_rows
 
 BACKBONES = (
     ("distilbert_base_uncased", "m2_controls_snippet.tex"),
@@ -24,22 +28,21 @@ def render_for_slug(art: Path, slug: str) -> list[str]:
         ("M1+M2 sans encodeur inter-émotions", f"m1_m2_no_enc_{slug}_campaign.json"),
         ("M1+M2 sans attention phrase", f"m1_m2_no_xattn_{slug}_campaign.json"),
     ]
-    lines: list[str] = []
+    row_lines: list[str] = []
     for label, fname in rows:
         path = art / fname
         if not path.is_file():
-            lines.append(f"{label} & {{---}} \\\\")
+            row_lines.append(f"{label} & {{---}} \\\\")
         else:
-            lines.append(f"{label} & {fmt(path)} \\\\")
-        lines.append("\\hline")
-    return lines
+            row_lines.append(f"{label} & {fmt(path)} \\\\")
+    return join_tabular_rows(row_lines)
 
 
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
     art = root / "reference" / "artifacts"
     for slug, out_name in BACKBONES:
-        body = "\n".join(render_for_slug(art, slug))
+        body = render_for_slug(art, slug).rstrip("\n")
         out = art / out_name
         out.write_text(body + "\n", encoding="utf-8")
         print(f"=== {out_name} ===")

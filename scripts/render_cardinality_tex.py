@@ -5,7 +5,11 @@ from __future__ import annotations
 
 import json
 import statistics
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tex_tabular_snippet import join_tabular_rows
 
 
 def aggregate_cardinality(runs: list[dict]) -> dict[str, dict[str, float]]:
@@ -63,7 +67,7 @@ def main() -> None:
         ("+M1+M2", f"m1_m2_{slug}_campaign.json"),
     ]
     support_n: dict[str, int] = {}
-    lines: list[str] = []
+    row_lines: list[str] = []
     for bucket in ("1", "2", "3", "4+"):
         row = [bucket]
         for _label, fname in configs:
@@ -87,10 +91,9 @@ def main() -> None:
             if len(row) == 1:
                 row.append(str(support_n.get(bucket, agg[bucket]["n_mean"])))
             row.append(fmt(m, s))
-        lines.append(" & ".join(row) + " \\\\")
-        lines.append("\\hline")
+        row_lines.append(" & ".join(row) + " \\\\")
     out = art / "cardinality_snippet.tex"
-    body = "\n".join(lines)
+    body = join_tabular_rows(row_lines)
     out.write_text(body + "\n", encoding="utf-8")
     print(f"Wrote {out}\n{body}")
 
