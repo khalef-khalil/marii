@@ -33,16 +33,16 @@ Une étiquette est prédite si $\hat{y}_k > 0{,}5$.
 Trois limites des approches standards motivent la conception :
 
 \begin{itemize}
-\item \textbf{L1 : Indépendance des étiquettes.} La tête
+\item \textbf{L1 : Indépendance des étiquettes} : La tête
   « pertinence binaire » sur un vecteur global partagé ignore les
   co-occurrences d'émotions, pourtant systématiques dans les données
   \cite{demszky2020} ;
-\item \textbf{L2 : Cécité à la structure du texte.} Une
+\item \textbf{L2 : Cécité à la structure du texte} : Une
   représentation plate (le seul vecteur \texttt{[CLS]} d'un encodeur
   type BERT \cite{devlin2019}) mélange les signaux portés par des
   phrases différentes ; les commentaires Reddit
   de GoEmotions comportent souvent plusieurs phrases \cite{demszky2020} ;
-\item \textbf{L3 : Pauvreté du signal pour les émotions rares.} Les
+\item \textbf{L3 : Pauvreté du signal pour les émotions rares} : Les
   fréquences d'émotions restent très inégales (par exemple l'admiration
   environ trente fois plus fréquente que le deuil sur le corpus)
   \cite{demszky2020}, ce qui limite l'apprentissage purement supervisé
@@ -306,7 +306,7 @@ injecter. La valeur apprise de $|g|$ sert de sonde d'utilisation du
 lexique (comparaison NRC vs SenticNet sous H3). Les commentaires sans
 couverture lexicale ($c{=}0$) n'ajoutent aucun signal ; la performance
 sur la longue traîne dépend alors du reste de l'architecture.
-\textbf{Limitation.} Le même $\mathrm{prior}$ est ajouté à toutes les
+\textbf{Limitation} : le même $\mathrm{prior}$ est ajouté à toutes les
 requêtes $Q_k$ : NRC et SenticNet résument le document en vecteurs
 globaux ($d_c{=}8$ ou $5$) avant projection, sans profils lexicaux
 distincts par émotion. Ce choix facilite la comparaison NRC vs

@@ -17,20 +17,20 @@ traîne, validation externe).
 Quatre principes ont structuré la campagne et restent pertinents au
 delà de HAKE-MER :
 \begin{itemize}
-\item \textbf{Multi-backbone.} Step~0 sur DistilBERT et RoBERTa a montré
+\item \textbf{Multi-backbone} : Step~0 sur DistilBERT et RoBERTa a montré
       des F1-macro test voisins ($0{,}486 \pm 0{,}005$ vs
       $0{,}487 \pm 0{,}005$) ; la ladder M1 à M4 est reproduite sur
       les deux encodeurs (tableau~\ref{tab:expe-roberta-ablation}) pour
       comparer H1 à H4 à protocole identique.
-\item \textbf{Contrôle du prétraitement.} M1 seul sous-performe le flat
+\item \textbf{Contrôle du prétraitement} : M1 seul sous-performe le flat
       à budget token comparable : une hiérarchie naïve peut \emph{perdre}
       du contexte utile. Les gains viennent de M2 (lecture
       label-specific), pas du seul découpage phrase.
-\item \textbf{Métriques par classe.} Le F1-macro masque des profils
+\item \textbf{Métriques par classe} : Le F1-macro masque des profils
       hétérogènes (tableau~\ref{tab:expe-per-class-f1}) : M2 améliore
       surtout des émotions de fréquence intermédiaire, pas la longue
       traîne (\emph{grief}, \emph{relief}).
-\item \textbf{Comparaisons externes prudentes.} Le dépassement du
+\item \textbf{Comparaisons externes prudentes} : Le dépassement du
       $0{,}46$ macro de BERT-base \cite{demszky2020} reste indicatif
       (encodeur, fenêtre, budget) ; l'argument principal repose sur
       les comparaisons internes à budget fixe.
@@ -42,19 +42,19 @@ delà de HAKE-MER :
 Les hypothèses H1 à H4 (\SecRef{sec:conception-hypotheses}) se
 traduisent en messages concrets pour un lecteur praticien :
 \begin{itemize}
-\item \textbf{H1 non soutenue.} L'encodage hiérarchique sans M2 n'est pas
+\item \textbf{H1 non soutenue} : L'encodage hiérarchique sans M2 n'est pas
       une alternative crédible au \texttt{[CLS]} flat sur GoEmotions
       sous ce protocole ; ne pas déployer M1 seul pour le F1-macro.
-\item \textbf{H2 soutenue.} M2 restaure et dépasse le flat sur les
+\item \textbf{H2 soutenue} : M2 restaure et dépasse le flat sur les
       deux encodeurs ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$
       en DistilBERT ; $0{,}526 \pm 0{,}007$ en RoBERTa) : l'attention
       croisée phrase$\times$émotion est le cœur utile de HAKE-MER.
-\item \textbf{H3 non soutenue.} NRC et SenticNet n'améliorent pas
+\item \textbf{H3 non soutenue} : NRC et SenticNet n'améliorent pas
       robustement le F1-macro vs M1+M2 ; aucune supériorité nette de NRC
       sur SenticNet ; l'écart fréquent vs rare n'a pas été comparé
       directement entre lexiques (exports par classe limités à Step~0
       à +M1+M2).
-\item \textbf{H4 non soutenue.} M4 n'améliore pas la macro par rapport
+\item \textbf{H4 non soutenue} : M4 n'améliore pas la macro par rapport
       à M3 SenticNet ni à M1+M2 sur les deux backbones ; la complexité
       supplémentaire n'est pas justifiée par les scores test actuels.
 \end{itemize}
@@ -62,8 +62,7 @@ traduisent en messages concrets pour un lecteur praticien :
 \section{Recommandations pratiques}
 \label{sec:persp-recommandations}
 
-\paragraph{Configuration retenue :}
-Pour maximiser le F1-macro test mesuré, la pile est \textbf{M1+M2} :
+\ParHead{Configuration retenue :}Pour maximiser le F1-macro test mesuré, la pile est \textbf{M1+M2} :
 $0{,}526 \pm 0{,}007$ avec RoBERTa-base,
 $0{,}505 \pm 0{,}004$ avec DistilBERT-base
 (tableau~\ref{tab:expe-roberta-ablation}, protocole du
@@ -72,7 +71,7 @@ par émotion ; pas de branche M3/M4 si la macro prime sur
 l'interprétabilité lexicale. DistilBERT reste le compromis latence
 et maintenance lorsque $\approx 2$ points de macro suffisent.
 
-\paragraph{Quand simplifier ou enrichir :}
+\ParHead{Quand simplifier ou enrichir :}
 \begin{itemize}
 \item \textbf{Flat Step~0} : baseline légère si la latence ou la
       maintenance prime sur $\approx 2$ points de macro ; performances
@@ -85,8 +84,7 @@ et maintenance lorsque $\approx 2$ points de macro suffisent.
       test plus haute sur +M1+M2 ($0{,}526 \pm 0{,}007$).
 \end{itemize}
 
-\paragraph{Coût et risques :}
-M1+M2 encode jusqu'à quatre phrases par commentaire : le surcoût
+\ParHead{Coût et risques :}M1+M2 encode jusqu'à quatre phrases par commentaire : le surcoût
 reste modéré face à un forward document unique, mais la segmentation
 NLTK et les têtes multi-émotions augmentent la surface de bug et de
 réglage. Toute réduction de $M$ ou de 32 tokens impose de refaire
@@ -99,29 +97,29 @@ Les prolongements suivants ciblent les limites observées au
 \ChapRef{experimentation}, sans remettre en cause les
 résultats déjà archivés :
 \begin{itemize}
-\item \textbf{Déséquilibre et longue traîne.} Pertes repondérées
+\item \textbf{Déséquilibre et longue traîne} : Pertes repondérées
       \cite{lin2017focal}, rééchantillonnage \cite{chawla2002smote},
       seuils par émotion, ou entraînement ciblé sur les labels à
       très faible support (\emph{grief}, \emph{relief}) où le F1
       reste instable.
-\item \textbf{Lexique et connaissances.} Fusion par émotion (non
+\item \textbf{Lexique et connaissances} : Fusion par émotion (non
       un vecteur document partagé), graphes type ConceptNet
       \cite{speer2017}, injection de connaissances de bon sens
       \cite{ghosal2020cosmic}, ou alignement fin entre Plutchik et
       GoEmotions au-delà du gate global M3 testé ici.
-\item \textbf{Autres lexiques.} Tester d'autres ressources affectives ou
+\item \textbf{Autres lexiques} : Tester d'autres ressources affectives ou
       des fusions par émotion sur la pile M1+M2 déjà validée sur les
       deux backbones.
-\item \textbf{Validation externe.} Campagnes SemEval (p.ex. affect in
+\item \textbf{Validation externe} : Campagnes SemEval (p.ex. affect in
       tweets \cite{mohammad2018semeval}, EmoContext
       \cite{semeval2019emocontext}) ou corpus hors Reddit pour tester
       la robustesse du choix M1+M2.
-\item \textbf{Modèles généralistes.} Comparer M1+M2 à des LLM
+\item \textbf{Modèles généralistes} : Comparer M1+M2 à des LLM
       instructs, à des encodeurs de phrase spécialisés
       \cite{reimers2019sentence}, ou à des modèles affectifs lorsque
       des protocoles reproductibles et comparables existent
       \cite{sharma2024deeplearningmlc}.
-\item \textbf{Interprétabilité.} Compléter l'analyse de confusions
+\item \textbf{Interprétabilité} : Compléter l'analyse de confusions
       par des explications locales ou l'analyse d'attention
       \cite{ribeiro2016lime,clark2019bert} pour documenter le rôle de
       \emph{neutral} et des labels rares.

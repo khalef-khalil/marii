@@ -13,8 +13,7 @@ Les baselines PLM et les ablations +M1 à +M4 (H1 à H4) disposent de scores
 test sur DistilBERT-base et RoBERTa-base sous le même contrat
 (section~\ref{sec:expe-roberta-ablation}).
 
-\paragraph{Synthèse des scores test :}
-Sous ce protocole, le Step~0 flat atteint environ $0{,}486$ à $0{,}487$ de
+\ParHead{Synthèse des scores test :}Sous ce protocole, le Step~0 flat atteint environ $0{,}486$ à $0{,}487$ de
 F1-macro ; +M1 seul recule nettement ; +M1+M2 devient la meilleure pile
 macro, environ $0{,}505$ en DistilBERT-base et $0{,}526$ en RoBERTa-base.
 Les variantes +M3 et +M4 restent au niveau de M1+M2 ou en dessous sur la
@@ -375,7 +374,12 @@ Step~0 PLM (flat) & $0{,}486 \pm 0{,}005$ & $0{,}487 \pm 0{,}005$ \\
 \hline
 +M1+M2 & $0{,}505 \pm 0{,}004$ & $0{,}526 \pm 0{,}007$ \\
 \hline
-\IfFileExists{roberta_ablation_extra_rows.tex}{\input{roberta_ablation_extra_rows}}{}
++M1+M2+M3 (NRC) & $0{,}504 \pm 0{,}008$ & $0{,}493 \pm 0{,}045$ \\
+\hline
++M1+M2+M3 (SenticNet) & $0{,}504 \pm 0{,}003$ & $0{,}523 \pm 0{,}003$ \\
+\hline
++M1+M2+M3+M4 (SenticNet) & $0{,}499 \pm 0{,}006$ & $0{,}521 \pm 0{,}005$ \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -568,7 +572,7 @@ gain robuste vs M1+M2. Pour (iii), les moyennes macro sont quasi
 identiques ; \textbf{aucune supériorité robuste de NRC sur SenticNet}
 n'est observée (SenticNet plus stable inter-graines sur DistilBERT ; NRC
 plus variable sur RoBERTa, graine $42$ sous-performante).
-\textbf{Synthèse H3.} Aucun avantage robuste de NRC ou SenticNet sur le
+\textbf{Synthèse H3 :} aucun avantage robuste de NRC ou SenticNet sur le
 F1-macro ; l'analyse par classe disponible (Step~0 à +M1+M2,
 tableaux~\ref{tab:expe-per-class-f1} et~\ref{tab:expe-freq-rare-gap})
 ne montre pas que le prior lexique affine la longue traîne, et les
@@ -717,8 +721,7 @@ sous-ensemble de labels rares et fréquents).}
 \label{fig:expe-per-class-selected}
 \end{figure}
 
-\paragraph{Protocole :}
-Pour chaque configuration, le checkpoint retenu (meilleur F1-macro
+\ParHead{Protocole :}Pour chaque configuration, le checkpoint retenu (meilleur F1-macro
 validation) est réévalué sur le test ; le F1 binaire par émotion est
 calculé avec seuil $0{,}5$, identique au macro global. Les campagnes
 Step~0, +M1 et +M1+M2 sont relancées sur trois graines avec export
@@ -726,8 +729,7 @@ automatique des F1 par classe dans les journaux d'entraînement ; les
 moyennes inter-graines sont agrégées en un rapport JSON archivé avec
 les autres campagnes.
 
-\paragraph{Résultats par classe (Step~0 vs +M1 vs +M1+M2) :}
-Le tableau~\ref{tab:expe-per-class-f1} confirme le macro global :
+\ParHead{Résultats par classe (Step~0 vs +M1 vs +M1+M2) :}Le tableau~\ref{tab:expe-per-class-f1} confirme le macro global :
 +M1 seul dégrade la plupart des F1 par rapport au Step~0 flat (p.ex.
 \emph{approval}, \emph{annoyance}, \emph{gratitude}), tandis que +M1+M2
 rattrape ou dépasse le flat sur les labels \emph{moyens} (\emph{curiosity}
@@ -773,8 +775,7 @@ neutral & 1\,787 & $0{,}628 \pm 0{,}013$ & $0{,}620 \pm 0{,}012$ & $0{,}629 \pm 
 \end{tabular}
 \end{table}
 
-\paragraph{Écart fréquent vs rare (indicateur H1/H3) :}
-Pour compléter le F1-macro, on résume l'écart entre deux groupes d'étiquettes
+\ParHead{Écart fréquent vs rare (indicateur H1/H3) :}Pour compléter le F1-macro, on résume l'écart entre deux groupes d'étiquettes
 du tableau~\ref{tab:expe-per-class-f1} : \emph{fréquentes} (\emph{neutral},
 \emph{admiration}, support $\geq 500$) et \emph{très rares} (support
 $< 40$, cinq labels du tableau). On calcule la moyenne des F1 test par

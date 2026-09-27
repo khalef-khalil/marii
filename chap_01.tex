@@ -53,18 +53,18 @@ Trois limites structurelles freinent les approches existantes de
 détection multi-émotions, détaillées et documentées au chapitre~2 :
 
 \begin{itemize}
-\item \textbf{L'indépendance supposée des étiquettes.} Les architectures de
+\item \textbf{L'indépendance supposée des étiquettes} : Les architectures de
   classification multi-label standards traitent chaque émotion comme une
   décision binaire indépendante, ignorant les corrélations et
   incompatibilités entre émotions (la joie et la tristesse sont rarement
   co-actives, tandis que la surprise accompagne souvent la peur ou la
   joie).
-\item \textbf{La perte de la structure du texte.} L'encodage global d'un
+\item \textbf{La perte de la structure du texte} : L'encodage global d'un
   texte en un unique vecteur de représentation efface les signaux
   localisés à l'échelle de la phrase, alors que dans les textes
   multi-phrases, différentes émotions sont souvent portées par des
   segments distincts du texte.
-\item \textbf{Le déséquilibre sévère des classes.} La distribution des
+\item \textbf{Le déséquilibre sévère des classes} : La distribution des
   émotions dans les corpus réels suit une loi de puissance : quelques
   émotions fréquentes (joie, neutralité) dominent très largement les
   émotions rares (deuil, soulagement, nervosité), ce qui pénalise
@@ -86,20 +86,20 @@ pré-entraîné affiné de façon standard ?}
 Pour répondre à cette question, ce travail poursuit les objectifs suivants :
 
 \begin{itemize}
-\item \textbf{Concevoir} une architecture modulaire, HAKE-MER, structurée
+\item \textbf{Concevoir} : une architecture modulaire, HAKE-MER, structurée
   en quatre composantes cumulables (encodage hiérarchique, attention
   croisée multi-émotions, enrichissement sémantique, pondération
   dynamique), permettant d'isoler la contribution de chaque mécanisme ;
-\item \textbf{Évaluer} cette architecture de façon rigoureuse sur le jeu de
+\item \textbf{Évaluer} : cette architecture de façon rigoureuse sur le jeu de
   données GoEmotions, par un protocole d'ablation cumulative à budget
   d'entraînement strictement constant : Step~0 et les étapes +M1/+M1+M2
   sur DistilBERT et RoBERTa (ladder M1 à M4 sur chaque backbone), afin
   de séparer effets d'architecture et capacité de l'encodeur ;
-\item \textbf{Comparer} deux ressources de connaissances externes de nature
+\item \textbf{Comparer} : deux ressources de connaissances externes de nature
   différente (lexique catégoriel NRC contre ressource conceptuelle
   SenticNet) afin de déterminer laquelle s'intègre le mieux à
   l'architecture proposée ;
-\item \textbf{Analyser} les résultats au niveau de la classe, au-delà des
+\item \textbf{Analyser} : les résultats au niveau de la classe, au-delà des
   métriques globales (tableau principal et annexe des $28$ F1), et par
   une analyse de confusions ciblée sur \emph{grief}, \emph{relief} et
   \emph{neutral}, enjeu applicatif central du sujet.
