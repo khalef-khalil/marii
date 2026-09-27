@@ -1,42 +1,41 @@
-\chapter*{Conclusion générale et Perspectives}
-\addcontentsline{toc}{chapter}{Conclusion générale et Perspectives}
-\markboth{Conclusion générale et Perspectives}{}
+\chapter*{Conclusion générale}
+\addcontentsline{toc}{chapter}{Conclusion générale}
+\markboth{Conclusion générale}{}
 
-Ce mémoire traite la détection de plusieurs émotions dans un même texte.
-Les approches mono-étiquette et les représentations plates peinent à
-suivre la cooccurrence des affects et le déséquilibre des classes sur
-GoEmotions \cite{demszky2020}, comme le rappellent les travaux récents
-\cite{seyeditabari2018,mohammad2020sentiment,sharma2024deeplearningmlc,minaee2021textcls}.
+Ce mémoire porte sur la détection de plusieurs émotions dans un même
+texte, sur le jeu GoEmotions \cite{demszky2020}. Le problème est
+multi-étiquettes et fortement déséquilibré : une baseline qui agrège
+tout le commentaire dans un seul vecteur ou qui traite les émotions
+comme indépendantes ne suffit pas pour suivre les cooccurrences et la
+longue traîne.
 
-HAKE-MER a été conçu de façon modulaire pour mesurer, à protocole
-constant, l'apport de chaque brique. Sur DistilBERT-base et RoBERTa-base,
-avec trois graines, la pile M1+M2 apporte le principal gain en F1-macro
-test (DistilBERT $\approx 0{,}505$, RoBERTa $\approx 0{,}526$). M1 seul
-reste sous une baseline PLM flat ($\approx 0{,}486$). M3 à prior
-\emph{document} n'améliore pas de façon stable la macro. L'extension NRC
-\emph{par étiquette} n'ajoute qu'un petit gain sur DistilBERT ($\approx
-+0{,}003$). H4 reste prudente : +M4 SenticNet recule ; NRC+M4
-($0{,}510 \pm 0{,}003$) ne dépasse M1+M2 que légèrement
-($0{,}505 \pm 0{,}004$). La pile retenue reste donc M1+M2. L'analyse par
-classe montre que M2 aide surtout des émotions de fréquence intermédiaire,
-pas la traîne la plus rare (\ChapRef{experimentation}).
+Pour répondre à cette problématique, nous avons conçu HAKE-MER, une
+architecture modulaire (M1 à M4) évaluée par ablation cumulative à
+budget d'affinage constant, sur DistilBERT-base et RoBERTa-base et
+trois graines. Le protocole, les hypothèses H1 à H4 et l'implémentation
+sont au \ChapRef{conception} ; les campagnes, tableaux et analyses
+d'erreurs au \ChapRef{experimentation}.
 
-\ParHead{Ce que les expériences montrent :}Avec le protocole GoEmotions
-retenu, M1+M2 améliore le F1-macro par rapport au flat et à M1 seul sur
-DistilBERT et RoBERTa. L'ablation M1$\to$M1+M2 ne sépare pas toutes les
-causes internes de M2 ; les contrôles sont au
-tableau~\ref{tab:expe-m2-controls}. Les priors lexicaux et M4 SenticNet
-n'ajoutent pas de gain macro robuste (NRC+M4 reste marginal). Les scores
-test du ladder complet sont exploratoires. Le choix de pile suit la
-validation (tableau~\ref{tab:expe-val-test-selection}, ladder principale,
-deux backbones quand c'est possible).
+Les expériences montrent que le gain mesurable en F1-macro vient surtout
+de la pile \textbf{M1+M2} : encodage hiérarchique du texte plus
+interaction entre émotions (M2), retenue sur validation sur les deux
+encodeurs. M1 seul reste en dessous du flat ; les priors lexicaux (M3)
+et la pondération dynamique (M4) testés ici n'apportent pas de gain
+macro stable au prix de la complexité ajoutée. L'analyse par classe et
+par cardinalité gold confirme que la macro masque des comportements
+très différents, notamment sur les étiquettes rares et le rôle central
+de \emph{neutral}.
 
-En synthèse, la contribution mesurable de HAKE-MER vient surtout de
-M1+M2. Les modules lexicaux et dynamiques testés ici ne justifient pas,
-dans ce protocole, la complexité en plus pour la macro. Les prolongements
-sont détaillés au \ChapRef{perspectives}.
+Cette synthèse ne prétend pas couvrir tout le champ de la détection
+d'émotions : un seul corpus anglais (Reddit), un protocole d'affinage
+fixe et des comparaisons externes limitées au cadre GoEmotions. Les
+recommandations d'usage, le bilan H1 à H4 et les pistes de prolongement
+(classes rares, autres corpus, connaissances externes, interprétabilité)
+sont développés au \ChapRef{perspectives}, sans les reprendre ici.
 
-Sur le plan personnel, ce travail m'a permis de mettre en place un
-protocole complet (ablations, campagnes archivées) et de voir l'écart
-entre la macro globale et le comportement par classe sur un corpus
-déséquilibré.
+Sur le plan personnel, ce travail m'a permis de mener un cycle complet
+de recherche appliquée : cadrage bibliographique, conception modulaire,
+campagnes reproductibles et lecture critique des scores globaux face aux
+confusions par émotion. La leçon la plus nette est méthodologique : sans
+ablation à budget constant et sans métriques par classe, il est facile
+de surinterpréter un module ou un lexique à partir du seul F1-macro.
