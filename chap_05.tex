@@ -39,7 +39,7 @@ delà de HAKE-MER :
 \section{Enseignements de la campagne HAKE-MER}
 \label{sec:persp-enseignements-campagne}
 
-Les hypothèses H1 à H4 (chapitre~\ref{sec:conception-hypotheses}) se
+Les hypothèses H1 à H4 (\SecRef{sec:conception-hypotheses}) se
 traduisent en messages concrets pour un lecteur praticien :
 \begin{itemize}
 \item \textbf{H1 non soutenue.} L'encodage hiérarchique sans M2 n'est pas
@@ -49,10 +49,11 @@ traduisent en messages concrets pour un lecteur praticien :
       deux encodeurs ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$
       en DistilBERT ; $0{,}526 \pm 0{,}007$ en RoBERTa) : l'attention
       croisée phrase$\times$émotion est le cœur utile de HAKE-MER.
-\item \textbf{H3 sans gain macro robuste.} NRC et SenticNet n'apportent
-      pas de surplus stable sur DistilBERT ni RoBERTa ; le prior lexique
-      est appris faiblement ($|g| \approx 0{,}03$--$0{,}04$) et n'affine
-      pas la longue traîne.
+\item \textbf{H3 non soutenue.} NRC et SenticNet n'améliorent pas
+      robustement le F1-macro vs M1+M2 ; aucune supériorité nette de NRC
+      sur SenticNet ; l'écart fréquent vs rare n'a pas été comparé
+      directement entre lexiques (exports par classe limités à Step~0
+      à +M1+M2).
 \item \textbf{H4 non soutenue.} M4 n'améliore pas la macro par rapport
       à M3 SenticNet ni à M1+M2 sur les deux backbones ; la complexité
       supplémentaire n'est pas justifiée par les scores test actuels.

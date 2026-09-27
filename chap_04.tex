@@ -284,7 +284,7 @@ neutral & (aucune) \\
 \label{sec:expe-senticnet}
 
 Pour H3, la branche SenticNet reprend les cinq descripteurs documentaires
-fixés au chapitre~\ref{sec:conception-choix} : polarité moyenne, polarité
+fixés en \SecRef{sec:conception-choix} : polarité moyenne, polarité
 max, polarité min, fraction de tokens couverts, nombre de concepts distincts.
 L'implémentation s'appuie sur SenticNet~5 \cite{cambria2018senticnet} avec
 le même protocole de lookup que pour NRC (lemme puis surface).
@@ -327,7 +327,7 @@ légèrement en F1-micro et en mAP ; l'écart macro reste inférieur à l'écart
 inter-graines. RoBERTa sert de deuxième baseline flat dans le
 tableau~\ref{tab:expe-baseline-step0} ; la ladder M1 à M4 est reproduite
 sur les deux encodeurs (section~\ref{sec:expe-roberta-ablation}) afin de
-trancher H1 à H4 indépendamment de la capacité du pré-entraînement.
+évaluer H1 à H4 indépendamment de la capacité du pré-entraînement.
 
 \subsection{Ladder multi-backbone (M1 à M4)}
 \label{sec:expe-roberta-ablation}
@@ -393,7 +393,7 @@ RoBERTa-base & $0{,}586 \pm 0{,}003$ & $0{,}487 \pm 0{,}005$ & $0{,}473 \pm 0{,}
 L'étape +M1 du tableau~\ref{tab:expe-ablation-flags} active la
 segmentation en $M{=}4$ phrases (NLTK), l'encodage DistilBERT à
 $32$ tokens par phrase et l'agrégation additive mot vers phrase puis
-phrase vers document (chapitre~\ref{sec:conception-m1}), sans M2 à M4.
+phrase vers document (\SecRef{sec:conception-m1}), sans M2 à M4.
 Le budget d'affinage reste celui du tableau~\ref{tab:expe-hyperparams}
 (quatre époques, trois graines, sélection au F1-macro validation).
 La comparaison porte sur la \textbf{même} baseline DistilBERT Step~0 :
@@ -419,8 +419,9 @@ Step~0 PLM (flat) & $0{,}582 \pm 0{,}001$ & $0{,}486 \pm 0{,}005$ & $0{,}472 \pm
 Le F1-macro test moyen passe de $0{,}486$ à $0{,}457$ ($\approx 2{,}9$
 points absolus) ; les trois graines restent alignées (test macro
 $0{,}457$, $0{,}454$, $0{,}459$). \textbf{H1 n'est pas soutenue} sous ce
-protocole : l'encodage hiérarchique n'améliore pas la détection
-multi-étiquettes macro par rapport au PLM document à encodeur fixé.
+protocole : l'encodage hiérarchique n'améliore ni le F1-macro global ni
+le comportement sur les émotions rares (tableau~\ref{tab:expe-per-class-f1},
+p.ex. \emph{grief} et \emph{relief} stables ou dégradés vs Step~0).
 L'écart concerne aussi le F1-micro et l'exact match ; seule la lecture
 flat avec troncature globale et pooling [CLS] performe mieux ici.
 Cette observation motive la suite de l'ablation (M2 : attention
@@ -436,7 +437,7 @@ L'étape +M2 (tableau~\ref{tab:expe-ablation-flags}) conserve M1 et
 remplace le pooling phrase vers document par une lecture croisée
 multi-têtes par émotion sur $s_1,\dots,s_M$, un encodeur sur l'axe
 des $K$ émotions et des têtes de classification par étiquette
-(chapitre~\ref{sec:conception-m2}). Protocole d'affinage identique à
+(\SecRef{sec:conception-m2}). Protocole d'affinage identique à
 l'étape M1.
 
 \begin{table}[H]
@@ -470,7 +471,7 @@ cette ligne.
 
 L'étape +M3 NRC injecte un vecteur documentaire à huit dimensions
 (frequences d'affects NRCLex sur tokens couverts) dans les requêtes
-d'émotions via la porte $g$ (initialisée à $0$, chapitre~\ref{sec:conception-m3}).
+d'émotions via la porte $g$ (initialisée à $0$, \SecRef{sec:conception-m3}).
 Protocole d'affinage inchangé.
 
 \begin{table}[H]
@@ -501,7 +502,7 @@ de façon stable par rapport à M1+M2.
 \label{sec:expe-m3-senticnet-h3}
 
 L'étape +M3 SenticNet injecte un vecteur documentaire à cinq dimensions
-(polarités et couverture SenticNet~5, chapitre~\ref{sec:conception-choix})
+(polarités et couverture SenticNet~5, \SecRef{sec:conception-choix})
 dans les requêtes d'émotions via la même porte $g$ (initialisée à $0$).
 Protocole d'affinage inchangé.
 
@@ -550,25 +551,23 @@ par rapport à M1+M2 sans traduction nette en F1-macro.
 \end{tabular}
 \end{table}
 
-\textbf{Sous ce protocole, H3 n'est pas soutenue sur le volet macro ni
-sur la réduction de l'écart entre classes fréquentes et rares} : ni NRC ni SenticNet
-n'améliorent de façon robuste le F1-macro par rapport à M1+M2 ; les
-moyennes sur trois graines coïncident à $\approx 0{,}504$--$0{,}505$.
-SenticNet présente une variance inter-graines plus faible ; NRC peut
-monter à $0{,}515$ sur une graine mais retombe sous $0{,}501$ sur les
-autres. SenticNet préserve le F1-micro de M1+M2 et le mAP le plus élevé
-des trois piles, sans gain macro décisif. Le levier principal reste
-donc M2 ; M3 ajoute un prior appris modestement ($|g| \approx 0{,}03$
-à $0{,}04$) plutôt qu'un saut de performance macro sur GoEmotions.
-Sur RoBERTa-base (tableau~\ref{tab:expe-roberta-ablation}), SenticNet
-préserve la macro au niveau de +M1+M2 ; NRC affiche une variance inter-graines
-élevée (graine $42$ sous-performante). Le constat H3 (pas de gain macro
-robuste du lexique) se reproduit sur les deux encodeurs.
-Sur le volet « classes rares » de H3 (chapitre~\ref{sec:conception-hypotheses}),
-ni NRC ni SenticNet ne réduisent de façon nette l'écart F1 entre labels
-fréquents et très rares : le tableau~\ref{tab:expe-per-class-f1} montre
-que les gains lexicaux restent macro-neutres alors que M2 améliore surtout
-des émotions de fréquence intermédiaire.
+H3 pose trois questions distinctes : (i)~NRC améliore-t-il M1+M2 en
+macro~? (ii)~SenticNet améliore-t-il M1+M2 en macro~? (iii)~NRC réduit-il
+mieux que SenticNet l'écart fréquent vs rare~? Les tableaux
+\ref{tab:expe-h3-lexicons} et \ref{tab:expe-h1-h4-summary} répondent
+(i) et (ii) par la négative : F1-macro $\approx 0{,}504$--$0{,}505$, sans
+gain robuste vs M1+M2. Pour (iii), les moyennes macro sont quasi
+identiques ; \textbf{aucune supériorité robuste de NRC sur SenticNet}
+n'est observée (SenticNet plus stable inter-graines sur DistilBERT ; NRC
+plus variable sur RoBERTa, graine $42$ sous-performante).
+\textbf{Synthèse H3.} Aucun avantage robuste de NRC ou SenticNet sur le
+F1-macro ; l'analyse par classe disponible (Step~0 à +M1+M2,
+tableaux~\ref{tab:expe-per-class-f1} et~\ref{tab:expe-freq-rare-gap})
+ne montre pas que le prior lexique affine la longue traîne, et les
+exports par classe des piles +M3 n'ont pas été produits dans cette
+campagne pour mesurer $\Delta$ fréquent vs rare sous NRC \emph{vs}
+SenticNet. Le levier principal reste M2 ; M3 n'ajoute qu'un prior appris
+modestement ($|g| \approx 0{,}03$ à $0{,}04$).
 
 \subsection{Ablation M1+M2+M3+M4 (SenticNet, H4)}
 \label{sec:expe-m4-h4}
@@ -765,6 +764,37 @@ neutral & 1\,787 & $0{,}628 \pm 0{,}013$ & $0{,}620 \pm 0{,}012$ & $0{,}629 \pm 
 \hline
 \end{tabular}
 \end{table}
+
+\paragraph{Écart fréquent vs rare (indicateur H1/H3).}
+Pour compléter le F1-macro, on résume l'écart entre deux groupes d'étiquettes
+du tableau~\ref{tab:expe-per-class-f1} : \emph{fréquentes} (\emph{neutral},
+\emph{admiration}, support $\geq 500$) et \emph{très rares} (support
+$< 40$, cinq labels du tableau). On calcule la moyenne des F1 test par
+groupe puis $\Delta = \overline{F1}_{\mathrm{freq}} -
+\overline{F1}_{\mathrm{rare}}$ (DistilBERT, mêmes graines).
+\begin{table}[H]
+\centering
+\caption{Écart F1 moyen fréquent vs rare (extrait tableau~\ref{tab:expe-per-class-f1})}
+\label{tab:expe-freq-rare-gap}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Configuration} & $\overline{F1}_{\mathrm{freq}}$ & $\overline{F1}_{\mathrm{rare}}$ & $\Delta$ \\
+\hline
+Step~0 PLM (flat) & $0{,}656$ & $0{,}291$ & $0{,}365$ \\
+\hline
++M1 seul & $0{,}648$ & $0{,}243$ & $0{,}405$ \\
+\hline
++M1+M2 & $0{,}658$ & $0{,}362$ & $0{,}296$ \\
+\hline
+\end{tabular}
+\end{table}
+M2 réduit $\Delta$ par rapport à Step~0 et à M1 seul ; M1 seul l'élargit.
+Les variantes +M3 (NRC, SenticNet) n'ont pas fait l'objet d'un export
+F1 par classe dans cette campagne : le volet comparatif NRC \emph{vs}
+SenticNet sur $\Delta$ reste donc non mesuré directement ; seules les
+comparaisons macro (section~\ref{sec:expe-h3-synthese}) et l'absence de
+gain lexique robuste sont reportées.
 
 \subsection{Analyse des confusions et des labels rares}
 \label{sec:expe-error-analysis}
