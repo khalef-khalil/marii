@@ -252,25 +252,25 @@ segments), puis à agréger au niveau document avec des poids appris.
 
 Le réseau d'attention hiérarchique (HAN) \cite{yang2016} pour la
 classification de documents illustre le schéma mot, phrase, puis
-document avec attention aux deux niveaux. Des variantes récentes
-combinent Transformers \cite{vaswani2017}, attention multi-têtes et
-pooling par segment pour les textes longs ou multi-phrases. Pour la
-détection d'émotions multi-étiquettes, l'enjeu n'est pas seulement la
-longueur du document mais la \textbf{séparation des signaux affectifs}
-portés par des unités discursives distinctes.
+document avec attention aux deux niveaux.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\linewidth]{lit/lit_han_schematic.pdf}
+\caption{Schéma HAN (mot, phrase, document) d'après \cite{yang2016}.}
+\label{fig:lit-han}
+\end{figure}
+
+Des variantes récentes combinent Transformers \cite{vaswani2017},
+attention multi-têtes et pooling par segment pour les textes longs ou
+multi-phrases. Pour la détection d'émotions multi-étiquettes, l'enjeu
+n'est pas seulement la longueur du document mais la \textbf{séparation
+des signaux affectifs} portés par des unités discursives distinctes.
 
 Le \textbf{module~1} de HAKE-MER s'inscrit dans cette lignée :
 segmentation en phrases, encodage par le backbone partagé, agrégation
 des phrases au niveau document par attention additive, avec des bornes
 de longueur fixées au chapitre~\ref{chap:experimentation}.
-
-\Needspace{16\baselineskip}
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.72\linewidth]{lit/lit_han_schematic.pdf}
-\caption{Schéma HAN (mot, phrase, document) d'après \cite{yang2016}.}
-\label{fig:lit-han}
-\end{figure}
 
 \section{Enrichissement par ressources lexicales externes}
 \label{sec:etat-lexiques}

@@ -67,8 +67,9 @@ def fig_han() -> None:
         if y > 1:
             ax.annotate("", xy=(5, y), xytext=(5, y - 0.8), arrowprops=dict(arrowstyle="->", lw=1.2))
     ax.set_title("Attention hiérarchique (mot, phrase, document)", fontsize=10)
-    fig.savefig(OUT / "lit_han_schematic.pdf")
-    fig.savefig(OUT / "lit_han_schematic.png")
+    fig.tight_layout(pad=0.15)
+    fig.savefig(OUT / "lit_han_schematic.pdf", bbox_inches="tight", pad_inches=0.08)
+    fig.savefig(OUT / "lit_han_schematic.png", bbox_inches="tight", pad_inches=0.08)
     plt.close(fig)
 
 
