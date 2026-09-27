@@ -36,7 +36,7 @@ build() {
 
   mkdir -p "$BUILD_DIR"
 
-  latexmk -pdf -interaction=nonstopmode \
+  latexmk -pdf -interaction=nonstopmode -f \
     -outdir="$BUILD_DIR" \
     -auxdir="$BUILD_DIR" \
     "${MAIN}.tex"
