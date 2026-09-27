@@ -36,7 +36,9 @@ Trois limites des approches standards motivent la conception :
   \cite{demszky2020} ;
 \item \textbf{L2 : Cécité à la structure du texte} : Une
   représentation plate (le seul vecteur \texttt{[CLS]} d'un encodeur
-  type BERT \cite{devlin2019}) mélange les signaux portés par des
+  type BERT \cite{devlin2019}) agrège la décision alors que les
+  couches internes récupèrent des niveaux linguistiques distincts
+  \cite{tenney2019bert} ; elle mélange ainsi les signaux portés par des
   phrases différentes ; les commentaires Reddit
   de GoEmotions comportent souvent plusieurs phrases \cite{demszky2020} ;
 \item \textbf{L3 : Pauvreté du signal pour les émotions rares} : Les

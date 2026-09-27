@@ -23,8 +23,9 @@ croisée entre émotions et des lexiques NRC et SenticNet, au-dessus
 d'encodeurs contextuels affinés
 \cite{howard2018ulmfit,devlin2019}. Les expériences portent sur
 GoEmotions \cite{demszky2020}, avec un protocole d'ablation à budget
-d'affinage identique, le F1-macro comme métrique principale
-\cite{bond2022multilabel,wu2021multilabelranking,mohammad2020sentiment,zhang2014multilabel}
+d'affinage identique, le F1-macro comme métrique principale pour le
+déséquilibre multi-étiquettes
+\cite{bond2022multilabel,wu2021multilabelranking,zhang2014multilabel}
 et trois graines. Le Step~0 compare DistilBERT-base et RoBERTa-base en
 encodage document flat ; la ladder M1 à M4 est menée sur les deux
 encodeurs. Les scores test détaillés sont au \ChapRef{experimentation}.
