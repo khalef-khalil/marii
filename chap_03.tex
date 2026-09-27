@@ -8,8 +8,8 @@ par modèles pré-entraînés et les réponses littéraires aux limitations
 L1 à L3. Ce chapitre en déduit l'architecture \textbf{HAKE-MER}
 (\emph{Hierarchical Attention with Knowledge Enhancement for
 Multi-Emotion Recognition}) : formalisation de la tâche, description
-des modules M1 à M4 et hypothèses H1 à H4 que le
-\ChapRef{experimentation} testera ces hypothèses par ablation.
+des modules M1 à M4 et les hypothèses H1 à H4, évaluées par ablation au
+\ChapRef{experimentation}.
 
 \section{Formulation du problème et limites existantes}
 \label{sec:conception-formulation}
@@ -343,9 +343,8 @@ progressivement l'intensité de chaque émotion selon le texte.
 \section{Hypothèses de recherche}
 \label{sec:conception-hypotheses}
 
-Le protocole du \ChapRef{experimentation} testera les
-hypothèses suivantes par ablation cumulative
-(tableau~\ref{tab:conception-ablation}), à budget d'affinage
+Le \ChapRef{experimentation} évalue les hypothèses suivantes par ablation
+cumulative (tableau~\ref{tab:conception-ablation}), à budget d'affinage
 identique (epochs, early stopping, recherche d'hyperparamètres) et avec
 F1-macro comme métrique principale (écart F1 fréquent vs rare en
 complément pour H3) :

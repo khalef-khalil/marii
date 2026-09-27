@@ -19,9 +19,10 @@ têtes par émotion, porte le gain principal en F1-macro test, DistilBERT
 $\approx 0{,}505$ et RoBERTa $\approx 0{,}526$,
 que M1 seul sous-performe une baseline PLM flat
 ($\approx 0{,}486$), et que M3 à prior \emph{document} n'améliore pas robustement la macro ;
-une extension à prior par étiquette n'élève le DistilBERT qu'à
-$0{,}508 \pm 0{,}001$ (NRC) avec $\Delta$ fréquent vs rare encore
-élevé (H3 prudente au \ChapRef{experimentation}). M4 n'améliore pas
+une extension à prior par étiquette n'ajoute qu'un gain macro marginal
+sur DistilBERT ($\approx +0{,}003$, NRC $0{,}508 \pm 0{,}001$ vs M1+M2
+$0{,}505 \pm 0{,}004$) avec $\Delta$ fréquent vs rare encore élevé
+(H3 prudente au \ChapRef{experimentation}). M4 n'améliore pas
 robustement la F1-macro test, $0{,}499 \pm 0{,}006$, par rapport à M3
 SenticNet ni à M1+M2 : la pile retenue en macro reste M1+M2.
 L'analyse par classe (Step~0, +M1, +M1+M2) confirme que les gains macro

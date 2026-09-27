@@ -115,9 +115,9 @@ Warmup & $10\,\%$ des pas d'optimisation \\
 \hline
 Sélection de modèle & Meilleur F1-macro validation sur les quatre époques \\
 \hline
-Graines & $42$, $123$, $456$ \\
+Graines & $42$, $123$, $456$ (trois répétitions, intervalles de confiance non reportés) \\
 \hline
-Troncature (Step~0) & $128$ tokens document (alignée sur $4\times 32$ tokens, ch.~\ref{sec:conception-choix}) \\
+Troncature (Step~0) & $128$ tokens document ($4$ phrases $\times$ $32$ tokens, soit $128$, ch.~\ref{sec:conception-choix}) \\
 \hline
 Segmentation (M1+) & $M{=}4$ phrases, $32$ tokens/phrase \\
 \hline
@@ -478,9 +478,8 @@ absolus) ; les trois graines convergent ($0{,}499$, $0{,}508$, $0{,}508$).
 améliorent nettement la détection macro par rapport à M1 seul, avec un
 F1-micro retrouvé au niveau du Step~0 flat ($0{,}582 \pm 0{,}002$).
 La hiérarchie seule (M1) reste insuffisante ; le gain provient de la
-lecture \emph{label-specific} sur les phrases. La branche M3 (NRC) et M4
-testeront si un prior lexical et une pondération dynamique prolongent
-cette ligne.
+lecture \emph{label-specific} sur les phrases. Les branches M3 et M4 vérifient si un prior lexical et une pondération
+dynamique prolongent cette ligne.
 
 \subsection{Ablation M1+M2+M3 (NRC, H3)}
 \label{sec:expe-m3-nrc-h3}
@@ -607,13 +606,13 @@ campagnes.
 \end{tabular}
 \end{table}
 
-Le prior NRC par étiquette porte la macro à $0{,}508 \pm 0{,}001$, légèrement
-au-dessus de M1+M2 ($0{,}505 \pm 0{,}004$) et du M3 document ($0{,}504 \pm 0{,}008$),
-avec un écart-type inter-graines faible ($0{,}506$, $0{,}508$, $0{,}508$).
+Le prior NRC par étiquette atteint $0{,}508 \pm 0{,}001$, soit environ
+$+0{,}003$ en macro absolue par rapport à M1+M2 ($0{,}505 \pm 0{,}004$),
+sans dépasser nettement l'incertitude inter-graines de cette baseline.
 SenticNet par étiquette reste à $0{,}504 \pm 0{,}001$, au niveau du prior
-document. Les portes $|g|$ restent modestes ($\approx 0{,}037$ NRC,
-$\approx 0{,}037$ SenticNet). Le gain macro reste limité ; il ne remplace
-pas M2 comme levier principal.
+document ($0{,}504 \pm 0{,}008$ pour NRC document). Les portes $|g|$ restent
+modestes ($\approx 0{,}037$). Ce gain marginal ne remplace pas M2 comme
+levier principal ($0{,}457$ à $0{,}505$ via M2 seul).
 
 H3 pose trois questions : (i)~NRC améliore-t-il M1+M2 en macro~?
 (ii)~SenticNet améliore-t-il M1+M2 en macro~? (iii)~NRC réduit-il
@@ -625,9 +624,10 @@ pas été exporté sur ces piles. L'extension prior par étiquette mesure
 NRC ($0{,}280$) légèrement inférieur à SenticNet ($0{,}290$), tous deux
 un peu en dessous de M1+M2 ($0{,}296$) sans écart décisif entre lexiques.
 Au global,
-\textbf{H3 reste prudente} : gain macro net surtout pour NRC par étiquette
-($0{,}508 \pm 0{,}001$), sans supériorité lexicale robuste ni rattrapage
-clair de la longue traîne ; M2 demeure le levier principal.
+\textbf{H3 reste prudente} : prior document neutre ; extension NRC par
+étiquette avec gain macro marginal ($\approx +0{,}003$) ; $\Delta$ légèrement
+abaissé pour NRC ($0{,}280$ vs $0{,}296$ pour M1+M2) sans supériorité
+lexicale robuste ; M2 demeure le levier principal.
 
 \subsection{Ablation M1+M2+M3+M4 (SenticNet, H4)}
 \label{sec:expe-m4-h4}
@@ -686,7 +686,7 @@ H2 & +M1 vs +M1+M2 & $0{,}457 \pm 0{,}002$ vs $0{,}505 \pm 0{,}004$ & H2 soutenu
 \hline
 H3 & +M1+M2 vs +M3 (NRC / SenticNet) &
 $0{,}505 \pm 0{,}004$ vs $0{,}504 \pm 0{,}008$ / $0{,}504 \pm 0{,}003$ &
-macro neutre ; $\Delta$ lex. non mesuré \\
+prior doc. neutre ; ext. par étiquette (§~\ref{sec:expe-m3-per-label}) marginale \\
 \hline
 H4 & +M3 SenticNet vs +M4 & $0{,}504 \pm 0{,}003$ vs $0{,}499 \pm 0{,}006$ & H4 non soutenue \\
 \hline
