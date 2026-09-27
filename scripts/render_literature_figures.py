@@ -42,7 +42,7 @@ def fig_transformer_encoder() -> None:
 
 
 def fig_han() -> None:
-    fig, ax = plt.subplots(figsize=(6.4, 2.85))
+    fig, ax = plt.subplots(figsize=(7.5, 4))
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 6)
     ax.axis("off")
@@ -56,17 +56,10 @@ def fig_han() -> None:
             (x, y), 8, 1.2, boxstyle="round,pad=0.06", linewidth=1.2, edgecolor="black", facecolor=color
         )
         ax.add_patch(rect)
-        ax.text(
-            5,
-            y + 0.6,
-            f"{label} : attention, vecteur de niveau",
-            ha="center",
-            va="center",
-            fontsize=9,
-        )
+        ax.text(5, y + 0.6, f"{label} → attention → vecteur de niveau", ha="center", va="center", fontsize=10)
         if y > 1:
             ax.annotate("", xy=(5, y), xytext=(5, y - 0.8), arrowprops=dict(arrowstyle="->", lw=1.2))
-    ax.set_title("Attention hiérarchique (mot, phrase, document)", fontsize=10)
+    ax.set_title("Attention hiérarchique document (mot → phrase → document)", fontsize=11)
     fig.savefig(OUT / "lit_han_schematic.pdf")
     fig.savefig(OUT / "lit_han_schematic.png")
     plt.close(fig)

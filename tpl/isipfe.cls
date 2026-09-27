@@ -248,12 +248,10 @@
   labelfont=bf,
   labelsep = newline,
   name = Figure,
-  justification=justified,
+  justification=centering,
   singlelinecheck=false,
   labelsep=colon,
-  skip = \medskipamount,
-  width=\linewidth,
-  font=small}
+  skip = \medskipamount}
 
 %%%%% Fancyhdr stuff
 % define how headers are marked, for details, see fancyhdr docs
@@ -269,12 +267,10 @@
 \fancyhf{}
 %\fancyhead[LE,RO]{\nouppercase{\thepage}}
 %\fancyhead[L]{\nouppercase{\leftmark}}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrulewidth}{0pt}
-\setlength{\headwidth}{\textwidth}
-\fancyheadoffset[L,R]{0pt}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
 \pagestyle{fancy}
-\lhead{\parbox[t]{\headwidth}{\raggedright\small\nouppercase{\leftmark}}}
+\lhead{\nouppercase{\leftmark}}
 \rfoot{\centering \thepage}
 
 %=============== Defining Fancy Page Styles ===============%

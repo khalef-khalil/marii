@@ -17,7 +17,7 @@
 \hspace{-47pt}
 \begin{minipage}[l]{0.2\columnwidth}
 \vspace{6mm}
-\includegraphics[width=\columnwidth]{Logo_ISI_Black}\\
+\includegraphics[width=1.1\columnwidth]{Logo_ISI_Black}\\
 \end{minipage}
 \hfill
 \begin{minipage}[l]{0.6\columnwidth}
@@ -66,7 +66,7 @@ et de la Recherche Scientifique}}\\
 \vskip12mm
 
 \begin{changemargin}{-9mm}{0cm}
-\begin{minipage}[l]{\columnwidth}
+\begin{minipage}[l]{1.1\columnwidth}
 \begin{tcolorbox}[colback=white,boxrule=0pt,toprule=3pt,bottomrule=3pt,arc=0pt,top=0mm,right=0mm,left=0mm,bottom=0mm,boxsep=0.5mm]{
     \begin{tcolorbox}[colback=white, boxrule=0pt,toprule=1pt,bottomrule=1pt,arc=0pt,enlarge bottom by=-0.9mm, auto outer arc]
         \centering
@@ -82,7 +82,14 @@ et de la Recherche Scientifique}}\\
 
 \begin{center}
 \large
-Encadrant académique : \textbf{\@academicFramerName}\quad\@academicFramerSpeciality
+\begin{minipage}{0.92\textwidth}
+\centering
+\begin{tabular}{@{} >{\raggedright\arraybackslash}p{0.34\linewidth}
+                  >{\centering\arraybackslash}p{0.38\linewidth}
+                  >{\raggedleft\arraybackslash}p{0.24\linewidth} @{}}
+Encadrant académique : & \textbf{\@academicFramerName} & \@academicFramerSpeciality \\
+\end{tabular}
+\end{minipage}
 \end{center}
 \vskip16mm
 

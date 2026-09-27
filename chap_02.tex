@@ -57,9 +57,9 @@ configuration multi-étiquettes. Il s'agit, à notre connaissance, du
 plus grand corpus manuel publié dans cette granularité (58\,009
 exemples après curation) \cite{demszky2020}. La construction combine
 filtrage (profanité, biais de sentiment), équilibrage et
-sous-échantillonnage par longueur (commentaires retenus entre 3 et
-30 tokens, plafonnés au volume de la médiane à 12 tokens)
-\cite{demszky2020}.
+sous-échantillonnage par longueur (commentaires initialement retenus
+entre 3 et 30 tokens ; plafond au volume correspondant à la médiane de
+12 tokens) \cite{demszky2020}.
 
 Le tableau~\ref{tab:goemotions-stats} reprend les statistiques
 d'annotation reportées par les auteurs \cite{demszky2020}. Environ
@@ -224,10 +224,11 @@ global partagé ignore les \textbf{cooccurrences} et
 \textbf{incompatibilités} entre labels (joie/surprise vs joie/tristesse),
 alors que la multi-étiquette admet des dépendances marginales et
 conditionnelles entre étiquettes \cite{dembczynski2012}. La littérature
-propose chaînes de classificateurs
-\cite{read2009classifier,read2019classifier}, graphes de corrélation,
-attention par émotion et encodeurs d'interactions entre étiquettes.
-Ce fil justifie le \textbf{module~2} de HAKE-MER
+propose plusieurs réponses : chaînes de classificateurs
+\cite{read2009classifier,read2019classifier}, graphes
+de corrélation entre étiquettes, attention dédiée par émotion,
+encodeurs d'interactions entre représentations d'étiquettes. Ce fil
+justifie le \textbf{module~2} de HAKE-MER
 (attention croisée multi-émotions), qui vise à donner à chaque émotion
 une représentation contextuelle propre tout en modélisant les
 interactions entre émotions.
@@ -250,25 +251,28 @@ segments), puis à agréger au niveau document avec des poids appris.
 
 \subsection{Travaux fondateurs et extensions Transformer}
 
-\begin{center}
-\includegraphics[width=0.62\linewidth]{lit/lit_han_schematic.pdf}\\[0.4em]
-\captionof{figure}{Schéma HAN (mot, phrase, document) d'après \cite{yang2016}.}
-\label{fig:lit-han}
-\end{center}
-
 Le réseau d'attention hiérarchique (HAN) \cite{yang2016} pour la
-classification de documents illustre le schéma mot, phrase, puis
-document avec attention aux deux niveaux. Des variantes récentes
-combinent Transformers \cite{vaswani2017}, attention multi-têtes et
-pooling par segment pour les textes longs ou multi-phrases. Pour la
-détection d'émotions multi-étiquettes, l'enjeu n'est pas seulement la
-longueur du document mais la \textbf{séparation des signaux affectifs}
-portés par des unités discursives distinctes.
+classification de documents illustre le schéma
+mot$\to$phrase$\to$document avec attention aux deux niveaux. Des
+variantes récentes combinent Transformers \cite{vaswani2017},
+attention multi-têtes et pooling par segment pour les
+textes longs ou multi-phrases. Pour la détection d'émotions
+multi-étiquettes, l'enjeu n'est pas seulement la longueur du
+document mais la \textbf{séparation des signaux affectifs} portés
+par des unités discursives distinctes.
 
 Le \textbf{module~1} de HAKE-MER s'inscrit dans cette lignée :
 segmentation en phrases, encodage par le backbone partagé, agrégation
-des phrases au niveau document par attention additive, avec des bornes
-de longueur fixées au chapitre~\ref{chap:experimentation}.
+phrase$\to$document par attention additive, avec des bornes de
+longueur fixées au chapitre~\ref{chap:experimentation}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\linewidth]{lit/lit_han_schematic.pdf}
+\caption{Principe d'attention hiérarchique mot, phrase et document
+(schéma pédagogique d'après \cite{yang2016}).}
+\label{fig:lit-han}
+\end{figure}
 
 \section{Enrichissement par ressources lexicales externes}
 \label{sec:etat-lexiques}
@@ -280,7 +284,7 @@ SenticNet dans le protocole.
 \subsection{Intérêt pour les émotions rares}
 
 Les classes rares offrent peu d'exemples supervisés ; les
-\textbf{lexiques affectifs} (association mot et catégories
+\textbf{lexiques affectifs} (association mot$\to$catégories
 d'émotions ou dimensions de sentiment) peuvent fournir un signal
 auxiliaire, en particulier lorsque les mots du texte sont couverts
 par le lexique. L'intégration se fait typiquement par
