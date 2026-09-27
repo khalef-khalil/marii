@@ -9,53 +9,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+from hakemer.eval_full_test import (
+    cardinality_is_reportable,
+    eval_cardinality_full_test,
+    full_test_config,
+    make_full_test_loader,
+)
 from hakemer.eval_checkpoint import config_from_run_dir
-from hakemer.data import GoEmotionsTorchDataset, load_go_emotions_splits, make_dataloader
-from hakemer.metrics import f1_by_gold_cardinality, logits_to_preds
 from hakemer.model import HAKEMER
-from hakemer.train import evaluate, forward_batch, resolve_device, set_seed
-import numpy as np
+from hakemer.train import evaluate, resolve_device, set_seed
 import torch
-from transformers import AutoTokenizer
-
-
-def eval_cardinality(run_dir: Path, device: str) -> dict:
-    run_dir = run_dir.resolve()
-    config = config_from_run_dir(run_dir)
-    set_seed(config.seed)
-    dev = resolve_device(device)
-    tokenizer = AutoTokenizer.from_pretrained(config.backbone)
-    _, _, test_hf = load_go_emotions_splits()
-    ds_kw = dict(
-        use_m1=config.use_m1,
-        use_m3=config.use_m3,
-        lexicon_source=config.lexicon_source,
-        lexicon_fusion=config.lexicon_fusion,
-        max_phrases=config.max_phrases,
-        phrase_max_length=config.phrase_max_length,
-    )
-    test_ds = GoEmotionsTorchDataset(
-        test_hf,
-        tokenizer,
-        config.max_length,
-        config.num_labels,
-        config.max_eval_samples,
-        **ds_kw,
-    )
-    loader = make_dataloader(test_ds, 16, shuffle=False)
-    model = HAKEMER(config).to(dev)
-    model.load_state_dict(torch.load(run_dir / "best_model.pt", map_location=dev))
-    model.eval()
-    y_true_all: list[np.ndarray] = []
-    y_pred_all: list[np.ndarray] = []
-    with torch.no_grad():
-        for batch in loader:
-            logits = forward_batch(model, batch, dev)
-            y_true_all.append(batch["labels"].numpy())
-            y_pred_all.append(logits_to_preds(logits.cpu().numpy(), threshold=config.decision_threshold))
-    y_true = np.vstack(y_true_all)
-    y_pred = np.vstack(y_pred_all)
-    return f1_by_gold_cardinality(y_true, y_pred)
 
 
 def supplement_run(run_dir: Path, device: str, dry_run: bool = False) -> bool:
@@ -70,36 +33,19 @@ def supplement_run(run_dir: Path, device: str, dry_run: bool = False) -> bool:
         summary = json.loads(metrics_path.read_text(encoding="utf-8"))
     changed = False
     test = summary.setdefault("test", {})
-    if not test.get("by_gold_cardinality"):
+    existing = test.get("by_gold_cardinality")
+    if not existing or not cardinality_is_reportable(existing):
         if dry_run:
             print(f"[dry-run] cardinality: {run_dir.name}")
         else:
-            test["by_gold_cardinality"] = eval_cardinality(run_dir, device)
+            test["by_gold_cardinality"] = eval_cardinality_full_test(run_dir, device)
             changed = True
-            print(f"Cardinality: {run_dir.name}")
+            print(f"Cardinality: {run_dir.name} (n={test['by_gold_cardinality']['1']['n']})")
     if config.use_m3:
         dev = resolve_device(device)
         set_seed(config.seed)
-        tokenizer = AutoTokenizer.from_pretrained(config.backbone)
-        _, _, test_hf = load_go_emotions_splits()
-        ds_kw = dict(
-            use_m1=config.use_m1,
-            use_m3=config.use_m3,
-            lexicon_source=config.lexicon_source,
-            lexicon_fusion=config.lexicon_fusion,
-            max_phrases=config.max_phrases,
-            phrase_max_length=config.phrase_max_length,
-        )
-        test_ds = GoEmotionsTorchDataset(
-            test_hf,
-            tokenizer,
-            config.max_length,
-            config.num_labels,
-            config.max_eval_samples,
-            **ds_kw,
-        )
-        loader = make_dataloader(test_ds, 16, shuffle=False)
-        model = HAKEMER(config).to(dev)
+        cfg_full, loader = make_full_test_loader(run_dir)
+        model = HAKEMER(full_test_config(config_from_run_dir(run_dir))).to(dev)
         model.load_state_dict(torch.load(ckpt, map_location=dev))
         model.eval()
         for mode in ("zero", "shuffle"):
@@ -113,7 +59,7 @@ def supplement_run(run_dir: Path, device: str, dry_run: bool = False) -> bool:
                 model,
                 loader,
                 dev,
-                threshold=config.decision_threshold,
+                threshold=cfg_full.decision_threshold,
                 lexicon_ablation=mode,
             )
             summary[key] = {k: v for k, v in ablated.items() if k != "per_label"}
@@ -130,6 +76,7 @@ def main() -> None:
     p.add_argument("--device", default="cuda")
     p.add_argument("--glob", default="distilbert_base_uncased_seed*")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--no-merge", action="store_true", help="Skip merge_archived_metrics (Step~0 script)")
     args = p.parse_args()
     root = Path(__file__).resolve().parents[2]
     runs_root = root / "runs"
@@ -140,16 +87,21 @@ def main() -> None:
     for run_dir in sorted(runs_root.glob(f"{args.glob}")):
         if not run_dir.is_dir():
             continue
-        if supplement_run(run_dir, args.device, dry_run=args.dry_run):
-            any_changed = True
+        try:
+            if supplement_run(run_dir, args.device, dry_run=args.dry_run):
+                any_changed = True
+        except RuntimeError as exc:
+            print(f"skip {run_dir.name}: {exc}", file=sys.stderr)
     merge = root / "scripts" / "merge_archived_metrics_into_campaigns.py"
     render_card = root / "scripts" / "render_cardinality_tex.py"
     render_lex = root / "scripts" / "render_lexicon_ablation_tex.py"
     if any_changed and not args.dry_run:
-        subprocess.run([sys.executable, str(merge)], check=True, cwd=root)
+        if not args.no_merge:
+            subprocess.run([sys.executable, str(merge)], check=True, cwd=root)
         subprocess.run([sys.executable, str(render_card)], check=True, cwd=root)
-        subprocess.run([sys.executable, str(render_lex)], check=True, cwd=root)
-        print("Merged campaigns and regenerated LaTeX snippets.")
+        if "baseline_plm" not in args.glob:
+            subprocess.run([sys.executable, str(render_lex)], check=True, cwd=root)
+        print("Regenerated LaTeX snippets.")
     elif not any_changed:
         print("No supplements applied (missing checkpoints or already complete).")
 

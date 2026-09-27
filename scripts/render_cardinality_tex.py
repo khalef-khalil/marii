@@ -41,7 +41,7 @@ def fmt(m: float, s: float) -> str:
 def campaign_path(art: Path, fname: str) -> Path | None:
     primary = art / fname
     supplement = art / "step_eval_supplements_distilbert" / "campaigns" / fname
-    for path in (primary, supplement):
+    for path in (supplement, primary):
         if not path.is_file():
             continue
         runs = json.loads(path.read_text(encoding="utf-8")).get("runs", [])

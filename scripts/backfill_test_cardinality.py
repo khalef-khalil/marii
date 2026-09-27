@@ -10,53 +10,7 @@ from pathlib import Path
 root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(root / "src"))
 
-from hakemer.eval_checkpoint import config_from_run_dir
-from hakemer.data import GoEmotionsTorchDataset, load_go_emotions_splits, make_dataloader
-from hakemer.metrics import f1_by_gold_cardinality, logits_to_preds, logits_to_probs, multilabel_scores
-from hakemer.model import HAKEMER
-from hakemer.train import forward_batch, resolve_device, set_seed
-import numpy as np
-import torch
-from transformers import AutoTokenizer
-
-
-def eval_cardinality(run_dir: Path, device: str = "auto") -> dict:
-    run_dir = run_dir.resolve()
-    config = config_from_run_dir(run_dir)
-    set_seed(config.seed)
-    dev = resolve_device(device)
-    tokenizer = AutoTokenizer.from_pretrained(config.backbone)
-    _, _, test_hf = load_go_emotions_splits()
-    ds_kw = dict(
-        use_m1=config.use_m1,
-        use_m3=config.use_m3,
-        lexicon_source=config.lexicon_source,
-        lexicon_fusion=config.lexicon_fusion,
-        max_phrases=config.max_phrases,
-        phrase_max_length=config.phrase_max_length,
-    )
-    test_ds = GoEmotionsTorchDataset(
-        test_hf,
-        tokenizer,
-        config.max_length,
-        config.num_labels,
-        config.max_eval_samples,
-        **ds_kw,
-    )
-    loader = make_dataloader(test_ds, 16, shuffle=False)
-    model = HAKEMER(config).to(dev)
-    model.load_state_dict(torch.load(run_dir / "best_model.pt", map_location=dev))
-    model.eval()
-    y_true_all: list[np.ndarray] = []
-    y_pred_all: list[np.ndarray] = []
-    with torch.no_grad():
-        for batch in loader:
-            logits = forward_batch(model, batch, dev)
-            y_true_all.append(batch["labels"].numpy())
-            y_pred_all.append(logits_to_preds(logits.cpu().numpy(), threshold=config.decision_threshold))
-    y_true = np.vstack(y_true_all)
-    y_pred = np.vstack(y_pred_all)
-    return f1_by_gold_cardinality(y_true, y_pred)
+from hakemer.eval_full_test import eval_cardinality_full_test
 
 
 def patch_campaign(path: Path, root: Path) -> bool:
@@ -81,7 +35,7 @@ def patch_campaign(path: Path, root: Path) -> bool:
                     run_dir = candidate
         if run_dir is None or not (run_dir / "best_model.pt").is_file():
             continue
-        card = eval_cardinality(run_dir)
+        card = eval_cardinality_full_test(run_dir)
         run.setdefault("test", {})["by_gold_cardinality"] = card
         changed = True
         print(f"Updated cardinality: {run_dir.name}")

@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
+
+_root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_root / "src"))
 
 FIELDS_ON_RUN = ("test_lexicon_zero", "test_lexicon_shuffle")
 TEST_SUBKEYS = ("by_gold_cardinality",)
@@ -17,9 +21,18 @@ def run_key(run: dict) -> tuple[int | None, str | None]:
 def merge_test_block(target: dict, source_test: dict) -> bool:
     changed = False
     for sub in TEST_SUBKEYS:
-        if sub in source_test and sub not in target:
-            target[sub] = source_test[sub]
-            changed = True
+        if sub not in source_test or sub in target:
+            continue
+        if sub == "by_gold_cardinality":
+            try:
+                from hakemer.eval_full_test import cardinality_is_reportable
+
+                if not cardinality_is_reportable(source_test[sub]):
+                    continue
+            except Exception:
+                continue
+        target[sub] = source_test[sub]
+        changed = True
     return changed
 
 

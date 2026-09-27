@@ -59,4 +59,10 @@ Push `main` on GitHub first, then open each notebook (GPU runtime). After each r
 
 Trains **only missing** Step~0 / M1 / M1+M2 / M3 checkpoints, then runs `run_eval_supplements.sh` → download `eval_supplements_distilbert.zip` (updated campaigns + `cardinality_snippet.tex` + `lexicon_ablation_snippet.tex`).
 
+## Step~0 cardinality only (fill first column of cardinality table)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/step0_cardinality_campaign.ipynb)
+
+Trains **full-protocol** Step~0 checkpoints if missing, then `run_step0_cardinality.sh` → `step0_cardinality_distilbert.zip`. Do **not** use local smoke-test `runs/` (subsampled eval).
+
 **Training records:** archive executed Colab notebooks and manifests under [`reference/training_records/`](../reference/training_records/README.md). After updating artifacts, run `python scripts/build_step0_training_record.py` to refresh the Step 0 record notebooks from campaign JSON.
