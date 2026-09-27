@@ -313,6 +313,13 @@ distincts par émotion. Ce choix facilite la comparaison NRC vs
 SenticNet à architecture fixée, mais peut sous-exploiter la structure
 catégorielle du NRC par rapport à une injection mot-émotion plus fine.
 
+\ParHead{Variante prior par étiquette :}Une campagne complémentaire
+(\SecRef{sec:expe-m3-per-label}) remplace le vecteur document $c$ unique
+par un score $c_k \geq 0$ par étiquette GoEmotions (pont sémantique vers
+NRC ou polarité SenticNet regroupée via le même pont). L'injection devient
+$\tilde{Q}_k = Q_k + g \cdot \tanh(W_c c_k)$ avec $W_c$, $g$ et le reste
+de la pile identiques : seule la construction des $c_k$ change.
+
 \section{Module 4 : Pondération Dynamique}
 \label{sec:conception-m4}
 

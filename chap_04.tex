@@ -549,6 +549,9 @@ par rapport à M1+M2 sans traduction nette en F1-macro.
 \subsection{Synthèse H3 (NRC vs SenticNet)}
 \label{sec:expe-h3-synthese}
 
+Le tableau~\ref{tab:expe-h3-lexicons} compare d'abord les priors
+\emph{document} (configuration M3 initiale) à la pile M1+M2.
+
 \begin{table}[H]
 \centering
 \caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : pile M1+M2 et variantes M3}
@@ -567,26 +570,64 @@ par rapport à M1+M2 sans traduction nette en F1-macro.
 \end{tabular}
 \end{table}
 
-H3 pose trois questions distinctes : (i)~NRC améliore-t-il M1+M2 en
-macro~? (ii)~SenticNet améliore-t-il M1+M2 en macro~? (iii)~NRC réduit-il
-mieux que SenticNet l'écart fréquent vs rare~? Les tableaux
-\ref{tab:expe-h3-lexicons} et \ref{tab:expe-h1-h4-summary} répondent
-(i) et (ii) par la négative : F1-macro $\approx 0{,}504$--$0{,}505$, sans
-gain robuste vs M1+M2. Pour (iii), les moyennes macro NRC et SenticNet
-sont quasi identiques, mais $\Delta$ fréquent vs rare n'a pas été calculé
-pour ces piles : la question NRC \emph{vs} SenticNet sur la longue
-traîne reste \textbf{non démontrée} (SenticNet plus stable inter-graines
-sur DistilBERT ; NRC plus variable sur RoBERTa, graine $42$
-sous-performante).
-\textbf{Synthèse H3 :} sous ce protocole, ni NRC ni SenticNet n'apportent
-un gain macro robuste vs M1+M2 (questions (i) et (ii)). La question (iii),
-comparaison NRC \emph{vs} SenticNet sur $\Delta$ fréquent vs rare, n'est
-pas démontrée faute d'exports F1 par classe pour les piles +M3. L'analyse
-disponible (Step~0 à +M1+M2, tableaux~\ref{tab:expe-per-class-f1}
-et~\ref{tab:expe-freq-rare-gap}) ne montre pas que le prior lexique global
-affine la longue traîne. Le levier principal reste M2 ; M3 n'ajoute qu'un
-prior appris modestement ($|g| \approx 0{,}03$ à $0{,}04$), sans supériorité
-robuste de NRC sur SenticNet au niveau macro.
+Les priors \emph{document} restent au niveau de M1+M2 en F1-macro ; une
+extension prior par étiquette est reportée ci-dessous.
+
+\subsection{Extension M3 : prior lexical par étiquette}
+\label{sec:expe-m3-per-label}
+
+Pour tester la limitation du prior global (\SecRef{sec:conception-m3}),
+deux campagnes complémentaires réutilisent M1+M2 et la porte $g$, mais
+associent à chaque requête $Q_k$ un score lexique propre $c_k$ (pont
+GoEmotions–NRC ou SenticNet via NRC, même protocole d'affinage,
+trois graines). Les exports F1 par classe sont archivés avec les
+campagnes.
+
+\begin{table}[H]
+\centering
+\caption{DistilBERT-base, test ($n{=}5\,427$, 3 graines) : M1+M2 et M3 prior par étiquette}
+\label{tab:expe-m3-per-label-distilbert}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{3.5pt}
+\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Configuration} & \textbf{F1-micro} & \textbf{F1-macro} & \textbf{Exact match} & \textbf{mAP} \\
+\hline
++M1+M2 & $0{,}582 \pm 0{,}002$ & $0{,}505 \pm 0{,}004$ & $0{,}457 \pm 0{,}004$ & $0{,}504 \pm 0{,}002$ \\
+\hline
++M3 NRC (prior document) & $0{,}577 \pm 0{,}002$ & $0{,}504 \pm 0{,}008$ & $0{,}453 \pm 0{,}003$ & $0{,}504 \pm 0{,}001$ \\
+\hline
++M3 SenticNet (prior document) & $0{,}582 \pm 0{,}002$ & $0{,}504 \pm 0{,}003$ & $0{,}458 \pm 0{,}006$ & $0{,}515 \pm 0{,}002$ \\
+\hline
++M3 NRC (prior par étiquette) & $0{,}580 \pm 0{,}003$ & $0{,}508 \pm 0{,}001$ & $0{,}454 \pm 0{,}003$ & $0{,}504 \pm 0{,}002$ \\
+\hline
++M3 SenticNet (prior par étiquette) & $0{,}579 \pm 0{,}002$ & $0{,}504 \pm 0{,}001$ & $0{,}456 \pm 0{,}004$ & $0{,}505 \pm 0{,}003$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Le prior NRC par étiquette porte la macro à $0{,}508 \pm 0{,}001$, légèrement
+au-dessus de M1+M2 ($0{,}505 \pm 0{,}004$) et du M3 document ($0{,}504 \pm 0{,}008$),
+avec un écart-type inter-graines faible ($0{,}506$, $0{,}508$, $0{,}508$).
+SenticNet par étiquette reste à $0{,}504 \pm 0{,}001$, au niveau du prior
+document. Les portes $|g|$ restent modestes ($\approx 0{,}037$ NRC,
+$\approx 0{,}037$ SenticNet). Le gain macro reste limité ; il ne remplace
+pas M2 comme levier principal.
+
+H3 pose trois questions : (i)~NRC améliore-t-il M1+M2 en macro~?
+(ii)~SenticNet améliore-t-il M1+M2 en macro~? (iii)~NRC réduit-il
+mieux que SenticNet l'écart fréquent vs rare~? Pour le prior
+\emph{document} (tableau~\ref{tab:expe-h3-lexicons}), (i) et (ii) sont
+négatifs : F1-macro $\approx 0{,}504$--$0{,}505$. Pour (iii), $\Delta$ n'a
+pas été exporté sur ces piles. L'extension prior par étiquette mesure
+(iii) partiellement (tableau~\ref{tab:expe-freq-rare-gap}) : $\Delta$
+NRC ($0{,}280$) légèrement inférieur à SenticNet ($0{,}290$), tous deux
+un peu en dessous de M1+M2 ($0{,}296$) sans écart décisif entre lexiques.
+Au global,
+\textbf{H3 reste prudente} : gain macro net surtout pour NRC par étiquette
+($0{,}508 \pm 0{,}001$), sans supériorité lexicale robuste ni rattrapage
+clair de la longue traîne ; M2 demeure le levier principal.
 
 \subsection{Ablation M1+M2+M3+M4 (SenticNet, H4)}
 \label{sec:expe-m4-h4}
@@ -790,7 +831,7 @@ groupe puis $\Delta = \overline{F1}_{\mathrm{freq}} -
 \overline{F1}_{\mathrm{rare}}$ (DistilBERT, mêmes graines).
 \begin{table}[H]
 \centering
-\caption{Écart F1 moyen fréquent vs rare (extrait tableau~\ref{tab:expe-per-class-f1})}
+\caption{Écart F1 moyen fréquent vs rare (même groupes d'étiquettes, DistilBERT)}
 \label{tab:expe-freq-rare-gap}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular}{|l|c|c|c|}
@@ -803,14 +844,20 @@ Step~0 PLM (flat) & $0{,}656$ & $0{,}291$ & $0{,}365$ \\
 \hline
 +M1+M2 & $0{,}658$ & $0{,}362$ & $0{,}296$ \\
 \hline
++M3 NRC (prior par étiquette) & $0{,}656$ & $0{,}376$ & $0{,}280$ \\
+\hline
++M3 SenticNet (prior par étiquette) & $0{,}657$ & $0{,}366$ & $0{,}290$ \\
+\hline
 \end{tabular}
 \end{table}
 M2 réduit $\Delta$ par rapport à Step~0 et à M1 seul ; M1 seul l'élargit.
-Les variantes +M3 (NRC, SenticNet) n'ont pas fait l'objet d'un export
-F1 par classe dans cette campagne : le volet comparatif NRC \emph{vs}
-SenticNet sur $\Delta$ reste donc non mesuré directement ; seules les
-comparaisons macro (section~\ref{sec:expe-h3-synthese}) et l'absence de
-gain lexique robuste sont reportées.
+Les priors \emph{document} (NRC, SenticNet) n'ont pas produit d'export
+F1 par classe dans la campagne principale. Sur l'extension prior par
+étiquette (tableau~\ref{tab:expe-m3-per-label-distilbert}), NRC abaisse
+légèrement $\Delta$ ($0{,}280$ vs $0{,}296$ pour M1+M2) ; SenticNet par
+étiquette laisse $\Delta$ à $0{,}290$. L'écart entre lexiques sur la longue
+traîne reste faible : NRC par étiquette n'affine pas nettement la traîne
+rare malgré le gain macro marginal.
 
 \subsection{Analyse des confusions et des labels rares}
 \label{sec:expe-error-analysis}

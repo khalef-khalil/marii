@@ -18,11 +18,10 @@ trois graines et protocole identique, montrent que M2, attention croisée et
 têtes par émotion, porte le gain principal en F1-macro test, DistilBERT
 $\approx 0{,}505$ et RoBERTa $\approx 0{,}526$,
 que M1 seul sous-performe une baseline PLM flat
-($\approx 0{,}486$), et que M3, NRC ou SenticNet, n'améliore
-pas de façon robuste la macro par rapport à M1+M2, sans supériorité
-robuste de NRC sur SenticNet ; l'écart fréquent vs rare entre lexiques
-n'a pas été mesuré directement (H3 non démontrée sur $\Delta$ ; macro
-neutre au \ChapRef{experimentation}). M4 n'améliore pas
+($\approx 0{,}486$), et que M3 à prior \emph{document} n'améliore pas robustement la macro ;
+une extension à prior par étiquette n'élève le DistilBERT qu'à
+$0{,}508 \pm 0{,}001$ (NRC) avec $\Delta$ fréquent vs rare encore
+élevé (H3 prudente au \ChapRef{experimentation}). M4 n'améliore pas
 robustement la F1-macro test, $0{,}499 \pm 0{,}006$, par rapport à M3
 SenticNet ni à M1+M2 : la pile retenue en macro reste M1+M2.
 L'analyse par classe (Step~0, +M1, +M1+M2) confirme que les gains macro
