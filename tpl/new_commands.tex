@@ -129,6 +129,9 @@
 \usepackage{tcolorbox}
 \usepackage{afterpage}
 \usepackage{array,longtable,multirow}% http://ctan.org/pkg/{array,longtable,multirow}
+\usepackage{needspace}
+% Keep float tables from breaking mid-tabular (avoids dangling vertical rules).
+\newcommand{\NeedspaceForTable}[1][14]{\Needspace{#1\baselineskip}}
 \usepackage{pifont}
 
 \usepackage{pdflscape}

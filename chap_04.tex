@@ -138,6 +138,7 @@ comparaisons internes ont été interprétées à \emph{protocole d'affinage
 identique} ; le nombre de paramètres et le coût de calcul varient
 (tableau~\ref{tab:expe-param-count}).
 
+\NeedspaceForTable[10]
 \begin{table}[H]
 \centering
 \caption{Nombre de paramètres entraînables (DistilBERT-base, ordre de grandeur)}
@@ -152,16 +153,17 @@ identique} ; le nombre de paramètres et le coût de calcul varient
 \end{tabular}
 \end{table}
 
+\NeedspaceForTable[22]
 \begin{table}[H]
 \centering
 \caption{Sélection sur validation vs F1-macro test (moyenne $\pm$ écart-type, trois graines)}
 \label{tab:expe-val-test-selection}
 \small
-\renewcommand{\arraystretch}{1.15}
+\renewcommand{\arraystretch}{1.12}
 \begin{tabular}{|p{4.5cm}|c|c|c|c|}
 \hline
-\textbf{Pile} & \multicolumn{2}{c|}{\textbf{DistilBERT}} & \multicolumn{2}{c|}{\textbf{RoBERTa}} \\
-\cline{2-5}
+\multirow{2}{*}{\textbf{Pile}} & \multicolumn{2}{c|}{\textbf{DistilBERT}} & \multicolumn{2}{c|}{\textbf{RoBERTa}} \\
+\cline{2-3}\cline{4-5}
  & Val. & Test & Val. & Test \\
 \hline
 \inputartifacttabular{reference/artifacts/val_test_selection_snippet.tex}{Lignes générées depuis les campagnes archivées}
@@ -244,6 +246,7 @@ vecteur injecté reste
 \emph{partagé} entre émotions (section~\ref{sec:conception-m3}), la
 table servant à l'analyse et à la justification du protocole.
 
+\NeedspaceForTable[36]
 \begin{table}[H]
 \centering
 \caption{Correspondance GoEmotions $\rightarrow$ émotions NRC (Plutchik)}
@@ -519,6 +522,7 @@ causalement chaque sous-brique. Le
 tableaux~\ref{tab:expe-m2-controls} et~\ref{tab:expe-m2-controls-roberta}
 rapportent les contrôles mécanistiques (trois graines).
 
+\NeedspaceForTable[8]
 \begin{table}[H]
 \centering
 \caption{Contrôles M2 (DistilBERT-base, F1-macro test, trois graines)}
@@ -532,6 +536,7 @@ rapportent les contrôles mécanistiques (trois graines).
 \end{tabular}
 \end{table}
 
+\NeedspaceForTable[8]
 \begin{table}[H]
 \centering
 \caption{Contrôles M2 (RoBERTa-base, F1-macro test, trois graines)}
@@ -1014,6 +1019,7 @@ nous regroupons les exemples test selon le nombre d'étiquettes gold
 ($1$, $2$, $3$, $4+$) et reportons le F1-macro par bucket (DistilBERT,
 trois graines).
 
+\NeedspaceForTable[10]
 \begin{table}[H]
 \centering
 \caption{F1-macro test par cardinalité gold (DistilBERT, moyenne $\pm$ écart-type ; Step~0 : buckets sur les checkpoints de la campagne principale ; +M1 et +M1+M2 : passe d'évaluation supplémentaire, même protocole)}
@@ -1078,6 +1084,7 @@ porte $|g|$ élevée ne prouve pas que le lexique est utilisé de façon
 causale : le tableau~\ref{tab:expe-lexicon-ablation} montre des tests
 \emph{zero}/\emph{shuffle} à l'inférence quand les métriques existent.
 
+\NeedspaceForTable[14]
 \begin{table}[H]
 \centering
 \caption{F1-macro test : inférence normale vs lexique nul ou permuté (DistilBERT)}
