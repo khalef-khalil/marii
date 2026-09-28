@@ -215,6 +215,11 @@
 \newcommand{\filterminitoc}[1]{#1}
 \renewcommand{\thesection}{\csname filterminitoc \endcsname{\arabic{chapter}.}\arabic{section}}
 \newcommand{\minitocsection}{\begingroup\renewcommand{\filterminitoc}[1]{}\minitoc\endgroup}
+% Starred \chapter* entries in the TOC before the first numbered chapter
+% (Dédicaces, Remerciements, Introduction générale) shift minitoc files;
+% align the runtime mtc counter with that TOC order.
+\newcounter{minitocstaroffset}
+\setcounter{minitocstaroffset}{3}
 
 %=============== Customizing Chapters Names ===============%
 %@author: Stoufa
@@ -257,6 +262,7 @@
       \endgroup
       \ChapRefReadyfalse
     \fi
+    \setcounter{mtc}{\numexpr\value{chapter}+\value{minitocstaroffset}\relax}%
     \minitocsection
     \thispagestyle{empty}%
     \newpage
