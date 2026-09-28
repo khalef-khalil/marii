@@ -152,31 +152,21 @@ identique} ; le nombre de paramètres et le coût de calcul varient
 \end{tabular}
 \end{table}
 
-{\small
-\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{|p{4.5cm}|c|c|c|c|}
+\begin{table}[H]
+\centering
 \caption{Sélection sur validation vs F1-macro test (moyenne $\pm$ écart-type, trois graines)}
-\label{tab:expe-val-test-selection} \\
+\label{tab:expe-val-test-selection}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|p{4.5cm}|c|c|c|c|}
 \hline
 \textbf{Pile} & \multicolumn{2}{c|}{\textbf{DistilBERT}} & \multicolumn{2}{c|}{\textbf{RoBERTa}} \\
 \cline{2-5}
  & Val. & Test & Val. & Test \\
 \hline
-\endfirsthead
-\multicolumn{5}{|c|}{\emph{(suite du tableau~\ref{tab:expe-val-test-selection})}} \\
-\hline
-\textbf{Pile} & \multicolumn{2}{c|}{\textbf{DistilBERT}} & \multicolumn{2}{c|}{\textbf{RoBERTa}} \\
-\cline{2-5}
- & Val. & Test & Val. & Test \\
-\hline
-\endhead
-\hline
-\endfoot
-\hline
-\endlastfoot
 \inputartifacttabular{reference/artifacts/val_test_selection_snippet.tex}{Lignes générées depuis les campagnes archivées}
-\end{longtable}
-}
+\end{tabular}
+\end{table}
 
 Pour retenir une pile, nous \textbf{maximisons le F1-macro validation
 moyen} sur la ladder principale (Step~0, +M1, +M1+M2, +M3, +M4
@@ -254,24 +244,16 @@ vecteur injecté reste
 \emph{partagé} entre émotions (section~\ref{sec:conception-m3}), la
 table servant à l'analyse et à la justification du protocole.
 
-{\small
-\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{|p{3.2cm}|p{10.8cm}|}
+\begin{table}[H]
+\centering
 \caption{Correspondance GoEmotions $\rightarrow$ émotions NRC (Plutchik)}
-\label{tab:nrc-goemotions-map} \\
+\label{tab:nrc-goemotions-map}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|p{3.2cm}|p{10.8cm}|}
 \hline
 \textbf{Étiquette GoEmotions} & \textbf{Émotions NRC associées} \\
 \hline
-\endfirsthead
-\multicolumn{2}{|c|}{\emph{(suite du tableau~\ref{tab:nrc-goemotions-map})}} \\
-\hline
-\textbf{Étiquette GoEmotions} & \textbf{Émotions NRC associées} \\
-\hline
-\endhead
-\hline
-\endfoot
-\hline
-\endlastfoot
 admiration & trust, joy \\
 \hline
 amusement & joy, surprise \\
@@ -328,8 +310,8 @@ surprise & surprise \\
 \hline
 neutral & (aucune) \\
 \hline
-\end{longtable}
-}
+\end{tabular}
+\end{table}
 
 \section{Pipeline SenticNet (rappel protocolaire)}
 \label{sec:expe-senticnet}
