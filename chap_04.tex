@@ -148,27 +148,35 @@ identique} ; le nombre de paramètres et le coût de calcul varient
 \hline
 \textbf{Configuration} & \textbf{Paramètres} \\
 \hline
-\IfFileExists{reference/artifacts/param_counts_snippet.tex}{\input{reference/artifacts/param_counts_snippet}}{Step~0 et piles M1 à M4 (export paramètres) \\}%
-\hline
+\inputartifacttabular{reference/artifacts/param_counts_snippet.tex}{Step~0 et piles M1 à M4 (export paramètres)}
 \end{tabular}
 \end{table}
 
-\begin{table}[H]
-\centering
-\caption{Sélection sur validation vs F1-macro test (moyenne $\pm$ écart-type, trois graines)}
-\label{tab:expe-val-test-selection}
-\small
+{\small
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{|p{4.8cm}|c|c|c|c|}
+\begin{longtable}{|p{4.5cm}|c|c|c|c|}
+\caption{Sélection sur validation vs F1-macro test (moyenne $\pm$ écart-type, trois graines)}
+\label{tab:expe-val-test-selection} \\
 \hline
 \textbf{Pile} & \multicolumn{2}{c|}{\textbf{DistilBERT}} & \multicolumn{2}{c|}{\textbf{RoBERTa}} \\
 \cline{2-5}
  & Val. & Test & Val. & Test \\
 \hline
-\IfFileExists{reference/artifacts/val_test_selection_snippet.tex}{\input{reference/artifacts/val_test_selection_snippet}}{Lignes générées depuis les campagnes archivées \\}%
+\endfirsthead
+\multicolumn{5}{|c|}{\emph{(suite du tableau~\ref{tab:expe-val-test-selection})}} \\
 \hline
-\end{tabular}
-\end{table}
+\textbf{Pile} & \multicolumn{2}{c|}{\textbf{DistilBERT}} & \multicolumn{2}{c|}{\textbf{RoBERTa}} \\
+\cline{2-5}
+ & Val. & Test & Val. & Test \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+\inputartifacttabular{reference/artifacts/val_test_selection_snippet.tex}{Lignes générées depuis les campagnes archivées}
+\end{longtable}
+}
 
 Pour retenir une pile, nous \textbf{maximisons le F1-macro validation
 moyen} sur la ladder principale (Step~0, +M1, +M1+M2, +M3, +M4
@@ -538,8 +546,7 @@ rapportent les contrôles mécanistiques (trois graines).
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\IfFileExists{reference/artifacts/m2_controls_snippet.tex}{\input{reference/artifacts/m2_controls_snippet}}{Campagnes M2 en cours ou archivées \\}%
-\hline
+\inputartifacttabular{reference/artifacts/m2_controls_snippet.tex}{Campagnes M2 en cours ou archivées}
 \end{tabular}
 \end{table}
 
@@ -552,8 +559,7 @@ rapportent les contrôles mécanistiques (trois graines).
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\IfFileExists{reference/artifacts/m2_controls_roberta_snippet.tex}{\input{reference/artifacts/m2_controls_roberta_snippet}}{Campagne RoBERTa en cours \\}%
-\hline
+\inputartifacttabular{reference/artifacts/m2_controls_roberta_snippet.tex}{Campagne RoBERTa en cours}
 \end{tabular}
 \end{table}
 
@@ -1035,8 +1041,7 @@ trois graines).
 \hline
 \textbf{Card. gold} & \textbf{$n$ test} & \textbf{Step~0} & \textbf{+M1} & \textbf{+M1+M2} \\
 \hline
-\IfFileExists{reference/artifacts/cardinality_snippet.tex}{\input{reference/artifacts/cardinality_snippet}}{Export depuis campagnes avec checkpoints locaux \\}%
-\hline
+\inputartifacttabular{reference/artifacts/cardinality_snippet.tex}{Export depuis campagnes avec checkpoints locaux}
 \end{tabular}
 \end{table}
 
@@ -1102,8 +1107,7 @@ causale : le tableau~\ref{tab:expe-lexicon-ablation} montre des tests
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\IfFileExists{reference/artifacts/lexicon_ablation_snippet.tex}{\input{reference/artifacts/lexicon_ablation_snippet}}{Campagnes M3 avec ablation à l'inférence en cours \\}%
-\hline
+\inputartifacttabular{reference/artifacts/lexicon_ablation_snippet.tex}{Campagnes M3 avec ablation à l'inférence en cours}
 \end{tabular}
 \end{table}
 

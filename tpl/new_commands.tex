@@ -31,6 +31,15 @@
 \newcommand{\SecRef}[1]{section~\ref{#1}}%
 % Run-in heading « titre : » suite (avoids block-style \paragraph)
 \newcommand{\ParHead}[1]{\par\noindent\textbf{#1}\space}%
+% Artifact rows for \input inside tabular/longtable (fallback ends with \\).
+\newcommand{\inputartifacttabular}[2]{%
+  \IfFileExists{#1}{%
+    \input{#1}%
+  }{%
+    #2 \\%
+    \hline
+  }%
+}%
 
 %================= front cover variables =================%
 
