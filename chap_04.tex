@@ -138,7 +138,6 @@ comparaisons internes ont été interprétées à \emph{protocole d'affinage
 identique} ; le nombre de paramètres et le coût de calcul varient
 (tableau~\ref{tab:expe-param-count}).
 
-\NeedspaceForTable[10]
 \begin{table}[H]
 \centering
 \caption{Nombre de paramètres entraînables (DistilBERT-base, ordre de grandeur)}
@@ -149,24 +148,49 @@ identique} ; le nombre de paramètres et le coût de calcul varient
 \hline
 \textbf{Configuration} & \textbf{Paramètres} \\
 \hline
-\inputartifacttabular{reference/artifacts/param_counts_snippet.tex}{Step~0 et piles M1 à M4 (export paramètres)}
+Step~0 PLM (flat) & 66{,}384{,}412 \\
+\hline
++M1 & 67{,}567{,}132 \\
+\hline
++M1+M2 & 76{,}447{,}516 \\
+\hline
++M1+M2 (sans encodeur inter-émotions) & 69{,}359{,}644 \\
+\hline
++M1+M2+M3 (NRC) & 76{,}454{,}429 \\
+\hline
++M1+M2+M3+M4 (SenticNet) & 77{,}633{,}310 \\
+\hline
 \end{tabular}
 \end{table}
 
-\NeedspaceForTable[22]
 \begin{table}[H]
 \centering
 \caption{Sélection sur validation vs F1-macro test (moyenne $\pm$ écart-type, trois graines)}
 \label{tab:expe-val-test-selection}
 \small
-\renewcommand{\arraystretch}{1.12}
+\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|p{4.5cm}|c|c|c|c|}
 \hline
-\multirow{2}{*}{\textbf{Pile}} & \multicolumn{2}{c|}{\textbf{DistilBERT}} & \multicolumn{2}{c|}{\textbf{RoBERTa}} \\
-\cline{2-3}\cline{4-5}
- & Val. & Test & Val. & Test \\
+\textbf{Pile} & \textbf{DistilBERT Val.} & \textbf{DistilBERT Test} & \textbf{RoBERTa Val.} & \textbf{RoBERTa Test} \\
 \hline
-\inputartifacttabular{reference/artifacts/val_test_selection_snippet.tex}{Lignes générées depuis les campagnes archivées}
+Step~0 PLM & $0{,}491 \pm 0{,}002$ & $0{,}486 \pm 0{,}005$ & $0{,}488 \pm 0{,}006$ & $0{,}487 \pm 0{,}005$ \\
+\hline
++M1 & $0{,}471 \pm 0{,}005$ & $0{,}457 \pm 0{,}002$ & $0{,}486 \pm 0{,}001$ & $0{,}485 \pm 0{,}002$ \\
+\hline
++M1+M2 & $0{,}506 \pm 0{,}003$ & $0{,}505 \pm 0{,}004$ & $0{,}524 \pm 0{,}004$ & $0{,}526 \pm 0{,}007$ \\
+\hline
++M1+M2 (sans encodeur inter-émotions) & $0{,}482 \pm 0{,}001$ & $0{,}476 \pm 0{,}013$ & {---} & {---} \\
+\hline
++M1+M2 (sans attention phrase) & $0{,}507 \pm 0{,}006$ & $0{,}504 \pm 0{,}004$ & {---} & {---} \\
+\hline
++M1+M2+M3 (NRC) & $0{,}504 \pm 0{,}003$ & $0{,}504 \pm 0{,}008$ & $0{,}497 \pm 0{,}037$ & $0{,}493 \pm 0{,}045$ \\
+\hline
++M1+M2+M3 (SenticNet) & $0{,}501 \pm 0{,}003$ & $0{,}504 \pm 0{,}003$ & $0{,}518 \pm 0{,}005$ & $0{,}523 \pm 0{,}003$ \\
+\hline
++M1+M2+M3+M4 (SenticNet) & $0{,}504 \pm 0{,}004$ & $0{,}499 \pm 0{,}006$ & $0{,}515 \pm 0{,}005$ & $0{,}521 \pm 0{,}005$ \\
+\hline
++M1+M2+M3+M4 (NRC) & $0{,}508 \pm 0{,}002$ & $0{,}510 \pm 0{,}003$ & {---} & {---} \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -246,7 +270,6 @@ vecteur injecté reste
 \emph{partagé} entre émotions (section~\ref{sec:conception-m3}), la
 table servant à l'analyse et à la justification du protocole.
 
-\NeedspaceForTable[36]
 \begin{table}[H]
 \centering
 \caption{Correspondance GoEmotions $\rightarrow$ émotions NRC (Plutchik)}
@@ -522,7 +545,6 @@ causalement chaque sous-brique. Le
 tableaux~\ref{tab:expe-m2-controls} et~\ref{tab:expe-m2-controls-roberta}
 rapportent les contrôles mécanistiques (trois graines).
 
-\NeedspaceForTable[8]
 \begin{table}[H]
 \centering
 \caption{Contrôles M2 (DistilBERT-base, F1-macro test, trois graines)}
@@ -532,11 +554,15 @@ rapportent les contrôles mécanistiques (trois graines).
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\inputartifacttabular{reference/artifacts/m2_controls_snippet.tex}{Campagnes M2 en cours ou archivées}
+M1+M2 (référence) & $0{,}505 \pm 0{,}004$ \\
+\hline
+M1+M2 sans encodeur inter-émotions & $0{,}476 \pm 0{,}013$ \\
+\hline
+M1+M2 sans attention phrase & $0{,}504 \pm 0{,}004$ \\
+\hline
 \end{tabular}
 \end{table}
 
-\NeedspaceForTable[8]
 \begin{table}[H]
 \centering
 \caption{Contrôles M2 (RoBERTa-base, F1-macro test, trois graines)}
@@ -546,7 +572,12 @@ rapportent les contrôles mécanistiques (trois graines).
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\inputartifacttabular{reference/artifacts/m2_controls_roberta_snippet.tex}{Campagne RoBERTa en cours}
+M1+M2 (référence) & $0{,}526 \pm 0{,}007$ \\
+\hline
+M1+M2 sans encodeur inter-émotions & $0{,}507 \pm 0{,}011$ \\
+\hline
+M1+M2 sans attention phrase & $0{,}524 \pm 0{,}020$ \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -1009,7 +1040,47 @@ agrégat sur trois graines).}
 \label{fig:expe-error-pairs}
 \end{figure}
 
-\IfFileExists{error_analysis_snippet.tex}{\input{error_analysis_snippet}}{}
+\begin{table}[H]
+\centering
+\caption{Paires d'erreurs les plus fréquentes (+M1+M2, DistilBERT, agrégat sur graines)}
+\label{tab:expe-error-pairs}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|p{0.62\textwidth}|r|}
+\hline
+\textbf{Motif (référence vs prédiction)} & \textbf{Occurrences} \\
+\hline
+FN approval pred neutral & 285 \\
+\hline
+FP neutral gold approval & 264 \\
+\hline
+FN annoyance pred neutral & 242 \\
+\hline
+FN neutral pred curiosity & 238 \\
+\hline
+FP curiosity gold neutral & 227 \\
+\hline
+FP neutral gold disapproval & 227 \\
+\hline
+FP approval gold neutral & 221 \\
+\hline
+FP neutral gold annoyance & 220 \\
+\hline
+FN disapproval pred neutral & 212 \\
+\hline
+FP disapproval gold neutral & 209 \\
+\hline
+\end{tabular}
+\end{table}
+
+\ParHead{Illustrations (extrait) :}
+\begin{itemize}
+\item \textbf{grief} (TP) : « My condolences.… » ; or : \{grief, sadness\} ; prédit : \{grief, sadness\}.
+\item \textbf{grief} (FN) : « [NAME] death is just so..... senseless. Why? WHY??? The based gods have forsaken us… » ; or : \{grief\} ; prédit : \{\}.
+\item \textbf{relief} (TP) : « Resetting a dislocated knee hurts like hell but it feels a lot better immediately after.… » ; or : \{relief\} ; prédit : \{caring, relief\}.
+\item \textbf{relief} (TP) : « I've exposed on social media. It made me feel better so I don't care what anyway has to say about it.… » ; or : \{relief\} ; prédit : \{relief\}.
+\item \textbf{neutral} (TP) : « They got bored from haunting earth for thousands of years and ultimately moved on to the afterlife.… » ; or : \{neutral\} ; prédit : \{neutral\}.
+\item \textbf{neutral} (TP) : « After he left the bus, the two harpies sat next to each other and discussed why they were unable to find a decent man.… » ; or : \{neutral\} ; prédit : \{neutral\}.
+\end{itemize}
 
 \subsection{Performance selon le nombre d'émotions gold}
 \label{sec:expe-cardinality}
@@ -1019,7 +1090,6 @@ nous regroupons les exemples test selon le nombre d'étiquettes gold
 ($1$, $2$, $3$, $4+$) et reportons le F1-macro par bucket (DistilBERT,
 trois graines).
 
-\NeedspaceForTable[10]
 \begin{table}[H]
 \centering
 \caption{F1-macro test par cardinalité gold (DistilBERT, moyenne $\pm$ écart-type ; Step~0 : buckets sur les checkpoints de la campagne principale ; +M1 et +M1+M2 : passe d'évaluation supplémentaire, même protocole)}
@@ -1029,7 +1099,14 @@ trois graines).
 \hline
 \textbf{Card. gold} & \textbf{$n$ test} & \textbf{Step~0} & \textbf{+M1} & \textbf{+M1+M2} \\
 \hline
-\inputartifacttabular{reference/artifacts/cardinality_snippet.tex}{Export depuis campagnes avec checkpoints locaux}
+1 & 4590 & $0{,}502 \pm 0{,}007$ & $0{,}490 \pm 0{,}007$ & $0{,}506 \pm 0{,}003$ \\
+\hline
+2 & 774 & $0{,}437 \pm 0{,}018$ & $0{,}361 \pm 0{,}003$ & $0{,}488 \pm 0{,}009$ \\
+\hline
+3 & 61 & $0{,}315 \pm 0{,}018$ & $0{,}288 \pm 0{,}037$ & $0{,}320 \pm 0{,}018$ \\
+\hline
+4+ & 2 & $0{,}052 \pm 0{,}006$ & $0{,}032 \pm 0{,}011$ & $0{,}048 \pm 0{,}000$ \\
+\hline
 \end{tabular}
 \end{table}
 
@@ -1084,7 +1161,6 @@ porte $|g|$ élevée ne prouve pas que le lexique est utilisé de façon
 causale : le tableau~\ref{tab:expe-lexicon-ablation} montre des tests
 \emph{zero}/\emph{shuffle} à l'inférence quand les métriques existent.
 
-\NeedspaceForTable[14]
 \begin{table}[H]
 \centering
 \caption{F1-macro test : inférence normale vs lexique nul ou permuté (DistilBERT)}
@@ -1096,7 +1172,24 @@ causale : le tableau~\ref{tab:expe-lexicon-ablation} montre des tests
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\inputartifacttabular{reference/artifacts/lexicon_ablation_snippet.tex}{Campagnes M3 avec ablation à l'inférence en cours}
+M3 SenticNet (Normal) & $0{,}503 \pm 0{,}003$ \\
+\hline
+M3 SenticNet (Lexique nul) & $0{,}484 \pm 0{,}004$ \\
+\hline
+M3 SenticNet (Lexique permuté) & $0{,}502 \pm 0{,}005$ \\
+\hline
+M3 NRC (Normal) & $0{,}508 \pm 0{,}002$ \\
+\hline
+M3 NRC (Lexique nul) & $0{,}507 \pm 0{,}002$ \\
+\hline
+M3 NRC (Lexique permuté) & $0{,}508 \pm 0{,}002$ \\
+\hline
+M3+M4 NRC (Normal) & $0{,}510 \pm 0{,}003$ \\
+\hline
+M3+M4 NRC (Lexique nul) & $0{,}510 \pm 0{,}003$ \\
+\hline
+M3+M4 NRC (Lexique permuté) & $0{,}510 \pm 0{,}003$ \\
+\hline
 \end{tabular}
 \end{table}
 
