@@ -17,8 +17,9 @@ Les variantes +M3 (prior \emph{document}) restent au niveau de M1+M2 ;
 +M4 SenticNet recule légèrement ; seule la branche NRC+M4
 ($0{,}510 \pm 0{,}003$) dépasse marginalement M1+M2
 ($0{,}505 \pm 0{,}004$) sans écart net suffisant pour modifier la pile
-retenue. Le reste du chapitre déroule le cadre, les ablations et
-l'analyse par classe.
+retenue. Le reste du chapitre déroule le cadre, les ablations,
+l'analyse par classe, puis le bilan des hypothèses et les recommandations
+pratiques en fin de chapitre.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -147,7 +148,7 @@ identique} ; le nombre de paramètres et le coût de calcul varient
 \hline
 \textbf{Configuration} & \textbf{Paramètres} \\
 \hline
-\IfFileExists{reference/artifacts/param_counts_snippet.tex}{\input{reference/artifacts/param_counts_snippet}}{Step~0 et piles M1 à M4 (export paramètres) \\}
+\IfFileExists{reference/artifacts/param_counts_snippet.tex}{\input{reference/artifacts/param_counts_snippet}}{Step~0 et piles M1 à M4 (export paramètres) \\}%
 \hline
 \end{tabular}
 \end{table}
@@ -164,7 +165,7 @@ identique} ; le nombre de paramètres et le coût de calcul varient
 \cline{2-5}
  & Val. & Test & Val. & Test \\
 \hline
-\IfFileExists{reference/artifacts/val_test_selection_snippet.tex}{\input{reference/artifacts/val_test_selection_snippet}}{Lignes générées depuis les campagnes archivées \\}
+\IfFileExists{reference/artifacts/val_test_selection_snippet.tex}{\input{reference/artifacts/val_test_selection_snippet}}{Lignes générées depuis les campagnes archivées \\}%
 \hline
 \end{tabular}
 \end{table}
@@ -537,7 +538,7 @@ rapportent les contrôles mécanistiques (trois graines).
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\IfFileExists{reference/artifacts/m2_controls_snippet.tex}{\input{reference/artifacts/m2_controls_snippet}}{Campagnes M2 en cours ou archivées \\}
+\IfFileExists{reference/artifacts/m2_controls_snippet.tex}{\input{reference/artifacts/m2_controls_snippet}}{Campagnes M2 en cours ou archivées \\}%
 \hline
 \end{tabular}
 \end{table}
@@ -551,7 +552,7 @@ rapportent les contrôles mécanistiques (trois graines).
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\IfFileExists{reference/artifacts/m2_controls_roberta_snippet.tex}{\input{reference/artifacts/m2_controls_roberta_snippet}}{Campagne RoBERTa en cours \\}
+\IfFileExists{reference/artifacts/m2_controls_roberta_snippet.tex}{\input{reference/artifacts/m2_controls_roberta_snippet}}{Campagne RoBERTa en cours \\}%
 \hline
 \end{tabular}
 \end{table}
@@ -1034,7 +1035,7 @@ trois graines).
 \hline
 \textbf{Card. gold} & \textbf{$n$ test} & \textbf{Step~0} & \textbf{+M1} & \textbf{+M1+M2} \\
 \hline
-\IfFileExists{reference/artifacts/cardinality_snippet.tex}{\input{reference/artifacts/cardinality_snippet}}{Export depuis campagnes avec checkpoints locaux \\}
+\IfFileExists{reference/artifacts/cardinality_snippet.tex}{\input{reference/artifacts/cardinality_snippet}}{Export depuis campagnes avec checkpoints locaux \\}%
 \hline
 \end{tabular}
 \end{table}
@@ -1080,7 +1081,8 @@ NRC / GoEmotions, réservé à l'extension \emph{par étiquette}.
 \subsection{Validité externe}
 Les résultats concernent GoEmotions (Reddit, anglais) avec le protocole
 du tableau~\ref{tab:expe-hyperparams}. On ne sait pas s'ils tiennent sur
-d'autres types de textes ou d'autres langues (\ChapRef{perspectives}).
+d'autres types de textes ou d'autres langues (perspectives en
+conclusion générale).
 
 \subsection{Validité conclusionnelle}
 Les classes très rares (par ex. \emph{grief}) donnent des F1 instables.
@@ -1100,7 +1102,7 @@ causale : le tableau~\ref{tab:expe-lexicon-ablation} montre des tests
 \hline
 \textbf{Configuration} & \textbf{F1-macro} \\
 \hline
-\IfFileExists{reference/artifacts/lexicon_ablation_snippet.tex}{\input{reference/artifacts/lexicon_ablation_snippet}}{Campagnes M3 avec ablation à l'inférence en cours \\}
+\IfFileExists{reference/artifacts/lexicon_ablation_snippet.tex}{\input{reference/artifacts/lexicon_ablation_snippet}}{Campagnes M3 avec ablation à l'inférence en cours \\}%
 \hline
 \end{tabular}
 \end{table}
@@ -1120,13 +1122,89 @@ pour F1 et mAP. Les versions exactes et le GPU sont ceux des notebooks
 Colab (annexe B). La table NRC / GoEmotions est fixée à la main pour
 l'extension par étiquette, elle n'est pas apprise.
 
+\section{Enseignements méthodologiques et bilan des hypothèses}
+\label{sec:expe-enseignements}
+
+Les campagnes archivées permettent de formuler un bilan au-delà des
+tableaux d'ablation. Quatre principes ont structuré le protocole :
+\begin{itemize}
+\item \textbf{Multi-backbone} : Step~0 sur DistilBERT et RoBERTa donne
+      des F1-macro test proches ($0{,}486 \pm 0{,}005$ vs
+      $0{,}487 \pm 0{,}005$). La ladder M1 à M4 est refaite sur les deux
+      encodeurs (tableau~\ref{tab:expe-roberta-ablation}) pour comparer
+      H1 à H4 au même protocole.
+\item \textbf{Prétraitement} : M1 seul fait moins bien que le flat à
+      budget token comparable. Les gains viennent surtout de M1+M2 ; les
+      contrôles M2 montrent que l'encodeur inter-émotions compte plus que
+      l'attention phrase seule.
+\item \textbf{Métriques par classe} : Le F1-macro cache des différences
+      fortes (tableau~\ref{tab:expe-per-class-f1}). M2 aide surtout des
+      émotions de fréquence moyenne, pas les plus rares (\emph{grief},
+      \emph{relief}).
+\item \textbf{Comparaisons externes} : Dépasser le $0{,}46$ macro de
+      BERT-base \cite{demszky2020} reste indicatif (encodeur, fenêtre,
+      budget). L'argument principal reste les comparaisons internes à
+      budget fixe.
+\end{itemize}
+
+Les hypothèses H1 à H4 (\SecRef{sec:conception-hypotheses}) se résument
+ainsi, en cohérence avec le tableau~\ref{tab:expe-h1-h4-summary} :
+\begin{itemize}
+\item \textbf{H1 non soutenue} : l'encodage hiérarchique sans M2 ne
+      remplace pas le \texttt{[CLS]} flat dans ce protocole ; M1 seul
+      n'est pas conseillé pour le F1-macro.
+\item \textbf{H2 soutenue} : M2 rattrape et dépasse le flat sur les deux
+      encodeurs ($0{,}505 \pm 0{,}004$ vs $0{,}486 \pm 0{,}005$ en
+      DistilBERT ; $0{,}526 \pm 0{,}007$ en RoBERTa), avec un rôle net
+      de l'encodeur inter-émotions (tableaux~\ref{tab:expe-m2-controls}
+      et~\ref{tab:expe-m2-controls-roberta}).
+\item \textbf{H3 prudente} : prior \emph{document} neutre en macro ;
+      NRC \emph{par étiquette} : gain marginal ($\approx 0{,}003$),
+      SenticNet neutre.
+\item \textbf{H4 prudente} : +M4 SenticNet recule ; NRC+M4
+      ($0{,}510 \pm 0{,}003$) n'apporte qu'un faible gain vs M1+M2, sans
+      campagne RoBERTa ; M4 n'est pas retenu.
+\end{itemize}
+
+\section{Recommandations pratiques}
+\label{sec:expe-recommandations}
+
+Ce qui suit traduit le bilan en choix d'usage pour un déploiement ou
+une reproduction.
+
+\ParHead{Configuration retenue :}D'après le F1-macro \emph{validation}
+moyen (trois graines) et H2, la pile de référence est \textbf{M1+M2} :
+$0{,}526 \pm 0{,}007$ avec RoBERTa-base, $0{,}505 \pm 0{,}004$ avec
+DistilBERT-base (tableau~\ref{tab:expe-roberta-ablation}, protocole du
+tableau~\ref{tab:expe-hyperparams}). Segmentation $M{=}4$, attention par
+émotion ; pas de M3/M4 si la macro prime. DistilBERT convient si
+$\approx 2$ points de macro suffisent, avec un modèle plus léger
+\cite{sanh2019distilbert}.
+
+\ParHead{Quand simplifier ou enrichir :}
+\begin{itemize}
+\item \textbf{Flat Step~0} : baseline plus légère si le déploiement
+      compte plus que $\approx 2$ points de macro ($0{,}486 \pm 0{,}005$).
+\item \textbf{M3 (NRC ou SenticNet)} : prior \emph{document} sans gain
+      macro stable ; NRC \emph{par étiquette} : gain marginal sur
+      DistilBERT ($\approx +0{,}003$). M2 reste le choix par défaut.
+\item \textbf{RoBERTa} : même tendance qu'en DistilBERT (M2 utile, M1
+      seul insuffisant), avec une macro test plus haute sur M1+M2
+      ($0{,}526 \pm 0{,}007$).
+\end{itemize}
+
+\ParHead{Coût et risques :}M1+M2 encode jusqu'à quatre phrases par
+commentaire. Le coût reste modéré par rapport à un forward document
+unique, mais la segmentation NLTK et les têtes multi-émotions ajoutent
+des réglages. Changer $M$ ou la limite de 32 tokens impose de refaire
+l'analyse de troncature (section~\ref{sec:expe-corpus-stats}).
+
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 GoEmotions a été évalué sous protocole fixe (DistilBERT et RoBERTa,
 tableaux~\ref{tab:expe-baseline-step0} et~\ref{tab:expe-roberta-ablation}).
-H1 à H4 sont reportées aux tableaux d'ablation et au
-tableau~\ref{tab:expe-h1-h4-summary} ; pile retenue sur validation :
-M1+M2. M3 document et M4 SenticNet n'ajoutent pas de gain macro stable ;
-NRC+M4 reste marginal. Cardinalité gold, contrôles M2 (deux backbones),
-analyse par classe et confusions complètent la macro. Le
-\ChapRef{perspectives} en tire des recommandations pratiques.
+La pile retenue sur validation est M1+M2 ; M3 document et M4 SenticNet
+n'ajoutent pas de gain macro stable ; NRC+M4 reste marginal.
+Cardinalité gold, contrôles M2, analyse par classe et confusions
+complètent la lecture de la macro. La conclusion générale reprend la
+contribution du mémoire et ouvre les perspectives de recherche.

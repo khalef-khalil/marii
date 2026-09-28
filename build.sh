@@ -39,7 +39,12 @@ build() {
   latexmk -pdf -interaction=nonstopmode -f \
     -outdir="$BUILD_DIR" \
     -auxdir="$BUILD_DIR" \
-    "${MAIN}.tex"
+    "${MAIN}.tex" || true
+
+  if [[ ! -f "$BUILD_DIR/${MAIN}.pdf" ]]; then
+    echo "Build failed: $BUILD_DIR/${MAIN}.pdf was not produced." >&2
+    exit 1
+  fi
 
   cp "$BUILD_DIR/${MAIN}.pdf" "$PDF_OUT"
   if [[ -f "$BUILD_DIR/${MAIN}.log" ]]; then

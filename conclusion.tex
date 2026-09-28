@@ -1,6 +1,6 @@
-\chapter*{Conclusion générale}
-\addcontentsline{toc}{chapter}{Conclusion générale}
-\markboth{Conclusion générale}{}
+\chapter*{Conclusion générale et perspectives}
+\addcontentsline{toc}{chapter}{Conclusion générale et perspectives}
+\markboth{Conclusion générale et perspectives}{}
 
 Ce mémoire porte sur la détection de plusieurs émotions dans un même
 texte, sur le jeu GoEmotions \cite{demszky2020}. Le problème est
@@ -13,9 +13,12 @@ Pour répondre à cette problématique, nous avons conçu HAKE-MER, une
 architecture modulaire (M1 à M4) évaluée par ablation cumulative à
 budget d'affinage constant, sur DistilBERT-base et RoBERTa-base et
 trois graines. Le protocole, les hypothèses H1 à H4 et l'implémentation
-sont au \ChapRef{conception} ; les campagnes, tableaux et analyses
-d'erreurs au \ChapRef{experimentation}.
+sont au \ChapRef{conception} ; les campagnes, tableaux, bilan H1 à H4
+et recommandations d'usage au \ChapRef{experimentation}
+(sections~\ref{sec:expe-enseignements} et~\ref{sec:expe-recommandations}).
 
+\section*{Synthèse des résultats}
+\addcontentsline{toc}{section}{Synthèse des résultats}
 Les expériences montrent que le gain mesurable en F1-macro vient surtout
 de la pile \textbf{M1+M2} : encodage hiérarchique du texte plus
 interaction entre émotions (M2), retenue sur validation sur les deux
@@ -24,15 +27,45 @@ et la pondération dynamique (M4) testés ici n'apportent pas de gain
 macro stable au prix de la complexité ajoutée. L'analyse par classe et
 par cardinalité gold confirme que la macro masque des comportements
 très différents, notamment sur les étiquettes rares et le rôle central
-de \emph{neutral}.
+de \emph{neutral}. H2 est la seule hypothèse clairement soutenue ; H3
+et H4 restent prudente au regard des chiffres archivés.
 
-Cette synthèse ne prétend pas couvrir tout le champ de la détection
-d'émotions : un seul corpus anglais (Reddit), un protocole d'affinage
-fixe et des comparaisons externes limitées au cadre GoEmotions. Les
-recommandations d'usage, le bilan H1 à H4 et les pistes de prolongement
-(classes rares, autres corpus, connaissances externes, interprétabilité)
-sont développés au \ChapRef{perspectives}, sans les reprendre ici.
+\section*{Recommandations}
+\addcontentsline{toc}{section}{Recommandations}
+Pour un usage orienté performance macro sur GoEmotions, la configuration
+retenue est \textbf{M1+M2} (RoBERTa si la marge de $\approx 2$ points
+de F1-macro justifie le coût, DistilBERT sinon). Step~0 flat reste
+pertinent lorsque la simplicité de déploiement prime ; M3 et M4 ne sont
+pas recommandés dans le protocole testé. Le détail chiffré, les cas où
+enrichir ou simplifier, et les menaces à la validité figurent au
+\ChapRef{experimentation}.
 
+\section*{Perspectives de recherche}
+\addcontentsline{toc}{section}{Perspectives de recherche}
+Ce travail ne clôt pas le sujet ; plusieurs prolongements restent
+ouverts sans remettre en cause les campagnes déjà archivées :
+\begin{itemize}
+\item \textbf{Déséquilibre et classes rares} : pertes repondérées
+      \cite{lin2017focal}, rééchantillonnage \cite{chawla2002smote},
+      seuils par émotion, ou entraînement ciblé sur \emph{grief},
+      \emph{relief}, etc.
+\item \textbf{Lexique et connaissances} : fusion par émotion, graphes
+      type ConceptNet \cite{speer2017}, bon sens \cite{ghosal2020cosmic},
+      ou meilleur alignement Plutchik / GoEmotions que le gate global M3.
+\item \textbf{Autres lexiques} : tester d'autres ressources sur la pile
+      M1+M2 déjà validée.
+\item \textbf{Validation externe} : SemEval \cite{mohammad2018semeval},
+      EmoContext \cite{semeval2019emocontext}, ou corpus hors Reddit.
+\item \textbf{Modèles généralistes} : comparer M1+M2 à des LLM ou
+      encodeurs de phrase \cite{reimers2019sentence} quand le protocole
+      est comparable \cite{sharma2024deeplearningmlc}.
+\item \textbf{Interprétabilité} : explications locales ou attention
+      \cite{ribeiro2016lime,clark2019bert} pour \emph{neutral} et les
+      labels rares.
+\end{itemize}
+
+\section*{Bilan personnel}
+\addcontentsline{toc}{section}{Bilan personnel}
 Sur le plan personnel, ce travail m'a permis de mener un cycle complet
 de recherche appliquée : cadrage bibliographique, conception modulaire,
 campagnes reproductibles et lecture critique des scores globaux face aux
