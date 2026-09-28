@@ -43,12 +43,12 @@ def main() -> None:
         (
             "+M1+M2 (sans encodeur inter-émotions)",
             f"m1_m2_no_enc_{dist}_campaign.json",
-            None,
+            f"m1_m2_no_enc_{rob}_campaign.json",
         ),
         (
             "+M1+M2 (sans attention phrase)",
             f"m1_m2_no_xattn_{dist}_campaign.json",
-            None,
+            f"m1_m2_no_xattn_{rob}_campaign.json",
         ),
         (
             "+M1+M2+M3 (NRC)",
