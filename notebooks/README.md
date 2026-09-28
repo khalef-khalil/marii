@@ -1,68 +1,38 @@
-# Colab — Step 0 baseline
+# Notebooks Colab — campagnes HAKE-MER (GoEmotions)
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/baseline_plm_campaign.ipynb)
+**PFE — Mariem El Wedani** · Encadrant académique : Sahbi Bahroun · 2025–2026
 
-**Two steps (same as before):**
+Ces notebooks reproduisent les expériences du chapitre 4 du rapport : ablations Step 0, M1 à M4, contrôles M2, extensions RoBERTa, analyse par classe et compléments d’évaluation.
 
-1. **Phase 1:** Run through **Download DistilBERT zip** → archive as `reference/artifacts/baseline_plm_distilbert_step0.zip` (and unpack JSON/metrics alongside).
-2. **Phase 2:** Uncomment RoBERTa cell, run it, run **Download RoBERTa zip** → archive as `reference/artifacts/baseline_plm_roberta_step0.zip` when ready.
+## Prérequis
 
-Protocol: batch 16, LR 5e-5, 4 epochs (GoEmotions/Demszky anchor).
+- Compte Google Colab, **runtime GPU** (T4 ou équivalent).
+- Protocole commun : lot 16, taux d’apprentissage \(5\times10^{-5}\), **4 époques**, graines **42**, **123**, **456**, sélection au meilleur F1-macro validation.
 
-## M1 ablation (H1)
+## Ordre logique des campagnes
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_campaign.ipynb)
+| Objectif | Notebook |
+|----------|----------|
+| Baseline flat (Step 0) | `baseline_plm_campaign.ipynb` |
+| M1 seul (H1) | `m1_campaign.ipynb` |
+| M1+M2 (H2) | `m1_m2_campaign.ipynb` |
+| M3 NRC / SenticNet (H3) | `m1_m2_m3_nrc_campaign.ipynb`, `m1_m2_m3_senticnet_campaign.ipynb` |
+| Prior lexical par étiquette | `m1_m2_m3_nrc_emotion_specific_campaign.ipynb`, `m1_m2_m3_senticnet_emotion_specific_campaign.ipynb` |
+| M4 (H4) | `m1_m2_m3_m4_senticnet_campaign.ipynb`, `m1_m2_m3_nrc_m4_campaign.ipynb` |
+| Contrôles M2 | `m1_m2_control_no_enc_campaign.ipynb`, `m1_m2_control_no_xattn_campaign.ipynb` |
+| RoBERTa (même ladder) | `roberta_m1_m1_m2_campaign.ipynb`, `roberta_m3_m4_campaign.ipynb`, `roberta_m2_controls_campaign.ipynb`, `roberta_full_ladder_campaign.ipynb` |
+| F1 par classe | `per_class_export_campaign.ipynb` |
+| Analyse d’erreurs (+M1+M2) | `error_analysis_m1_m2_campaign.ipynb` |
+| Cardinalité gold / ablation lexique | `step0_cardinality_campaign.ipynb`, `eval_supplements_campaign.ipynb` |
 
-Run `m1_campaign.ipynb` → archive `m1_distilbert_step0.zip` and executed notebook under `reference/training_records/step_m1/`.
+## Après une session Colab
 
-## M1+M2 ablation (H2)
+1. Télécharger l’archive zip proposée en fin de notebook (métriques et checkpoints légers).
+2. Télécharger le **notebook exécuté** (Fichier → Télécharger → `.ipynb`) pour conserver logs et hash Git.
+3. Les agrégats JSON correspondants figurent aussi dans le livrable encadrant (`resultats/agregats/`).
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_campaign.ipynb)
+## Dépôt Git
 
-Run `m1_m2_campaign.ipynb` → archive `m1_m2_distilbert_step0.zip` under `reference/training_records/step_m1_m2/`.
+Les notebooks clônent le dépôt du projet au démarrage. En cas de dépôt privé, définir le secret Colab `GITHUB_REPO` (forme `utilisateur/nom-du-depot`) et éventuellement `GITHUB_TOKEN`.
 
-## M1+M2+M3 NRC (H3 vs M1+M2)
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_nrc_campaign.ipynb)
-
-Run `m1_m2_m3_nrc_campaign.ipynb` → archive `m1_m2_m3_nrc_distilbert_step0.zip`.
-
-## M1+M2+M3 SenticNet (H3 vs NRC)
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_senticnet_campaign.ipynb)
-
-Run `m1_m2_m3_senticnet_campaign.ipynb` → archive `m1_m2_m3_senticnet_distilbert_step0.zip`.
-
-## RoBERTa +M1 / +M1+M2 (multi-backbone)
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/roberta_m1_m1_m2_campaign.ipynb)
-
-Run `roberta_m1_m1_m2_campaign.ipynb` → archive `roberta_m1_m1_m2_campaign.zip` under `reference/training_records/step_roberta_ablation/`.
-
-## Error analysis (+M1+M2, DistilBERT)
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/error_analysis_m1_m2_campaign.ipynb)
-
-Run `error_analysis_m1_m2_campaign.ipynb` → archive `error_analysis_m1_m2.zip` and executed notebook under `reference/training_records/step_error_analysis/`.
-
-## High-impact plan (Colab only — run in order)
-
-Push `main` on GitHub first, then open each notebook (GPU runtime). After each run: download **zip** + executed **.ipynb** and send for report integration.
-
-1. **M2 control (no inter-emotion encoder)** — [Open in Colab](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_control_no_enc_campaign.ipynb) → `m1_m2_no_enc_distilbert_step0.zip`
-2. **M2 control (no phrase cross-attention)** — [Open in Colab](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_control_no_xattn_campaign.ipynb) → `m1_m2_no_xattn_distilbert_step0.zip`
-3. **H4 NRC + M4** — [Open in Colab](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/m1_m2_m3_nrc_m4_campaign.ipynb) → `m1_m2_m3_nrc_m4_distilbert_step0.zip`
-
-## Eval supplements (cardinality + lexicon ablation, eval-only)
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/eval_supplements_campaign.ipynb)
-
-Trains **only missing** Step~0 / M1 / M1+M2 / M3 checkpoints, then runs `run_eval_supplements.sh` → download `eval_supplements_distilbert.zip` (updated campaigns + `cardinality_snippet.tex` + `lexicon_ablation_snippet.tex`).
-
-## Step~0 cardinality only (fill first column of cardinality table)
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/khalef-khalil/marii/blob/main/notebooks/step0_cardinality_campaign.ipynb)
-
-Trains **full-protocol** Step~0 checkpoints if missing, then `run_step0_cardinality.sh` → `step0_cardinality_distilbert.zip`. Do **not** use local smoke-test `runs/` (subsampled eval).
-
-**Training records:** archive executed Colab notebooks and manifests under [`reference/training_records/`](../reference/training_records/README.md). After updating artifacts, run `python scripts/build_step0_training_record.py` to refresh the Step 0 record notebooks from campaign JSON.
+Les journaux exécutés archivés pour ce PFE sont regroupés dans `reference/training_records/` du projet source (copie dans le zip encadrant : `journaux_colab/`).
