@@ -1,0 +1,31 @@
+% Shared mémoire block. Caller must define \CoverRuleColor and \CoverTitleColor (e.g. isiBlue or black).
+\noindent{\color{\CoverRuleColor}\rule{\linewidth}{1.1pt}}
+\vskip0.45cm
+\begin{center}
+{\color{\CoverTitleColor}\sffamily\bfseries\fontsize{13.5}{16}\selectfont MÉMOIRE DE MASTER}\\[0.45cm]
+{\large\textit{Présenté en vue de l'obtention du}}\\[0.28cm]
+{\large\bfseries\@diplomaName}\\[0.28cm]
+{\large Spécialité : \@speciality}
+\end{center}
+\vskip0.45cm
+\noindent{\color{\CoverRuleColor}\rule{\linewidth}{1.1pt}}
+\vskip0.12cm
+\begin{center}
+{\color{\CoverTitleColor}\bfseries\large\@title}
+\end{center}
+\vskip0.12cm
+\noindent{\color{\CoverRuleColor}\rule{\linewidth}{1.1pt}}
+\vskip0.95cm
+\begin{center}
+\large
+\textbf{Par :}\\[4mm]
+{\ifthenelse{\boolean{isBinomal}}
+    {\bfseries\large\@author \quad et \quad \bfseries\large\@secondAuthor}
+    {\Large\bfseries\@author}%
+}
+\vskip8mm
+\noindent
+\makebox[0pt][l]{\textbf{Encadrant}}%
+\makebox[\linewidth][c]{\@academicFramerName}%
+\makebox[0pt][r]{\@academicFramerSpeciality}%
+\end{center}

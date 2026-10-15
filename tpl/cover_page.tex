@@ -1,62 +1,13 @@
 
-%===== File containing the main cover of the document =====%
-% Layout aligned with ISI page de garde (Mémoire de Master).
+%===== Main cover (color accents) =====%
 
 \thispagestyle{cover}%
 \newgeometry{bottom=25mm,left=20mm,top=15mm,right=20mm}
-\hspace{-47pt}
-\begin{minipage}[l]{0.26\columnwidth}
-\vspace{4mm}
-\includegraphics[width=\columnwidth]{logo-isi.png}\\
-\end{minipage}
-\hfill
-\begin{minipage}[l]{0.58\columnwidth}
-\centering
-\footnotesize
-\textbf{République Tunisienne}\\
-\textbf{Ministère de l'Enseignement Supérieur\\
-et de la Recherche Scientifique}\\
-\textbf{Université de Tunis El Manar}\\
-\textbf{Institut Supérieur d'Informatique}
-\end{minipage}
-\hfill
-\begin{minipage}[l]{0.14\columnwidth}
-\vspace{4mm}
-\includegraphics[width=\columnwidth]{Logo_UTM}\\
-\end{minipage}
-\vskip1.2cm
-
-\begin{center}
-{\LARGE\textbf{MÉMOIRE DE MASTER}}\\
-\vskip0.45cm
-\large
-\textbf{Présenté en vue de l'obtention du}\\[2mm]
-\textbf{\@diplomaName}\\[2mm]
-\textbf{Spécialité : \@speciality}
-\end{center}
-
-\vskip0.8cm
 \definecolor{isiBlue}{RGB}{31, 78, 121}
-\noindent{\color{isiBlue}\rule{\linewidth}{1.2pt}}
-\vskip0.35cm
-\begin{center}
-{\Large\textbf{\@title}}
-\end{center}
-\vskip0.35cm
-\noindent{\color{isiBlue}\rule{\linewidth}{1.2pt}}
-
-\vskip1.1cm
-\begin{center}
-\large
-\textbf{Par :}\\[4mm]
-{\ifthenelse{\boolean{isBinomal}}
-    {%
-        \textbf{\@author} \quad et \quad \textbf{\@secondAuthor}%
-    }
-    {\Large\textbf{\@author}}%
-}
-\vskip10mm
-\textbf{Soutenu le \@defenseDate}
-\end{center}
-
+\def\CoverLogoISI{logo-isi.png}
+\def\CoverLogoUTM{Logo_UTM}
+\def\CoverRuleColor{isiBlue}
+\def\CoverTitleColor{isiBlue}
+\input{tpl/cover_page_header}
+\input{tpl/cover_page_memoire_core}
 \restoregeometry
