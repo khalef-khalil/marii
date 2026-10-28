@@ -193,7 +193,7 @@ s = new("Contexte : un texte, plusieurs émotions", notes=(
     "On a travaillé sur la dataset GoEmotions. Elle se compose de commentaires Reddit, annotés avec 27 émotions, "
     "plus neutral, donc 28 classes. "
     "Le découpage est celui des auteurs : plus de 40 000 exemples pour l'entraînement, "
-    "et un peu plus de 5 000 pour la validation comme pour le test. Les chiffres exacts sont sur la diapo. "
+    "et un peu plus de 5 000 pour la validation comme pour le test. "
     "Le graphique, à droite, change un peu l'image qu'on se fait de la tâche : "
     "autour de 85 % des commentaires de test n'ont qu'une seule étiquette. "
     "Et les classes sont très inégales. neutral en a près de 1 800, grief seulement 6. "
@@ -360,7 +360,7 @@ s = new("Résultat 1 : M1+M2 est la seule étape qui progresse", notes=(
     "Le point qui saute aux yeux : M1 seul recule par rapport au modèle plat. "
     "Puis M1+M2 remonte, avec un gain d'environ 0,02 sur Step 0. "
     "M3 et M4 restent au même niveau. Ils ne dépassent pas M1+M2. "
-    "Les valeurs exactes sont sur les cartes. Sur DistilBERT, une seule étape fait vraiment progresser le score."))
+    "Sur DistilBERT, une seule étape fait vraiment progresser le score."))
 s.add(*fpic(FIG / "ablation_distilbert.png", 0.6, 1.5, 7.7, "F1-macro au test, DistilBERT, moyenne ± écart-type sur 3 essais. L'axe commence à 0,42."))
 s.add(*card(8.6, 1.6, 4.1, 1.55, "M1 seul recule", [f"{fr(mean(ROWS['m1'][0]))} contre {fr(mean(ROWS['step0'][0]))} pour le flat"], accent=ORANGE, size=17))
 s.add(*card(8.6, 3.3, 4.1, 1.55, "M1+M2 progresse", [f"{fr(mean(ROWS['m12'][0]))}, soit +{fr(gain_db)} sur Step 0"], accent=GREEN, size=17))
@@ -371,7 +371,7 @@ s = new("Résultat 2 : le même profil sur RoBERTa-base", notes=(
     "Est-ce que c'est seulement DistilBERT ? Le graphique met les deux modèles côte à côte : DistilBERT en clair, RoBERTa en foncé. "
     "Le profil est le même. M1 seul ne dépasse le modèle plat sur aucun des deux. "
     "M1+M2 monte des deux côtés. RoBERTa est un peu devant, d'environ 0,02, mais le gain de M2 apparaît sur les deux. "
-    "Ce n'est donc pas un effet du modèle choisi. Les chiffres exacts sont dans le tableau."))
+    "Ce n'est donc pas un effet du modèle choisi."))
 s.add(*fpic(FIG / "backbone.png", 0.6, 1.55, 6.6, "F1-macro test, moyenne ± écart-type sur 3 graines."))
 s.add(Table(7.5, 1.6, [2.0, 1.6, 1.6], [
     ["Configuration", "DistilBERT", "RoBERTa"],
@@ -412,7 +412,7 @@ s = new("Au-delà du F1-macro : où M2 aide, où il nuit", notes=(
     "grief et relief montent aussi, mais avec une poignée d'exemples seulement. Je ne m'y fie pas trop. "
     "Et ce n'est pas que du gain : nervousness et embarrassment baissent de près d'un dixième. "
     "L'écart entre classes fréquentes et classes très rares se réduit. "
-    "Avec M1 seul, il s'aggrave. Les valeurs sont sur les cartes. Le gain de M2 ne vient donc pas des classes les plus rares."))
+    "Avec M1 seul, il s'aggrave. Le gain de M2 ne vient donc pas des classes les plus rares."))
 s.add(*fpic(FIG / "per_class.png", 0.6, 1.5, 7.0, "F1 test par émotion, DistilBERT, moyenne sur 3 graines, labels par effectif croissant."))
 s.add(*card(8.6, 1.6, 4.1, 1.9, "Gains",
             ["Fréquence intermédiaire : desire, annoyance, curiosity", "grief et relief progressent, avec 6 et 11 exemples de test : fragile"], accent=GREEN, size=14))
