@@ -192,11 +192,11 @@ s = new("Contexte : un texte, plusieurs émotions", notes=(
     "L'idée de départ est simple : un même commentaire peut porter plusieurs émotions en même temps. "
     "On a travaillé sur la dataset GoEmotions. Elle se compose de commentaires Reddit, annotés avec 27 émotions, "
     "plus neutral, donc 28 classes. "
-    "Le découpage est celui des auteurs : 43 410 exemples pour l'entraînement, 5 426 pour la validation, "
-    "et 5 427 pour le test. "
+    "Le découpage est celui des auteurs : plus de 40 000 exemples pour l'entraînement, "
+    "et un peu plus de 5 000 pour la validation comme pour le test. Les chiffres exacts sont sur la diapo. "
     "Le graphique, à droite, change un peu l'image qu'on se fait de la tâche : "
-    f"{fr(single_share, 1)} % des commentaires de test n'ont qu'une seule étiquette. "
-    "Et les classes sont très inégales. neutral a 1 787 exemples, grief seulement 6. "
+    "autour de 85 % des commentaires de test n'ont qu'une seule étiquette. "
+    "Et les classes sont très inégales. neutral en a près de 1 800, grief seulement 6. "
     "Ce déséquilibre va revenir dans les résultats."))
 s.add(Box(0.6, 1.55, 6.3, 5.2, [
     P("**Tâche** : prédire l'ensemble des émotions exprimées dans un commentaire (multi-étiquettes)", 18, bullet=True, after=12),
@@ -212,7 +212,7 @@ s = new("Trois limites des méthodes classiques", notes=(
     "Sur cette dataset, les méthodes classiques butent sur trois points. "
     "Première carte, L1 : chaque émotion est décidée toute seule. Or la joie et la tristesse vont rarement ensemble. "
     "Deuxième carte, L2 : tout le commentaire est mis dans un seul vecteur, et les phrases se mélangent. "
-    "Troisième carte, L3 : grief n'a que 6 exemples au test, neutral en a 1 787. Avec si peu d'exemples, le modèle apprend mal. "
+    "Troisième carte, L3 : grief n'a que 6 exemples au test, neutral près de 1 800. Avec si peu d'exemples, le modèle apprend mal. "
     "D'où la question en bas. Si on sépare les phrases, si on relie les émotions, et si on ajoute un lexique, est-ce qu'on fait mieux ?"))
 cw = 3.9
 s.add(*card(0.6, 1.6, cw, 3.0, "L1 : émotions décidées seules",
@@ -328,9 +328,9 @@ s = new("Protocole : le même entraînement pour tous les tests", notes=(
     "On a travaillé sur la dataset GoEmotions : 28 classes, avec le découpage des auteurs. "
     "Les deux modèles sont DistilBERT et RoBERTa. On part du modèle plat, Step 0, puis on ajoute les modules un par un. "
     "Le score que je regarde, c'est le F1-macro au test. Et je garde le modèle qui était le meilleur en validation. "
-    "Chaque configuration est lancée trois fois, avec les graines 42, 123 et 456. "
-    "Le tableau, à droite, fixe le reste : 4 époques, lots de 16, taux 0,00005, seuil 0,5. "
-    "Une seule différence de format : Step 0 lit 128 tokens d'un bloc. À partir de M1, c'est 4 phrases de 32."))
+    "Chaque configuration est lancée trois fois, avec trois graines fixes. "
+    "Le tableau, à droite, fixe le reste : quatre époques, des lots de 16, un taux très faible, un seuil à 0,5. "
+    "Une seule différence de format : Step 0 lit le texte d'un bloc. À partir de M1, on le coupe en quatre phrases courtes."))
 s.add(Box(0.6, 1.55, 6.3, 5.2, [
     P("**Dataset** : GoEmotions, 28 classes, découpage des auteurs", 19, bullet=True, after=14),
     P("**Modèles** : DistilBERT-base et RoBERTa-base", 19, bullet=True, after=14),
@@ -356,11 +356,11 @@ divider(2, "Voici les résultats. Je commence par DistilBERT, puis je vérifie q
 # ----------------------------------------------------------------------------- Results DistilBERT
 s = new("Résultat 1 : M1+M2 est la seule étape qui progresse", notes=(
     "Ce graphique, c'est le F1-macro au test pour DistilBERT : la moyenne, et l'écart-type, sur trois essais. "
-    "L'axe commence à 0,42, sinon les barres se ressemblent trop. "
-    f"Le point qui saute aux yeux : M1 seul recule, {fr(mean(ROWS['m1'][0]))} contre {fr(mean(ROWS['step0'][0]))} pour le modèle plat. "
-    f"Puis M1+M2 remonte à {fr(mean(ROWS['m12'][0]))}, un gain de {fr(gain_db)} sur Step 0. "
-    "Et après, M3 et M4 restent entre 0,499 et 0,504. Ils ne dépassent pas M1+M2. "
-    "Sur DistilBERT, une seule étape fait vraiment progresser le score."))
+    "L'axe est coupé en bas, sinon les barres se ressemblent trop. "
+    "Le point qui saute aux yeux : M1 seul recule par rapport au modèle plat. "
+    "Puis M1+M2 remonte, avec un gain d'environ 0,02 sur Step 0. "
+    "M3 et M4 restent au même niveau. Ils ne dépassent pas M1+M2. "
+    "Les valeurs exactes sont sur les cartes. Sur DistilBERT, une seule étape fait vraiment progresser le score."))
 s.add(*fpic(FIG / "ablation_distilbert.png", 0.6, 1.5, 7.7, "F1-macro au test, DistilBERT, moyenne ± écart-type sur 3 essais. L'axe commence à 0,42."))
 s.add(*card(8.6, 1.6, 4.1, 1.55, "M1 seul recule", [f"{fr(mean(ROWS['m1'][0]))} contre {fr(mean(ROWS['step0'][0]))} pour le flat"], accent=ORANGE, size=17))
 s.add(*card(8.6, 3.3, 4.1, 1.55, "M1+M2 progresse", [f"{fr(mean(ROWS['m12'][0]))}, soit +{fr(gain_db)} sur Step 0"], accent=GREEN, size=17))
@@ -370,10 +370,8 @@ s.add(*card(8.6, 5.0, 4.1, 1.75, "M3 et M4 sans gain", ["0,499 à 0,504, aucun n
 s = new("Résultat 2 : le même profil sur RoBERTa-base", notes=(
     "Est-ce que c'est seulement DistilBERT ? Le graphique met les deux modèles côte à côte : DistilBERT en clair, RoBERTa en foncé. "
     "Le profil est le même. M1 seul ne dépasse le modèle plat sur aucun des deux. "
-    f"Sur RoBERTa : {fr(mean(ROWS['m1'][1]))} contre {fr(mean(ROWS['step0'][1]))}. "
-    f"M1+M2 arrive à {fr(mean(ROWS['m12'][0]))} et {fr(mean(ROWS['m12'][1]))}. "
-    f"RoBERTa est devant d'environ {fr(gap_bb)}, mais le gain de M2 apparaît des deux côtés. "
-    "Ce n'est donc pas un effet du modèle choisi."))
+    "M1+M2 monte des deux côtés. RoBERTa est un peu devant, d'environ 0,02, mais le gain de M2 apparaît sur les deux. "
+    "Ce n'est donc pas un effet du modèle choisi. Les chiffres exacts sont dans le tableau."))
 s.add(*fpic(FIG / "backbone.png", 0.6, 1.55, 6.6, "F1-macro test, moyenne ± écart-type sur 3 graines."))
 s.add(Table(7.5, 1.6, [2.0, 1.6, 1.6], [
     ["Configuration", "DistilBERT", "RoBERTa"],
@@ -390,8 +388,8 @@ s.add(Box(7.5, 4.0, 5.2, 2.7, [
 s = new("Pourquoi M2 aide : deux contrôles", notes=(
     "M2 aide, mais pourquoi ? Le tableau isole deux pièces. "
     "La ligne verte, c'est M1+M2 complet. "
-    f"Si on enlève le lien entre les émotions, la ligne orange, on perd {fr(loss_enc_db)} sur DistilBERT "
-    f"et {fr(loss_enc_rb)} sur RoBERTa. "
+    "Si on enlève le lien entre les émotions, la ligne orange, on perd clairement : "
+    "près de 0,03 sur DistilBERT, environ 0,02 sur RoBERTa. "
     "Si on enlève seulement le regard vers les phrases, les scores restent proches : l'écart tient dans l'écart-type. "
     "Le gain vient donc surtout du lien entre les émotions. C'est la limite L1, pas la structure des phrases."))
 s.add(Table(0.6, 1.65, [4.6, 3.3, 3.3], [
@@ -411,10 +409,10 @@ s.add(Box(0.6, 5.0, 11.2, 1.75, [
 s = new("Au-delà du F1-macro : où M2 aide, où il nuit", notes=(
     "Le F1-macro ne dit pas tout. Ici, douze émotions, des plus rares aux plus fréquentes. Step 0 en gris, M1+M2 en vert. "
     "M2 aide surtout les émotions de fréquence moyenne : desire, annoyance, curiosity. "
-    "grief et relief montent aussi, mais avec 6 et 11 exemples seulement. Je ne m'y fie pas trop. "
-    "Et ce n'est pas que du gain : nervousness et embarrassment baissent d'environ 0,09. "
-    "L'écart entre classes fréquentes et classes très rares passe de 0,365 à 0,296. "
-    "Avec M1 seul, il s'aggrave, à 0,405. Le gain de M2 ne vient donc pas des classes les plus rares."))
+    "grief et relief montent aussi, mais avec une poignée d'exemples seulement. Je ne m'y fie pas trop. "
+    "Et ce n'est pas que du gain : nervousness et embarrassment baissent de près d'un dixième. "
+    "L'écart entre classes fréquentes et classes très rares se réduit. "
+    "Avec M1 seul, il s'aggrave. Les valeurs sont sur les cartes. Le gain de M2 ne vient donc pas des classes les plus rares."))
 s.add(*fpic(FIG / "per_class.png", 0.6, 1.5, 7.0, "F1 test par émotion, DistilBERT, moyenne sur 3 graines, labels par effectif croissant."))
 s.add(*card(8.6, 1.6, 4.1, 1.9, "Gains",
             ["Fréquence intermédiaire : desire, annoyance, curiosity", "grief et relief progressent, avec 6 et 11 exemples de test : fragile"], accent=GREEN, size=14))
@@ -440,10 +438,10 @@ s = new("Bilan des hypothèses : une seule est soutenue", notes=(
     "On peut maintenant trancher. "
     "H1 n'est pas soutenue : M1 seul est plus bas que Step 0, sur les deux modèles. "
     "La seule ligne verte, c'est H2. M1+M2 dépasse bien M1 seul. "
-    "H3, je la laisse prudente : le lexique ne donne pas un gain stable. Sur RoBERTa, NRC bouge beaucoup, écart-type 0,045. "
+    "H3, je la laisse prudente : le lexique ne donne pas un gain stable. Sur RoBERTa, NRC bouge beaucoup d'un essai à l'autre. "
     "H4 aussi : avec SenticNet, M4 ne fait pas mieux, donc je ne le retiens pas. "
     "En bas, le choix : M1+M2, sur DistilBERT comme sur RoBERTa. "
-    "NRC avec M4 fait 0,510 sur DistilBERT seulement. Ce test n'existe pas pour RoBERTa, je ne peux pas le généraliser."))
+    "NRC avec M4 est un peu plus haut, mais seulement sur DistilBERT. Ce test n'existe pas pour RoBERTa, je ne peux pas le généraliser."))
 assert abs((mean(ROWS["m12"][0]) - mean(ROWS["m1"][0])) - 0.048) < 0.0015 and abs((mean(ROWS["m12"][1]) - mean(ROWS["m1"][1])) - 0.041) < 0.0015
 s.add(Table(0.6, 1.6, [0.7, 2.7, 3.3, 3.1, 2.3], [
     ["Hyp.", "Comparaison", "DistilBERT", "RoBERTa", "Verdict"],
@@ -461,7 +459,7 @@ divider(3, "Pour finir, je replace ces scores, je dis clairement ce que le trava
 
 # ----------------------------------------------------------------------------- Discussion and limits
 s = new("Discussion : comparaison et limites", notes=(
-    f"À gauche, nos scores M1+M2 : {fr(mean(ROWS['m12'][0]))} pour DistilBERT, {fr(mean(ROWS['m12'][1]))} pour RoBERTa. "
+    "À gauche, nos scores M1+M2 : un peu au-dessus de 0,50 pour DistilBERT, un peu plus haut pour RoBERTa. "
     "En face, BERT sur GoEmotions est autour de 0,46, Seq2Emo autour de 0,52. "
     "Je les montre comme des repères, pas comme une compétition : les modèles et les réglages ne sont pas les mêmes. "
     "Ce qui compte, ce sont nos comparaisons, faites avec le même entraînement. "
@@ -550,7 +548,7 @@ s.add(Box(0.6, 6.2, 12.1, 0.6, [P("F1-macro au test, moyenne ± écart-type sur 
 # ----------------------------------------------------------------------------- A2. Recommendations
 s = new("Annexe B : quel modèle choisir", notes=(
     "Et si on me demande quel modèle choisir. Par défaut, M1+M2. "
-    f"RoBERTa, si un gain d'environ {fr(gap_bb)} vaut le coût en calcul. DistilBERT, si on veut quelque chose de plus léger. "
+    "RoBERTa, si un gain d'environ 0,02 vaut le coût en calcul. DistilBERT, si on veut quelque chose de plus léger. "
     "On peut aussi rester sur le modèle plat, quand on veut un système simple. "
     "Et je n'ajoute ni M3 ni M4 si seul le F1-macro compte. "
     "Dernier point : M1+M2 lit jusqu'à quatre phrases. Si on change ce découpage, les chiffres d'aujourd'hui ne tiennent plus. Il faut refaire les tests."))
