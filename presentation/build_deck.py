@@ -210,16 +210,16 @@ s.add(*fpic(FIG / "goemotions_cardinality.png", 7.2, 1.7, 5.5, "Nombre d'étique
 # ----------------------------------------------------------------------------- 3. Problem
 s = new("Trois limites des méthodes classiques", notes=(
     "Sur cette dataset, les méthodes classiques butent sur trois points. "
-    "Première carte, L1 : chaque émotion est décidée toute seule. Or la joie et la tristesse vont rarement ensemble. "
-    "Deuxième carte, L2 : tout le commentaire est mis dans un seul vecteur, et les phrases se mélangent. "
-    "Troisième carte, L3 : grief n'a que 6 exemples au test, neutral près de 1 800. Avec si peu d'exemples, le modèle apprend mal. "
+    "Première carte, émotions décidées seules : chaque émotion est décidée toute seule. Or la joie et la tristesse vont rarement ensemble. "
+    "Deuxième carte, structure du texte perdue : tout le commentaire est mis dans un seul vecteur, et les phrases se mélangent. "
+    "Troisième carte, émotions rares : grief n'a que 6 exemples au test, neutral près de 1 800. Avec si peu d'exemples, le modèle apprend mal. "
     "D'où la question en bas. Si on sépare les phrases, si on relie les émotions, et si on ajoute un lexique, est-ce qu'on fait mieux ?"))
 cw = 3.9
-s.add(*card(0.6, 1.6, cw, 3.0, "L1 : émotions décidées seules",
+s.add(*card(0.6, 1.6, cw, 3.0, "Émotions décidées seules",
             ["Une sortie par émotion, sans lien entre elles", "La joie et la tristesse vont rarement ensemble"], size=17))
-s.add(*card(0.6 + cw + 0.2, 1.6, cw, 3.0, "L2 : structure du texte perdue",
+s.add(*card(0.6 + cw + 0.2, 1.6, cw, 3.0, "Structure du texte perdue",
             ["Un seul vecteur pour tout le commentaire", "Les phrases différentes se mélangent"], size=17))
-s.add(*card(0.6 + 2 * (cw + 0.2), 1.6, cw, 3.0, "L3 : émotions rares",
+s.add(*card(0.6 + 2 * (cw + 0.2), 1.6, cw, 3.0, "Émotions rares",
             ["grief : 6 exemples au test, neutral : 1" + NB + "787", "Très peu d'exemples pour apprendre"], size=17))
 s.add(Box(0.6, 4.95, 12.1, 1.75, [
     P("Question de recherche", 14, MINT, True, after=4),
@@ -256,7 +256,7 @@ s.add(Table(5.85, 1.6, [0.7, 1.75, 4.4], [
 s = new("Où se place HAKE-MER", notes=(
     "Avant l'architecture, je situe le travail. Trois cartes. "
     "À gauche, ce qui existe déjà pour plusieurs étiquettes : BERT est autour de 0,46 sur GoEmotions, Seq2Emo autour de 0,52. "
-    "Au centre, l'attention par niveaux : d'abord les mots, puis les phrases. C'est la réponse directe à la limite L2. "
+    "Au centre, l'attention par niveaux : d'abord les mots, puis les phrases. C'est la réponse directe à la structure du texte perdue. "
     "À droite, deux lexiques. NRC relie un mot à une émotion. SenticNet, lui, décrit des concepts. "
     "En bas, le point du mémoire : HAKE-MER met ces trois idées ensemble, et je peux allumer chaque module seul, pour voir ce qu'il apporte vraiment."))
 cw = 3.9
@@ -264,7 +264,7 @@ s.add(*card(0.6, 1.6, cw, 3.55, "Plusieurs étiquettes",
             ["GoEmotions : BERT-base, F1-macro ≈ 0,46 (Demszky et al., 2020)",
              "Seq2Emo : liens entre étiquettes, ≈ 0,52 (Ke et al., 2021)"], accent=ORANGE, size=17))
 s.add(*card(0.6 + cw + 0.2, 1.6, cw, 3.55, "Attention par niveaux",
-            ["HAN : d'abord les mots, puis les phrases (Yang et al., 2016)", "Répond à la limite L2"], accent=GREEN, size=17))
+            ["HAN : d'abord les mots, puis les phrases (Yang et al., 2016)", "Répond à la structure du texte perdue"], accent=GREEN, size=17))
 s.add(*card(0.6 + 2 * (cw + 0.2), 1.6, cw, 3.55, "Lexiques externes",
             ["NRC : lien entre un mot et une émotion (Mohammad et Turney, 2013)",
              "SenticNet : concepts et sentiments (Cambria et al., 2018)"], accent=(0x5B, 0x7B, 0xA6), size=17))
@@ -285,7 +285,7 @@ s = new("Architecture HAKE-MER : quatre modules", notes=(
     "M4 donne un poids à chaque émotion, et on sort 28 réponses. "
     "En bas, la branche lexicale. M3 lit NRC ou SenticNet, et l'ajoute avec une porte g. Au départ, g vaut 0 : le lexique n'entre pas tout de suite. "
     "Si on éteint M3, on retombe simplement sur M1+M2. "
-    "La barre du bas relie chaque module à une limite : M1 pour les phrases, M2 pour le lien entre émotions, M3 pour le lexique."))
+    "La barre du bas relie chaque module à une limite : M1 à la structure du texte perdue, M2 aux émotions décidées seules, M3 aux émotions rares."))
 BW, BH, BY = 1.47, 1.35, 2.0
 tops = [
     ("Texte d'entrée", "4 phrases × 32 tokens", LIGHT, LINE, None),
@@ -318,8 +318,8 @@ s.add(Arrow(6.525, BY + BH + 0.05, 0.24, LY - (BY + BH) - 0.1, direction="up"))
 s.add(Box(8.4, LY, 4.3, LH, [P("Si M3 est éteint, g = 0. Les requêtes ne changent pas : on revient à M1+M2.", 14, INK, after=0)],
           anchor="m", margins=(0.08, 0.06, 0.08, 0.06)))
 s.add(Box(0.6, 5.8, 12.1, 0.95, [
-    P("**M1** garde les phrases (L2).  **M2** relie les émotions (L1).  "
-      "**M3** ajoute un lexique (L3).  **M4** donne un poids à chaque émotion.", 16, NAVY, after=0)],
+    P("**M1** garde les phrases (structure du texte perdue).  **M2** relie les émotions (émotions décidées seules).  "
+      "**M3** ajoute un lexique (émotions rares).  **M4** donne un poids à chaque émotion.", 16, NAVY, after=0)],
     fill=LIGHT, anchor="m", margins=(0.3, 0.1, 0.3, 0.1)))
 
 # ----------------------------------------------------------------------------- 7. Protocol
@@ -391,7 +391,7 @@ s = new("Pourquoi M2 aide : deux contrôles", notes=(
     "Si on enlève le lien entre les émotions, la ligne orange, on perd clairement : "
     "près de 0,03 sur DistilBERT, environ 0,02 sur RoBERTa. "
     "Si on enlève seulement le regard vers les phrases, les scores restent proches : l'écart tient dans l'écart-type. "
-    "Le gain vient donc surtout du lien entre les émotions. C'est la limite L1, pas la structure des phrases."))
+    "Le gain vient donc surtout du lien entre les émotions. Cela répond aux émotions décidées seules, pas à la structure du texte perdue."))
 s.add(Table(0.6, 1.65, [4.6, 3.3, 3.3], [
     ["Configuration", "DistilBERT", "RoBERTa"],
     ["M1 seul", D("m1"), R("m1")],
@@ -402,7 +402,7 @@ s.add(Table(0.6, 1.65, [4.6, 3.3, 3.3], [
 s.add(Box(0.6, 5.0, 11.2, 1.75, [
     P(f"Sans le lien entre émotions : perte de {fr(loss_enc_db)} (DistilBERT) et {fr(loss_enc_rb)} (RoBERTa)", 17, bullet=True, after=8),
     P("Sans le regard vers les phrases, le F1-macro change peu : l'écart reste dans l'écart-type", 17, bullet=True, after=8),
-    P("Le gain de M2 vient surtout du lien entre les émotions (limite L1)", 17, bullet=True, after=0)],
+    P("Le gain de M2 répond aux émotions décidées seules", 17, bullet=True, after=0)],
     margins=(0, 0, 0, 0)))
 
 # ----------------------------------------------------------------------------- 11. Per class
