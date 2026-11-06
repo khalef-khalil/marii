@@ -4,13 +4,12 @@
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 Le \ChapRef{etat_art} a nommé un levier pour chaque limite, sans encore
-écrire les formules. Il reste à dire comment une lecture par émotion
-peut faire interagir les étiquettes, comment des vecteurs de phrases
-évitent d'agréger tous les indices dans un seul vecteur de document, et
-comment un lexique ou une repondération peuvent être mis à l'épreuve sur
-un corpus déséquilibré. \textbf{HAKE-MER} (\emph{Hierarchical Attention
-with Knowledge modules for Multi-Emotion Recognition}) est cette mise en
-forme. Les hypothèses H1 à H4 en découlent. L'ablation du
+écrire les formules. Ce chapitre les assemble dans \textbf{HAKE-MER}
+(\emph{Hierarchical Attention with Knowledge modules for Multi-Emotion
+Recognition}) : une lecture par émotion qui peut faire interagir les
+étiquettes, des vecteurs de phrases à la place d'un seul vecteur de
+document, et un lexique ou une repondération mis à l'épreuve sur un
+corpus déséquilibré. Les hypothèses H1 à H4 en découlent. L'ablation du
 \ChapRef{experimentation} les comparera à budget d'affinage constant.
 
 \section{Formulation du problème et limites existantes}
@@ -63,14 +62,14 @@ formulation.
 HAKE-MER place ces réponses sur un backbone partagé, DistilBERT-base
 ou RoBERTa-base \cite{sanh2019distilbert,liu2019roberta}, affiné comme
 un modèle de langue pré-entraîné \cite{devlin2019,sun2019}. La
-figure~\ref{fig:hakemer-archi} suit un commentaire. Les phrases y
-deviennent des vecteurs, c'est M1. Chaque émotion en fait ensuite sa
-lecture, et ces lectures s'échangent de l'information, c'est M2. Un
-lexique peut déplacer les requêtes de cette lecture, c'est M3. Avant la
-sigmoïde, l'amplitude de chaque représentation peut encore varier, c'est
-M4. Retirer un module laisse le reste en place. Le
+figure~\ref{fig:hakemer-archi} suit le parcours d'un commentaire : les
+phrases sont d'abord résumées en vecteurs (M1), chaque émotion en fait
+une lecture et ces lectures échangent de l'information (M2), un lexique
+peut déplacer les requêtes de cette lecture (M3), puis l'amplitude de
+chaque représentation peut varier avant la sigmoïde (M4). Chaque
+ablation conserve les autres composantes de l'architecture. Le
 tableau~\ref{tab:conception-ablation} compare donc des piles qui
-n'ajoutent qu'une pièce.
+n'ajoutent qu'un module.
 
 \begin{figure}[H]
 \centering
@@ -139,16 +138,16 @@ et branche lexicale (M3) alimentant les requêtes d'émotions.}
 \subsection{Enchaînement des calculs}
 \label{sec:conception-forward}
 
-Le passage avant suit le même commentaire. Le texte est découpé en au
-plus $M$ phrases. Chaque phrase est encodée, puis M1 la résume en un
-vecteur $s_m$. À côté, le lexique, NRC ou SenticNet, fournit un vecteur
-document $c$. M3 le projette en $\mathrm{prior}$ et forme les requêtes
-$\tilde{Q}_k = Q_k + g\cdot\mathrm{prior}$, avec $g{=}0$ au départ.
-Pour l'émotion $k$, M2 fait une attention croisée des phrases vers
-$r_k$, puis une auto-attention le long des $K$ émotions. M4 en tire des
-coefficients $\gamma_k$ et remet chaque $r_k$ à l'échelle avant la tête
-sigmoïde. Couper M3 revient à laisser $g{=}0$. Couper M4 revient à
-imposer $\gamma_k \equiv 1$.
+Le passage avant reprend ce parcours. Le texte est découpé en au plus
+$M$ phrases, chaque phrase est encodée, et M1 la résume en un vecteur
+$s_m$, tandis que le lexique, NRC ou SenticNet, fournit en parallèle un
+vecteur document $c$ que M3 projette en $\mathrm{prior}$ pour former les
+requêtes $\tilde{Q}_k = Q_k + g\cdot\mathrm{prior}$, avec $g{=}0$ au
+départ. Pour l'émotion $k$, M2 calcule une attention croisée des phrases
+vers $r_k$, puis une auto-attention le long des $K$ émotions. M4 en tire
+les coefficients $\gamma_k$ et remet chaque $r_k$ à l'échelle avant la
+tête sigmoïde. La désactivation de M3 correspond à fixer $g{=}0$, et
+celle de M4 à imposer $\gamma_k \equiv 1$.
 
 \subsection{Limites, modules, ablation et hypothèses}
 \label{sec:conception-synthese}
@@ -189,13 +188,14 @@ aux piles qui les utilisent. Les sections suivantes définissent M1 à M4.
 
 Les commentaires sont découpés en phrases par Punkt, dans l'ordre du
 texte, puis tronqués à $M{=}4$ phrases et 32 tokens sous-mots par phrase.
-Quatre phrases de 32 tokens retombent sur les 128 tokens du document
-plat : H1 ne compare donc pas une fenêtre plus longue à une fenêtre plus
-courte. Les phrases au-delà de $M$ sont ignorées. Les phrases courtes
-sont complétées par un padding masqué. Une étiquette est prédite si
-$\hat{y}_k > 0{,}5$. Le \ChapRef{experimentation} rapporte en outre une
-étude de seuil menée après l'entraînement. L'architecture reste celle
-décrite ici.
+Ce plafond, quatre fois 32 tokens, est le budget nominal du document
+plat de 128 tokens : H1 aligne donc la longueur annoncée des deux
+fenêtres. Le découpage en phrases, la troncature et le padding peuvent
+cependant retenir d'autres tokens que le document plat. Les phrases
+au-delà de $M$ sont ignorées, et les phrases courtes sont complétées par
+un padding masqué. Une étiquette est prédite si $\hat{y}_k > 0{,}5$. Le
+\ChapRef{experimentation} rapporte en outre une étude de seuil menée
+après l'entraînement, sans modifier l'architecture décrite ici.
 
 \subsection{Extraction NRC et correspondance GoEmotions}
 
@@ -307,19 +307,22 @@ concepts absents sont ignorés.
 Cinq descripteurs, nuls lorsqu'aucun token n'est reconnu, forment le
 vecteur $c$ ($d_c{=}5$) du prior principal : intensité moyenne des tokens
 reconnus, intensité maximale, intensité minimale, fraction de tokens
-couverts, nombre de tokens distincts reconnus. Cinq nombres, contre huit
-pour NRC, assez proches pour entrer dans la même porte. La variante par
-étiquette réutilise le tableau~\ref{tab:nrc-goemotions}. L'intensité est
-d'abord ramenée à $[0, 1]$ par la transformation (intensité $+ 1)/2$,
-puis moyennée sur les tokens dont une catégorie NRC pointe vers
-l'étiquette. \emph{Neutral} reste à zéro.
+couverts, nombre de tokens distincts reconnus. Les deux vecteurs entrent
+dans la même porte, mais un vecteur de fréquences sur huit émotions et
+un vecteur d'intensités signées n'ont pas les mêmes propriétés
+statistiques. La variante par étiquette réutilise le
+tableau~\ref{tab:nrc-goemotions}. L'intensité est d'abord ramenée à
+$[0, 1]$ par la transformation (intensité $+ 1)/2$, puis moyennée sur
+les tokens dont une catégorie NRC pointe vers l'étiquette.
+\emph{Neutral} reste à zéro.
 
-NRC et SenticNet n'entrent pas dans le tronc comme un encodeur de plus.
-Ils produisent ce vecteur $c$, et seul le module~3 le voit. Passer de
-l'un à l'autre change $d_c$ et le contenu de $c$, pas la segmentation,
-ni M1, ni M2. H3 tient ces pièces fixes. La macro et l'écart entre
-classes fréquentes et rares se lisent à part : un gain moyen peut laisser
-les classes rares inchangées.
+NRC et SenticNet produisent ce vecteur $c$, que seul le module~3 voit.
+Passer de l'un à l'autre change $d_c$ et le contenu de $c$, pas la
+segmentation, ni M1, ni M2. Le mécanisme d'injection reste le même, alors
+que les représentations initiales diffèrent : un écart de F1-macro ne
+s'attribue donc pas, à lui seul, à la qualité du lexique. La macro et
+l'écart entre classes fréquentes et rares se lisent à part, un gain
+moyen pouvant laisser les classes rares inchangées.
 
 \section{Module 1 : Encodage Hiérarchique}
 \label{sec:conception-m1}
@@ -379,25 +382,27 @@ $z_k = w_k^\top r_k + b_k$.
 \section{Module 3 : Enrichissement Sémantique}
 \label{sec:conception-m3}
 
-Le lexique a déjà produit $c$, de dimension $8$ ou $5$ selon la
-ressource (section~\ref{sec:conception-choix}). Une couche linéaire le
-projette, une tangente hyperbolique le borne, et une porte scalaire
-$g \in \mathbb{R}$, nulle au départ, décide de l'ajouter aux requêtes :
+Le vecteur $c$, de dimension $8$ ou $5$ selon la ressource
+(section~\ref{sec:conception-choix}), est projeté par une couche
+linéaire, borné par une tangente hyperbolique, puis ajouté aux requêtes
+par une porte scalaire $g \in \mathbb{R}$, nulle au départ :
 \begin{equation}
 \mathrm{prior} = \tanh(W_c\, c), \qquad
 \tilde{Q}_k = Q_k + g \cdot \mathrm{prior}.
 \label{eq:gate}
 \end{equation}
-Pourquoi le même $\mathrm{prior}$ pour les $K$ requêtes, plutôt qu'un
-profil par émotion dès cette étape ? NRC et SenticNet n'ont ni la même
-dimension ni les mêmes unités. Leur donner une injection identique, un
-seul vecteur de document ajouté partout, isole la ressource. Si le
-F1-macro bouge, c'est le contenu de $c$ qui a changé, pas la façon dont
-chaque émotion reçoit le lexique. La porte part de zéro, donc M3, à
-l'initialisation, recopie M2 : le modèle n'est pas obligé d'utiliser le
-lexique. La valeur apprise de $|g|$ indique ensuite s'il s'en sert, et
-permet de comparer NRC et SenticNet. Un commentaire sans mot couvert
-laisse $c$ nul, et la porte n'a rien à ajouter.
+Le même $\mathrm{prior}$ est ajouté aux $K$ requêtes, plutôt qu'un
+profil par émotion dès cette étape, parce que NRC et SenticNet n'ont ni
+la même dimension ni les mêmes unités. Cette configuration permet de
+comparer les deux ressources avec un mécanisme d'injection identique,
+même si leurs représentations initiales restent différentes. À
+l'initialisation, $g{=}0$ : la contribution du prior au passage avant est
+nulle, et M3 recopie M2 sur ce point. La porte $g$ reçoit un gradient dès
+que le prior est non nul. La projection $W_c$ n'en reçoit pas tant que
+$g$ reste exactement nul, et elle n'est mise à jour qu'une fois $g$
+écarté de zéro. La valeur absolue de $g$ indique alors dans quelle mesure
+le lexique est utilisé. Un commentaire sans mot couvert laisse $c$ nul,
+et aucun signal lexical supplémentaire n'est alors injecté.
 
 Cette injection commune laisse de côté le fait que NRC est déjà organisé
 en catégories. La campagne par étiquette
@@ -411,31 +416,32 @@ pile ne bougent pas. Seule la construction des $c_k$ change.
 \section{Module 4 : Pondération Dynamique}
 \label{sec:conception-m4}
 
-M3 déplace les requêtes, avant que les phrases ne soient lues. M4
-arrive après cette lecture. Il voit les représentations $r_k$ que M2
-vient de produire, et il peut en changer l'amplitude selon le contexte
-de l'exemple. Ce contexte est leur moyenne
-$\bar{r} = \frac{1}{K}\sum_k r_k$. Le coefficient de l'émotion $k$ en
-dépend, ainsi que de $r_k$ elle-même :
+M3 déplace les requêtes avant la lecture des phrases. M4 intervient
+après l'attention croisée : il voit les représentations $r_k$ produites
+par M2 et peut en changer l'amplitude selon le contexte de l'exemple,
+pris comme leur moyenne $\bar{r} = \frac{1}{K}\sum_k r_k$. Le
+coefficient de l'émotion $k$ dépend de cette moyenne et de $r_k$ :
 \begin{equation}
 \gamma_k = \sigma\!\big(W_2\,\mathrm{ReLU}(W_1 [r_k ; \bar{r}]) + b_2\big),
 \qquad r_k \leftarrow \gamma_k \cdot r_k,
 \label{eq:dyngate}
 \end{equation}
-Le biais $b_2$ vaut $+3$ au départ, donc $\gamma_k \approx 0{,}95$. La
-porte commence près de l'identité. Au départ, $r_k$ est presque inchangé,
-et la modulation s'apprend ensuite. H4 demande si cette modulation, une
-fois le lexique fixé, change le F1-macro.
+Le biais $b_2$ est initialisé à $+3$. Lorsque les autres termes de la
+pré-activation sont nuls ou faibles, $\gamma_k$ vaut environ $0{,}95$,
+et la porte part alors près de l'identité. Cette valeur n'est pas
+garantie pour chaque exemple, parce que les couches linéaires
+contribuent aussi à l'entrée de la sigmoïde. H4 demande si cette
+modulation, une fois le lexique fixé, change le F1-macro.
 
 \section{Hypothèses de recherche}
 \label{sec:conception-hypotheses}
 
 Chaque hypothèse fixe le sens de l'écart que l'ablation doit lire. Le
-\ChapRef{experimentation} dira si cet écart est là. Le protocole ne
-change pas d'une pile à l'autre : quatre époques, les hyperparamètres du
-tableau~\ref{tab:expe-hyperparams}, et le modèle retenu est celui dont
-le F1-macro de validation est le meilleur. C'est aussi la métrique sur
-laquelle les hypothèses sont jugées.
+\ChapRef{experimentation} permettra de déterminer si cet écart est
+effectivement observé. Le protocole ne change pas d'une pile à l'autre :
+quatre époques, les hyperparamètres du tableau~\ref{tab:expe-hyperparams},
+et le modèle retenu est celui dont le F1-macro de validation est le
+meilleur, métrique sur laquelle les hypothèses sont jugées.
 
 \begin{itemize}
 \item[\textbf{H1.}] \textbf{M1 vs baseline} : avec quatre phrases de $32$
@@ -458,6 +464,7 @@ laquelle les hypothèses sont jugées.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-L'architecture peut maintenant être comparée module par module, y
-compris la tête qui distingue M1 seul de M1+M2. Le \ChapRef{experimentation}
-applique un seul budget d'affinage et lit H1 à H4 sur le F1-macro.
+Les modules et les hypothèses H1 à H4 sont maintenant définis, y compris
+la tête qui distingue M1 seul de M1+M2 et le budget nominal de tokens
+de H1. Le \ChapRef{experimentation} applique un seul budget d'affinage
+et lit chaque hypothèse sur le F1-macro.
