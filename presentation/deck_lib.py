@@ -199,13 +199,12 @@ class Slide:
         return self
 
 
-def chrome(slide, number, label):
+def chrome(slide, number, _label):
     els = []
     if slide.title:
         els.append(Box(0.6, 0.3, 12.1, 0.85, [P(slide.title, 28, NAVY, True, after=0)], anchor="m", margins=(0, 0, 0, 0)))
         els.append(Box(0.6, 1.2, 1.2, 0.06, fill=GREEN))
     if slide.footer:
-        els.append(Box(0.6, 7.05, 9.0, 0.3, [P(label, 10, GRAY, after=0)], anchor="m", margins=(0, 0, 0, 0)))
         els.append(Box(11.9, 7.05, 0.8, 0.3, [P(str(number), 10, GRAY, align="r", after=0)], anchor="m", margins=(0, 0, 0, 0)))
     return els
 
