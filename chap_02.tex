@@ -331,37 +331,36 @@ apprise sur les requêtes d'attention par émotion.
 
 \subsection{Ressources retenues dans ce mémoire : NRC et SenticNet}
 
-Le protocole prévoit de comparer deux types de ressources à
-architecture fixée (M1+M2+M3) :
-\begin{itemize}
-\item le \textbf{NRC Emotion Lexicon} \cite{mohammad2013} : des mots
-      associés à huit émotions du cadre Plutchik, et à deux polarités
-      de sentiment. Le prior principal de M3 n'utilise que les huit
-      scores d'émotion, agrégés au niveau du document, puis une
-      projection apprise commune à toutes les émotions. Une variante
-      par étiquette rattache chaque étiquette GoEmotions à une ou
-      plusieurs de ces huit catégories. Cette correspondance est définie
-      pour ce mémoire. Elle n'appartient pas au lexique publié. La
-      catégorie \emph{neutral} n'y reçoit pas de signal. Le détail est
-      au \ChapRef{conception} ;
-\item \textbf{SenticNet} \cite{cambria2018senticnet} : une intensité
-      signée, dans $[-1, 1]$, associée à des concepts. Le prior principal
-      de M3 en retient cinq descripteurs de document : intensité moyenne
-      des tokens reconnus, intensité maximale, intensité minimale,
-      fraction de tokens couverts, nombre de tokens distincts reconnus.
-      La reconnaissance se fait sur le token de surface. Un concept de
-      plusieurs mots n'est pas reconstruit à partir de tokens séparés.
-      Ce n'est pas une table mot-émotion. La définition est au
-      \ChapRef{conception}.
-\end{itemize}
-Les deux ressources n'ont pas la même structure : catégories d'émotions
-d'un côté, intensités de concepts de l'autre. L'hypothèse H3
-(\ChapRef{conception}) demande si un prior lexical de document, NRC ou
-SenticNet, modifie le F1-macro par rapport à M1+M2, et si les deux
-ressources se comportent de la même façon. Une extension exploratoire
-teste un prior par étiquette. La macro et l'écart entre classes
-fréquentes et rares se lisent séparément. H3 n'annonce pas de
-ressource gagnante.
+M3 est ajouté à la pile M1+M2 pour comparer deux lexiques qui ne
+décrivent pas le mot de la même manière. L'un le range dans des
+émotions. L'autre lui associe une intensité.
+
+Le NRC Emotion Lexicon \cite{mohammad2013} associe des mots aux huit
+émotions de Plutchik et à deux polarités de sentiment. Dans les
+expériences principales, M3 ne garde que les huit scores d'émotion.
+Ils sont agrégés sur le document, puis passent par une projection
+apprise, commune à toutes les émotions. Une seconde variante rattache
+chaque étiquette de GoEmotions à une ou plusieurs de ces huit
+catégories. Cette correspondance est construite pour le mémoire : le
+lexique publié ne la contient pas, et \emph{neutral} reste sans
+catégorie.
+
+SenticNet \cite{cambria2018senticnet} part d'une autre grandeur. Chaque
+concept porte une intensité signée, dans $[-1, 1]$. Le prior de
+document en tire cinq descripteurs : l'intensité moyenne des tokens
+reconnus, le maximum, le minimum, la fraction de tokens couverts et le
+nombre de tokens distincts. L'appariement se fait sur le token de
+surface, de sorte qu'un concept de plusieurs mots n'est pas recomposé
+à partir de tokens séparés. Le calcul des deux vecteurs, et la table
+des étiquettes, sont fixés au \ChapRef{conception}.
+
+Cette différence de contenu est ce que H3 met à l'épreuve. Le prior de
+document, qu'il vienne de NRC ou de SenticNet, est comparé au F1-macro
+de M1+M2, et les deux lexiques sont lus l'un par rapport à l'autre,
+sans qu'une ressource soit désignée à l'avance. Une extension
+exploratoire remplace le vecteur de document par un prior par
+étiquette. Le F1-macro et l'écart entre classes fréquentes et rares
+restent deux lectures distinctes.
 
 \subsection{Graphes de connaissances et sens commun (hors périmètre principal)}
 
