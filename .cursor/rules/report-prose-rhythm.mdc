@@ -30,6 +30,16 @@ Do not stack the same skeleton: define the concept, state its purpose, give exam
 
 Parallel module sentences (M1 does A. M2 does B. M3 does C. M4 does D.) need to be folded into prose unless a list is genuinely clearer.
 
+## Paired technical descriptions
+
+When two resources, modules, or conditions are compared, do not give them the same sentence skeleton (what it is, what it contains, how it is used, a variant, a limitation, a pointer to another chapter). The symmetry reads as a form, not as a choice.
+
+- Open from why the two are being compared. Then let each one follow its own job. If one classifies words into emotions and the other assigns an intensity, the second paragraph should start from that other quantity, not from « Le prior principal de M3 en retient… » copied off the first.
+- Fold a limitation into the sentence that needs it. Do not line up short clarifications that each deny one thing (« Cette correspondance est définie pour ce mémoire. Elle n'appartient pas au lexique publié. Ce n'est pas une table mot-émotion. »).
+- Point to another chapter once, where the definitions live. Do not end every parallel item with the same renvoi.
+- A closing paragraph should not give one function to each short sentence (comparison, hypothesis, extension, metric, disclaimer). Tie the hypothesis to the difference already stated.
+- Do not lengthen a description with steps the implementation does not use. Do not add errors or synonyms so the passage will look less regular.
+
 ## Example
 
 Compressed:
