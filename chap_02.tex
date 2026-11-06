@@ -33,10 +33,11 @@ ou d'une polarité globale. Or, dans le langage naturel, plusieurs
 affects peuvent coexister dans un même énoncé. Le cadre adapté est
 la \textbf{classification multi-étiquettes} : étant donné un texte
 $x$ et un inventaire d'émotions $\mathcal{E}=\{e_1,\dots,e_K\}$,
-apprendre une fonction qui associe à chaque $e_k$ une décision
-(binaire ou score), indépendamment des autres étiquettes au niveau
-de la fonction de perte, mais non indépendamment au niveau
-sémantique \cite{zhang2014multilabel,read2009classifier,read2019classifier}.
+apprendre une fonction qui associe à chaque $e_k$ une décision binaire ou
+un score. Dans cette formulation courante, la perte est appliquée aux
+sorties, sans terme qui modéliserait explicitement les dépendances entre
+étiquettes, même lorsque ces dépendances existent sur le plan sémantique
+\cite{zhang2014multilabel,read2009classifier,read2019classifier}.
 
 Formellement, on cherche $f : x \mapsto \{0,1\}^K$ (ou des
 probabilités $\hat{y}_k \in [0,1]$), ce qui diffère de la
@@ -60,11 +61,13 @@ entre 3 et 30 tokens ; plafond au volume correspondant à la médiane de
 
 Le tableau~\ref{tab:goemotions-stats} reprend les statistiques
 d'annotation reportées par les auteurs \cite{demszky2020}. Sur ces
-58\,009 exemples, environ \textbf{17\,\%} portent au moins deux
-étiquettes (83\,\% une seule, 15\,\% deux, 2\,\% trois, 0{,}2\,\%
-quatre ou plus). La catégorie \emph{neutral}, que les auteurs mettent
-à part de l'espace sémantique des émotions, représente 26\,\% de toutes
-les étiquettes assignées, ce qui accentue le déséquilibre. Pour leurs
+58\,009 exemples, 83\,\% n'en portent qu'une. Les autres, environ
+\textbf{17\,\%}, en portent au moins deux (15\,\% deux, 2\,\% trois,
+0{,}2\,\% quatre ou plus) : le 17\,\% est le complément de la part à
+une seule étiquette, sur ce même effectif. La catégorie \emph{neutral},
+que les auteurs mettent à part de l'espace sémantique des émotions,
+représente 26\,\% de l'ensemble des étiquettes assignées, et non 26\,\%
+des exemples. Ce poids accentue le déséquilibre. Pour leurs
 expériences de référence, ils conservent 93\,\% des exemples après un
 filtrage supplémentaire et appliquent un partage aléatoire
 80\,\%/10\,\%/10\,\% \cite{demszky2020}. Ce n'est pas le partage de
@@ -119,11 +122,13 @@ Les corpus multi-émotions ont des \textbf{annotations partielles} et des
 des exemples ont un accord d'au moins une étiquette entre trois
 annotateurs ou plus \cite{demszky2020} ; 1{,}6\,\% sont jugés difficiles.
 Le \textbf{déséquilibre} est fort : \emph{neutral} et quelques émotions
-dominent, d'autres sont très rares. Le F1-macro peut alors cacher un
-mauvais score sur les classes minoritaires, pourtant importantes pour ce
-mémoire. Le rééchantillonnage \cite{chawla2002smote} et la \emph{focal
-loss} \cite{lin2017focal} existent, mais ne font pas partie de notre
-protocole immédiat.
+dominent, d'autres sont très rares. Le F1-macro accorde le même poids
+à chaque classe et limite ainsi le rôle des catégories fréquentes dans
+le score global. Cette moyenne ne dit pas, à elle seule, quelles
+catégories restent faibles : l'analyse par classe, au
+\ChapRef{experimentation}, sert à cela. Le rééchantillonnage
+\cite{chawla2002smote} et la \emph{focal loss} \cite{lin2017focal}
+existent. Ils ne font pas partie du protocole.
 
 \subsection{Métriques d'évaluation}
 
@@ -132,11 +137,15 @@ Pour la classification multi-étiquettes, les métriques usuelles
 incluent :
 \begin{itemize}
 \item le \textbf{F1-micro}, sensible aux classes fréquentes ;
-\item le \textbf{F1-macro}, moyenne non pondérée du F1 par émotion,
-      retenu ici comme métrique principale ;
-\item la \textbf{correspondance exacte} (ensemble d'étiquettes
-      prédit identique à la vérité) ;
-\item la \textbf{mAP} (moyenne des précisions moyennes par classe).
+\item le \textbf{F1-macro}, moyenne non pondérée du F1 de chaque classe,
+      retenue comme métrique principale parce que les catégories sont
+      déséquilibrées (L3) : chaque classe pèse autant, quelle que soit
+      sa fréquence ;
+\item la \textbf{correspondance exacte} (l'ensemble prédit est identique
+      à l'ensemble de référence) et la \textbf{mAP} (moyenne des
+      précisions moyennes par classe), toutes deux rapportées au
+      \ChapRef{experimentation}, sans remplacer le F1-macro pour la
+      sélection des configurations.
 \end{itemize}
 Une analyse \textbf{par classe} (F1, confusion avec \emph{neutral},
 classes quasi absentes du train) accompagne les moyennes globales au
@@ -161,10 +170,10 @@ présence de termes affectifs), représentations distribuées de mots
 \cite{mikolov2013word2vec,pennington2014glove}, lexiques de sentiment
 ou d'émotions, et classifieurs multi-étiquettes (SVM, forêts, chaînes
 de classificateurs modélisant des dépendances entre labels
-\cite{read2009classifier,read2019classifier,dembczynski2012}). Elles
-restent utiles comme référence historique et pour l'interprétabilité,
-mais peinent sur le contexte long, l'ironie et les émotions
-implicites.
+\cite{read2009classifier,read2019classifier,dembczynski2012}). Ces
+approches restent des références historiques, et certaines gardent un
+avantage d'interprétabilité. Elles sont en revanche limitées dès que le
+contexte se complique, ou que l'émotion est ironique ou implicite.
 
 Les architectures convolutionnelles et récurrentes (CNN
 \cite{kim2014}, LSTM/GRU \cite{cho2014,lipton2015sequencernn}, BiLSTM)
@@ -186,27 +195,29 @@ du texte \cite{mullenbach2018}.
 
 \subsection{Modèles pré-entraînés et ligne de base}
 
-La généralisation du \emph{fine-tuning} de modèles de langue
-\cite{howard2018ulmfit,peters2018elmo} prépare l'affinement de
-\textbf{modèles de langue pré-entraînés}
-\cite{devlin2019,liu2019roberta,sanh2019distilbert} avec une tête
-multi-étiquettes sigmoïde constitue aujourd'hui la \textbf{ligne de
-base} la plus répandue sur GoEmotions \cite{demszky2020}. Les pratiques
+La généralisation du \emph{fine-tuning} des modèles de langue
+pré-entraînés \cite{howard2018ulmfit,peters2018elmo,devlin2019,liu2019roberta,sanh2019distilbert},
+avec une tête multi-étiquettes à sorties sigmoïdes, est l'approche de
+référence retenue par les auteurs de GoEmotions, et le point de
+comparaison de notre ablation \cite{demszky2020}. Les pratiques
 d'affinage (warmup, têtes légères) et l'écosystème d'implémentation
-\cite{sun2019,wolf2020} influencent directement le protocole retenu au
-\ChapRef{experimentation}. Cette configuration (encodeur
-contextuel + classifieur binaire par émotion) sert de point de
-comparaison obligatoire dans notre protocole d'ablation : toute
-contribution architecturale (M1 à M4) doit être mesurée \emph{à budget
-et backbone constants} par rapport à cet affinage standard.
+\cite{sun2019,wolf2020} influencent directement le protocole du
+\ChapRef{experimentation}. Toute contribution de M1 à M4 est mesurée
+\emph{à budget et backbone constants} par rapport à cet affinage.
+
+Deux encodeurs portent cette baseline et la ladder qui suit.
+DistilBERT-base est le plus compact. RoBERTa-base est entraîné
+autrement, à une échelle plus large. La comparaison demande si les
+modules se comportent de la même façon sur les deux. Elle ne suppose
+ni le même coût ni la même capacité.
 
 Sur la taxonomie complète (28 classes), les auteurs rapportent pour
 BERT-base \cite{devlin2019} un \textbf{F1-macro de 0{,}46} sur leur
 jeu de test (précision macro 0{,}40, rappel macro 0{,}63)
-\cite{demszky2020}, avec de fortes disparités par émotion ; ordre de
-grandeur bibliographique obtenu avec leur filtrage, split 80/10/10 et
-hyperparamètres. Nos comparaisons principales restent les ablations
-internes au protocole du \ChapRef{experimentation}.
+\cite{demszky2020}, avec de fortes disparités par émotion. Ce chiffre
+vient de leur filtrage, de leur partage 80/10/10 et de leurs
+hyperparamètres. Les comparaisons du mémoire sont les ablations
+internes du \ChapRef{experimentation}.
 
 \subsection{Dépendances entre émotions (motivation du module M2)}
 
@@ -233,11 +244,12 @@ la structure phrase et document plutôt qu'un seul vecteur global.
 
 De nombreux textes portent des signaux affectifs \textbf{localisés}
 à l'échelle de la phrase : une phrase peut exprimer la gratitude,
-une autre la surprise. Aplatir le document en un unique vecteur
-(\texttt{[CLS]} ou pooling global) mélange ces signaux (limitation
-\textbf{L2} du \ChapRef{conception}). Les architectures
-\textbf{hiérarchiques} visent à encoder d'abord les phrases (ou
-segments), puis à agréger au niveau document avec des poids appris.
+une autre la surprise. Lorsque la décision repose sur un seul vecteur,
+vecteur \texttt{[CLS]} ou pooling global, les indices portés par des
+phrases différentes sont agrégés ensemble. Cette agrégation peut rendre
+moins explicite la part de chaque segment. C'est la limite L2 posée au
+\ChapRef{contexte}. Les architectures hiérarchiques représentent
+d'abord les segments, puis les agrègent au niveau du document.
 
 Sur GoEmotions, les commentaires Reddit annotés au niveau document
 peuvent néanmoins enchaîner plusieurs phrases aux fonctions discursives
@@ -279,14 +291,13 @@ même : éviter qu'un token très salient dans une phrase domine la
 prédiction d'étiquettes qui ne se manifestent que dans une autre
 phrase du même commentaire.
 
-Le \textbf{module~1} de HAKE-MER s'inscrit dans cette lignée :
-segmentation en phrases, encodage par le backbone partagé,
-pooling par attention additive \cite{bahdanau2015} au niveau phrase,
-avec des bornes de longueur fixées au \ChapRef{experimentation}.
-Le schéma de la figure~\ref{fig:lit-han} en rappelle la logique à
-trois strates (sans reproduire l'empilement récurrent complet,
-détaillé au \ChapRef{conception}) avant l'étude des
-lexiques externes.
+Le \textbf{module~1} reprend l'idée, pas le HAN complet. Le backbone
+fournit déjà les états de tokens. M1 segmente le commentaire en phrases,
+résume chaque phrase par une attention additive \cite{bahdanau2015},
+puis agrège ces phrases. Il n'ajoute pas d'encodeur récurrent mot vers
+phrase distinct du modèle pré-entraîné. Les bornes de longueur et le
+détail de cette agrégation sont au \ChapRef{conception}. La
+figure~\ref{fig:lit-han} rappelle le schéma du HAN, pas celui de M1.
 
 \begin{figure}[H]
 \centering
@@ -309,7 +320,9 @@ Les classes rares offrent peu d'exemples supervisés ; les
 \textbf{lexiques affectifs} (association mot$\to$catégories
 d'émotions ou dimensions de sentiment) peuvent fournir un signal
 auxiliaire, en particulier lorsque les mots du texte sont couverts
-par le lexique. L'intégration se fait typiquement par
+par le lexique. Cette aide n'est pas automatique : elle dépend de la
+couverture du lexique, de la qualité des associations et de leur
+compatibilité avec la taxonomie cible. L'intégration se fait typiquement par
 concaténation, features document-level, initialisation d'embeddings
 ou, comme dans HAKE-MER, injection contrôlée via une porte
 apprise sur les requêtes d'attention par émotion.
@@ -319,17 +332,21 @@ apprise sur les requêtes d'attention par émotion.
 Le protocole prévoit de comparer deux types de ressources à
 architecture fixée (M1+M2+M3) :
 \begin{itemize}
-\item le \textbf{NRC Emotion Lexicon} \cite{mohammad2013} : lexique
-      d'associations mot-émotion obtenu par crowdsourcing, fondé sur
-      huit émotions de base (cadre Plutchik) et projeté vers les 28
-      étiquettes GoEmotions ;
-\item \textbf{SenticNet} \cite{cambria2018senticnet} : ressource de
-      sentiment à base de \emph{primitives conceptuelles} et
-      d'embeddings contextuels, produisant des scores affectifs
-      continus au niveau concept. Dans HAKE-MER, cinq descripteurs
-      documentaires (polarités et couverture) alimentent M3, distincts
-      d'une table mot-émotion alignée sur les $K{=}28$ étiquettes
-      GoEmotions comme pour NRC.
+\item le \textbf{NRC Emotion Lexicon} \cite{mohammad2013} : des mots
+      associés à huit émotions du cadre Plutchik, et à deux polarités
+      de sentiment. Le module M3 ne reprend que les huit scores
+      d'émotion. Une correspondance définie pour ce mémoire les projette
+      vers les 28 étiquettes GoEmotions. Cette projection n'appartient
+      pas au lexique publié. La catégorie \emph{neutral} n'y reçoit pas
+      de signal obligatoire. Le détail est au \ChapRef{conception} ;
+\item \textbf{SenticNet} \cite{cambria2018senticnet} : des scores
+      affectifs continus associés à des concepts. Dans HAKE-MER, M3
+      reçoit cinq descripteurs agrégés au niveau du document : polarité
+      moyenne des concepts reconnus, polarité maximale, polarité
+      minimale, fraction de tokens couverts, nombre de concepts
+      distincts. Ce n'est pas une table mot-émotion alignée sur les
+      $K{=}28$ étiquettes, comme pour NRC. La définition de ces cinq
+      grandeurs est au \ChapRef{conception}.
 \end{itemize}
 Les deux ressources n'ont pas la même structure : catégories d'émotions
 d'un côté, scores conceptuels de l'autre. L'hypothèse H3
@@ -337,12 +354,12 @@ d'un côté, scores conceptuels de l'autre. L'hypothèse H3
 modifie le F1-macro par rapport à M1+M2, et si les deux se comportent
 de la même façon. Elle n'annonce pas de ressource gagnante.
 
-\subsection{Graphes de connaissances et bon sens (hors périmètre principal)}
+\subsection{Graphes de connaissances et sens commun (hors périmètre principal)}
 
 Des travaux intègrent ConceptNet \cite{speer2017}, des graphes de
-connaissances de bon sens pour l'émotion en dialogue
-\cite{ghosal2020cosmic}, bases d'inférences
-causales (ATOMIC) ou modèles génératifs de bon sens (COMET) pour les
+connaissances de sens commun pour l'émotion en dialogue
+\cite{ghosal2020cosmic}, des bases d'inférences causales (ATOMIC) ou
+des modèles génératifs de sens commun (COMET) pour les
 émotions implicites. Ils restent des prolongements, repris en
 conclusion générale. HAKE-MER s'en tient à l'injection lexicale NRC
 et SenticNet.
@@ -354,7 +371,10 @@ Le sujet initial prévoyait plus de benchmarks. Comme les protocoles
 publics diffèrent, ce mémoire insiste sur l'ablation interne. Le
 tableau~\ref{tab:goemotions-literature} situe quelques travaux sur
 GoEmotions ; les chiffres ne sont \emph{pas} directement comparables
-(split, prétraitement, seuil, graines).
+(split, prétraitement, seuil, graines). Les deux lignes HAKE-MER sont
+les moyennes de F1-macro test sur trois graines, reprises au
+\ChapRef{experimentation}, où figurent aussi les écarts-types. Elles ne
+se comparent pas aux lignes qui les précèdent.
 
 \begin{table}[H]
 \centering
@@ -370,9 +390,11 @@ GoEmotions BERT-base \cite{demszky2020} & 2020 & BERT-base & officiel & $\approx
 \hline
 Seq2Emo \cite{ke2021seq2emo} & 2021 & BERT/RoBERTa & split officiel & $\approx 0{,}52$ \\
 \hline
-Attention 3D multi-étiquettes \cite{li2025emotion3dattn} & 2025 & modèle dédié & GoEmotions & voir source \\
+Attention 3D multi-étiquettes \cite{li2025emotion3dattn} & 2025 & modèle dédié & autre protocole & non comparable \\
 \hline
-HAKE-MER (M1+M2, ce mémoire) & 2026 & DistilBERT/RoBERTa & protocole ch.~4 & $\approx 0{,}51$ / $0{,}53$ \\
+HAKE-MER, M1+M2 & 2026 & DistilBERT-base & test, 3 graines & $0{,}505$ \\
+\hline
+HAKE-MER, M1+M2 & 2026 & RoBERTa-base & test, 3 graines & $0{,}526$ \\
 \hline
 \end{tabular}
 \end{table}
@@ -380,8 +402,8 @@ HAKE-MER (M1+M2, ce mémoire) & 2026 & DistilBERT/RoBERTa & protocole ch.~4 & $\
 \section{Synthèse et positionnement de HAKE-MER}
 \label{sec:etat-synthese}
 
-Les tableaux ci-dessous condensent les lacunes repérées dans la
-littérature et la réponse modulaire proposée par HAKE-MER.
+Les deux tableaux de cette section condensent les lacunes repérées dans
+la littérature et les leviers que HAKE-MER met à l'épreuve.
 
 \subsection{Limites récurrentes et modules proposés}
 
@@ -408,7 +430,8 @@ M1 : encodage hiérarchique phrase$\to$doc \\
 \hline
 L3 : Classes rares &
 Peu d'exemples supervisés &
-M3 : prior lexical (NRC / SenticNet) ; M4 : pondération dynamique \\
+M3 : signal lexical ; M4 : pondération dynamique, contributions
+mesurées au \ChapRef{experimentation} \\
 \hline
 \end{tabular}
 \end{table}
@@ -439,7 +462,8 @@ structure, connaissances externes).
         \hline
         PLM affiné + tête multi-label &
         Représentations contextuelles fortes &
-        Contexte global unique, pas de prior lexical \\
+        Représentation globale de la baseline étudiée, sans interaction
+        explicite entre labels ni prior lexical \\
         \hline
         Enrichissement lexical seul &
         Signal pour mots affectifs &
