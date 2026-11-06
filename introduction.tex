@@ -2,61 +2,89 @@
 \addcontentsline{toc}{chapter}{Introduction générale}
 \markboth{Introduction générale}{}
 
-Les textes en ligne (commentaires, messages, avis) expriment souvent
-plusieurs émotions à la fois, et pas seulement une polarité positive ou
-négative. La détection d'émotions cherche à repérer des catégories
-affectives fines (joie, colère, tristesse, peur, etc.), parfois
-plusieurs dans le même texte. Il s'agit d'une classification
-\emph{multi-étiquettes} : chaque émotion est une décision binaire. Les
-cooccurrences et le fort déséquilibre entre classes rendent
-l'apprentissage et l'évaluation difficiles.
+Les échanges publiés sur les plateformes numériques, commentaires,
+messages ou avis, donnent à voir des réactions rarement réductibles à
+une seule polarité. Un même texte peut, par exemple, exprimer à la fois
+de la déception, de la colère et de la tristesse. Distinguer seulement
+un sentiment positif d'un sentiment négatif laisse alors échapper ce
+mélange. La détection d'émotions vise ces catégories plus fines.
+Plusieurs émotions pouvant coexister, la tâche est une classification
+\emph{multi-étiquettes} : chaque catégorie fait l'objet d'une décision
+binaire, présente ou absente.
 
-Ce mémoire est réalisé dans le Mastère de Recherche à l'Institut
+Formuler la tâche ainsi n'en simplifie pas l'apprentissage. Les étiquettes
+cooccurrent, et leurs effectifs sont très inégaux : quelques émotions
+fréquentes dominent une longue traîne de classes rares. Un indicateur
+global peut donc sembler satisfaisant alors que le modèle échoue là où
+les exemples manquent. GoEmotions illustre ce régime. Environ 17\,\%
+des textes y portent au moins deux émotions \cite{demszky2020}.
+
+Ce mémoire s'inscrit dans le Mastère de Recherche de l'Institut
 Supérieur d'Informatique (ISI), sous l'encadrement de M.~Sahbi Bahroun.
-Il présente HAKE-MER (\emph{Hierarchical Attention with Knowledge modules
-for Multi-Emotion Recognition}), un cadre modulaire M1 à M4 pour la
-détection multi-émotions. Après ablation, la configuration retenue est
-\textbf{M1+M2} (sans prior lexical ni pondération dynamique).
+La question qui l'organise est la suivante. Un modèle qui respecte
+l'organisation du texte, relie les émotions entre elles et peut recevoir
+un signal lexical externe reconnaît-il mieux les émotions multiples, y
+compris les plus rares, qu'un encodeur contextuel affiné de façon
+standard \cite{howard2018ulmfit,devlin2019} ?
 
-L'architecture combine un encodage hiérarchique du texte, une attention
-croisée entre émotions et des lexiques NRC et SenticNet, au-dessus
-d'encodeurs contextuels affinés
-\cite{howard2018ulmfit,devlin2019}. Les expériences portent sur
-GoEmotions \cite{demszky2020}, avec un protocole d'ablation à budget
-d'affinage identique, le F1-macro comme métrique principale pour le
-déséquilibre multi-étiquettes
-\cite{bond2022multilabel,wu2021multilabelranking,zhang2014multilabel}
-et trois graines. Le Step~0 compare DistilBERT-base et RoBERTa-base en
-encodage document flat ; la ladder M1 à M4 est menée sur les deux
-encodeurs. Les scores test détaillés sont au \ChapRef{experimentation}.
+HAKE-MER (\emph{Hierarchical Attention with Knowledge modules
+for Multi-Emotion Recognition}) est le cadre construit pour trancher
+cette question pièce par pièce. L'encodage hiérarchique, noté M1, garde
+une représentation des phrases au lieu d'écraser le document dans un
+vecteur unique. M2 y ajoute une attention croisée, de sorte que la
+décision sur une émotion puisse dépendre des autres. Deux modules
+supplémentaires interrogent des apports qu'une ablation doit isoler :
+un prior lexical, NRC ou SenticNet (M3), puis une pondération dynamique
+de l'intensité de chaque émotion (M4). Les hypothèses H1 à H4 attachent
+chaque palier à un effet attendu sur le F1-macro.
 
-\ParHead{Orientation des résultats :}Les campagnes montrent que la pile
-M1+M2 apporte la plus grande part du gain en F1-macro, par rapport au
-flat et à M1 seul. Les contrôles mécanistiques montrent surtout le rôle
-de l'encodeur inter-émotions. Les modules M3 (priors lexicaux) et M4
-(pondération dynamique) n'améliorent pas de façon stable la macro sur
-les deux encodeurs testés. L'analyse par classe montre des progrès surtout
-sur des émotions de fréquence moyenne, moins sur les classes très rares.
-Les chiffres, tableaux d'ablation et synthèse H1 à H4 sont au
-\ChapRef{experimentation} ; le résumé en tête de volume en donne une
-version courte.
+Le protocole évite de mêler l'effet de l'architecture et celui de
+l'encodeur. Une première étape, le Step~0, compare DistilBERT-base et
+RoBERTa-base lorsque le texte est encodé de façon plate, au niveau du
+document. La ladder M1 à M4 est ensuite répétée sur ces deux encodeurs,
+avec le même budget d'affinage et trois graines. Le F1-macro est la
+métrique principale, parce qu'il ne laisse pas les classes fréquentes
+absorber les classes rares
+\cite{bond2022multilabel,wu2021multilabelranking,zhang2014multilabel}.
+
+Dans ce cadre, la pile M1+M2 porte l'essentiel du gain en F1-macro, par
+rapport au flat comme par rapport à M1 seul. Le mécanisme n'est pas
+uniforme à l'intérieur de M2. Retirer l'encodeur inter-émotions fait
+reculer le score ; retirer seulement l'attention de phrase le laisse
+presque au même niveau. M3 et M4 n'améliorent pas la macro de façon
+stable sur les deux encodeurs testés. La configuration retenue est donc
+\textbf{M1+M2}, sans prior lexical ni pondération dynamique. Lu émotion
+par émotion, le progrès concerne surtout des classes de fréquence
+intermédiaire, et moins les classes très rares. Les tableaux d'ablation
+et la synthèse H1 à H4 sont au \ChapRef{experimentation}. Le résumé en
+tête de volume en donne une version courte.
 
 \ParHead{Contributions :}
 \begin{itemize}[noitemsep]
-\item une architecture HAKE-MER en quatre modules M1 à M4 et quatre
-      hypothèses H1 à H4 testées par ablation ;
-\item un protocole documenté (graines, hyperparamètres, campagnes
-      archivées), Step~0 sur deux encodeurs, NRC et SenticNet, contrôles
-      M2, analyse par cardinalité gold, synthèse H1 à H4 et F1 par
-      émotion sur le test ;
-\item des recommandations pratiques et un bilan H1 à H4 en fin
-      d'évaluation expérimentale, puis perspectives en conclusion générale.
+\item Une architecture, HAKE-MER, découpée en quatre modules M1 à M4.
+      Le découpage sert à tester quatre hypothèses, H1 à H4, par
+      ablation, et donc à attribuer un gain à un mécanisme plutôt qu'à
+      un empilement dont on ne peut plus distinguer les pièces.
+\item Un protocole tenu constant (graines, hyperparamètres, campagnes
+      archivées). Le Step~0 sur DistilBERT-base et RoBERTa-base sépare
+      le choix de l'encodeur de l'effet des modules. Les contrôles de
+      M2, l'analyse par cardinalité gold, la synthèse H1 à H4 et le F1
+      par émotion indiquent où la macro résume le comportement du
+      modèle, et où elle le masque.
+\item Un bilan d'usage à la fin de l'évaluation : quelle configuration
+      retenir, et pourquoi M3 et M4 ne se justifient pas dans le
+      protocole testé. La conclusion générale en dégage les
+      prolongements.
 \end{itemize}
 
 \ParHead{Organisation du mémoire :}
-Quatre chapitres numérotés et une conclusion générale : le
-\ChapRef{contexte} pose le problème et les objectifs ; le
-\ChapRef{etat_art}, la littérature ; le \ChapRef{conception}, HAKE-MER
-et H1 à H4 ; le \ChapRef{experimentation}, protocole, résultats,
-bilan des hypothèses et recommandations pratiques ; puis la conclusion
-générale et perspectives (synthèse, prolongements de recherche).
+Le \ChapRef{contexte} fixe le cadre, la problématique et les objectifs
+qui découlent du mélange des émotions dans un même texte. Le
+\ChapRef{etat_art} examine ensuite comment la littérature traite
+l'indépendance des étiquettes, la structure du document et le
+déséquilibre des classes. Le \ChapRef{conception} transforme ce constat
+en une architecture, HAKE-MER, et en hypothèses H1 à H4. Le
+\ChapRef{experimentation} les confronte à un protocole fixe, puis en
+tire les scores, le bilan et des recommandations pratiques. La
+conclusion générale rassemble ce qui est établi et indique les
+prolongements.

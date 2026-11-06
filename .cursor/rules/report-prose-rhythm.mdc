@@ -1,0 +1,43 @@
+---
+description: PFE prose — developed argument, varied rhythm, no compressed summary voice
+alwaysApply: true
+---
+
+# Report prose (rhythm and argument)
+
+When drafting or revising mémoire prose (French or English), write as a researcher developing a reasoning. A compressed executive summary is the failure mode. Do not add errors, random synonyms, filler, or personal asides to look less mechanical. Rhythm serves the argument. Integrity rules override style.
+
+Apply this when writing new prose or when asked to revise it. Do not rewrite a chapter for cadence alone.
+
+## Develop, then name
+
+- Start from the situation and why it matters. An example can carry the motivation. Give the technical definition after that explanation.
+- A paragraph should move: situation, complication, consequence. Uneven sentence length. Vary openings and verbs.
+- Unpack a sentence that welds several design choices. State how the pieces relate (what the first stage answers, what the next stage holds fixed).
+- Say why a contribution matters. A list of acronyms is not an explanation.
+
+## Introduction and chapter plans
+
+An introduction establishes the problem, the motivation, the gap, the question, and the approach. State findings once, as a reasoned outcome, and leave tables and figures to the experimental chapter and the abstract.
+
+A chapter handoff is one thread (which question the next chapter takes up). Do not repeat the same table of contents in the introduction, the conclusion, and each chapter opening.
+
+Abstracts stay short. Do not stretch them into a second introduction.
+
+## Patterns to break
+
+Do not stack the same skeleton: define the concept, state its purpose, give examples, add a hedge. Do not open neighboring sentences with the same formula (« L'architecture combine », « Les expériences portent », « Les campagnes montrent », « Les contrôles montrent », « L'analyse montre », « Le chapitre X présente »).
+
+Parallel module sentences (M1 does A. M2 does B. M3 does C. M4 does D.) need to be folded into prose unless a list is genuinely clearer.
+
+## Example
+
+Compressed:
+
+« La détection d'émotions cherche à repérer des catégories affectives fines (joie, colère, tristesse, peur, etc.), parfois plusieurs dans le même texte. »
+
+Developed:
+
+« Un même commentaire peut mêler déception, colère et tristesse. Une polarité positive ou négative n'en rend pas compte. La détection d'émotions identifie ces catégories, y compris lorsqu'elles coexistent, et se formule alors comme une classification multi-étiquettes. »
+
+Keep terminology stable: HAKE-MER, M1 à M4, H1 à H4, GoEmotions, NRC, SenticNet, F1-macro. Do not rename modules to vary the style.
