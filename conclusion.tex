@@ -2,73 +2,93 @@
 \addcontentsline{toc}{chapter}{Conclusion générale et perspectives}
 \markboth{Conclusion générale et perspectives}{}
 
-Ce mémoire porte sur la détection de plusieurs émotions dans un même
-texte, sur le jeu GoEmotions \cite{demszky2020}. Le problème est
-multi-étiquettes et fortement déséquilibré : une baseline qui agrège
-tout le commentaire dans un seul vecteur ou qui traite les émotions
-comme indépendantes ne suffit pas pour suivre les cooccurrences et la
-longue traîne.
-
-Pour répondre à cette problématique, nous avons conçu HAKE-MER, une
-architecture modulaire (M1 à M4) évaluée par ablation cumulative à
-budget d'affinage constant, sur DistilBERT-base et RoBERTa-base et
-trois graines. Le protocole, les hypothèses H1 à H4 et l'implémentation
-sont au \ChapRef{conception} ; les campagnes, tableaux, bilan H1 à H4
-et recommandations d'usage au \ChapRef{experimentation}
-(sections~\ref{sec:expe-enseignements} et~\ref{sec:expe-recommandations}).
+Le protocole du \ChapRef{experimentation} est clos : un budget d'affinage,
+deux encodeurs, trois graines, et le choix de la pile par le F1-macro de
+validation. Le bilan s'en tient aux résultats de ce cadre, puis à ce
+qu'il laisse ouvert.
 
 \section*{Synthèse des résultats}
 \addcontentsline{toc}{section}{Synthèse des résultats}
-Les expériences montrent que le gain mesurable en F1-macro vient surtout
-de la pile \textbf{M1+M2} : encodage hiérarchique du texte plus
-interaction entre émotions (M2), retenue sur validation sur les deux
-encodeurs. M1 seul reste en dessous du flat ; les priors lexicaux (M3)
-et la pondération dynamique (M4) testés ici n'apportent pas de gain
-macro stable au prix de la complexité ajoutée. L'analyse par classe et
-par cardinalité gold confirme que la macro masque des comportements
-très différents, notamment sur les étiquettes rares et le rôle central
-de \emph{neutral}. H2 est la seule hypothèse clairement soutenue ; H3
-et H4 restent prudente au regard des chiffres archivés.
+Sur GoEmotions, la baseline plate et la ladder M1 à M4 ont été comparées
+par le F1-macro, en moyenne sur les trois graines
+(tableau~\ref{tab:expe-val-test-selection}). M1 seul ne dépasse pas
+l'encodage plat. Avec DistilBERT, il recule. La pile retenue sur
+validation est M1+M2, pour les deux encodeurs. Sur le test, elle atteint
+$0{,}505$ avec DistilBERT-base et $0{,}526$ avec RoBERTa-base, au-dessus
+du flat ($0{,}486$ et $0{,}487$) et de M1 seul.
+
+H2 est soutenue à ce niveau de pile. Le gain reste celui de l'ensemble.
+Les contrôles donnent davantage à l'encodeur
+inter-émotions qu'à l'attention de phrase, et le passage de M1 seul à
+M1+M2 change aussi la tête de décision. H1 n'est pas soutenue. Le prior
+de document, qu'il vienne de NRC ou de SenticNet, laisse la macro au
+niveau de M1+M2. H3 n'est donc pas soutenue pour cette injection. Le
+prior NRC par étiquette est un peu plus haut. Trois graines, sans test
+statistique dédié, ne permettent pas d'en faire une amélioration
+établie. M4 dépend du lexique. Avec SenticNet, la moyenne baisse. Avec
+NRC, elle monte par rapport à M3 seul, sans gain robuste face à M1+M2,
+et sans la même campagne sur RoBERTa. H4 n'est pas soutenue de manière
+générale.
+
+Le F1-macro donne le même poids à chaque émotion. La moyenne ne désigne
+pas celles qui restent difficiles. Les scores par classe situent le
+progrès surtout sur des émotions de fréquence intermédiaire. L'écart
+entre \emph{neutral}, \emph{admiration} et cinq émotions très rares se
+réduit avec M1+M2. Ce groupe ne résume pas toute la distribution des
+effectifs.
 
 \section*{Recommandations}
 \addcontentsline{toc}{section}{Recommandations}
-Pour un usage orienté performance macro sur GoEmotions, la configuration
-retenue est \textbf{M1+M2} (RoBERTa si la marge de $\approx 2$ points
-de F1-macro justifie le coût, DistilBERT sinon). Step~0 flat reste
-pertinent lorsque la simplicité de déploiement prime ; M3 et M4 ne sont
-pas recommandés dans le protocole testé. Le détail chiffré, les cas où
-enrichir ou simplifier, et les menaces à la validité figurent au
+Lorsque le critère est le F1-macro, la configuration d'usage est
+\textbf{M1+M2}. Entre les deux encodeurs, RoBERTa-base dépasse
+DistilBERT-base d'environ deux points de F1-macro test. DistilBERT
+reste adapté si cet écart ne compense pas un
+modèle plus lourd. L'encodage plat reste le choix lorsque la simplicité
+pèse plus que ces points. M3 et M4 ne sont pas retenus dans le protocole
+testé. Le détail des cas limites est au
 \ChapRef{experimentation}.
 
 \section*{Perspectives de recherche}
 \addcontentsline{toc}{section}{Perspectives de recherche}
-Ce travail ne clôt pas le sujet ; plusieurs prolongements restent
-ouverts sans remettre en cause les campagnes déjà archivées :
+Ce bilan vaut pour GoEmotions, en anglais, avec ce budget et ces deux
+encodeurs. Le sujet déposé ouvrait d'autres corpus, des graphes de
+connaissances et un gain de 3 à 5\,\% sur l'état de l'art. Ce gain n'est
+pas revendiqué. Ces directions demandent leur propre protocole.
 \begin{itemize}
-\item \textbf{Déséquilibre et classes rares} : pertes repondérées
-      \cite{lin2017focal}, rééchantillonnage \cite{chawla2002smote},
-      seuils par émotion, ou entraînement ciblé sur \emph{grief},
-      \emph{relief}, etc.
-\item \textbf{Lexique et connaissances} : fusion par émotion, graphes
-      type ConceptNet \cite{speer2017}, bon sens \cite{ghosal2020cosmic},
-      ou meilleur alignement Plutchik / GoEmotions que le gate global M3.
-\item \textbf{Autres lexiques} : tester d'autres ressources sur la pile
-      M1+M2 déjà validée.
-\item \textbf{Validation externe} : SemEval \cite{mohammad2018semeval},
-      EmoContext \cite{semeval2019emocontext}, ou corpus hors Reddit.
-\item \textbf{Modèles généralistes} : comparer M1+M2 à des LLM ou
-      encodeurs de phrase \cite{reimers2019sentence} quand le protocole
-      est comparable \cite{sharma2024deeplearningmlc}.
-\item \textbf{Interprétabilité} : explications locales ou attention
-      \cite{ribeiro2016lime,clark2019bert} pour \emph{neutral} et les
-      labels rares.
+\item \textbf{Classes rares.} Le rééchantillonnage et une perte qui
+      repondère les exemples difficiles
+      \cite{chawla2002smote,lin2017focal} sont restés hors du protocole,
+      de même qu'un seuil propre à chaque émotion. Les effectifs de
+      \emph{grief} ou de \emph{relief} restent trop faibles pour qu'un
+      F1 isolé tranche.
+\item \textbf{Connaissances externes.} Le prior par étiquette a été
+      essayé. Il n'a pas suffi à conclure. Un graphe comme ConceptNet,
+      ou un modèle de connaissances de sens commun
+      \cite{speer2017,ghosal2020cosmic}, changerait le type de signal,
+      pas seulement la porte apprise.
+\item \textbf{Autres corpus.} SemEval-2018 \cite{mohammad2018semeval},
+      EmoContext \cite{semeval2019emocontext}, EmoInt, ou un corpus hors
+      Reddit, ont d'autres étiquettes et un autre partage. Les comparer
+      aux chiffres de ce mémoire sans reprendre le protocole mêlerait
+      des écarts que l'ablation a cherché à séparer.
+\item \textbf{Mécanisme et autres modèles.} Une variante de M1 qui
+      garderait la tête par émotion, sans attention de phrase ni
+      encodeur inter-émotions, isolerait la part de la tête dans l'écart
+      M1 vers M1+M2. Une comparaison à un grand modèle de langue ou à un
+      encodeur de phrases
+      \cite{reimers2019sentence,sharma2024deeplearningmlc} n'aurait de
+      sens qu'avec le même budget, le même partage et la même métrique.
+      Des explications locales
+      \cite{ribeiro2016lime,clark2019bert} pourraient relier les erreurs
+      autour de \emph{neutral} aux tokens. Le comptage des paires ne le
+      fait pas.
 \end{itemize}
 
 \section*{Bilan personnel}
 \addcontentsline{toc}{section}{Bilan personnel}
-Sur le plan personnel, ce travail m'a permis de mener un cycle complet
-de recherche appliquée : cadrage bibliographique, conception modulaire,
-campagnes reproductibles et lecture critique des scores globaux face aux
-confusions par émotion. La leçon la plus nette est méthodologique : sans
-ablation à budget constant et sans métriques par classe, il est facile
-de surinterpréter un module ou un lexique à partir du seul F1-macro.
+Ce travail a couvert le cadrage, la conception des quatre modules, les
+campagnes et la lecture des scores émotion par émotion. La leçon porte
+sur la manière de conclure. Le F1-macro met chaque classe au même poids.
+Pour savoir lesquelles restent difficiles, il faut les scores par
+étiquette. Une porte non nulle, ou un léger écart de moyenne sur trois
+graines, ne suffit pas à retenir un module.
