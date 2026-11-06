@@ -302,29 +302,39 @@ neutral & aucune \\
 
 \subsection{Extraction SenticNet}
 
-SenticNet~5 \cite{cambria2018senticnet} ne range pas le mot dans une
-émotion. Il lui associe une intensité signée, dans $[-1, 1]$, à la
-place de l'étiquette positif ou négatif. Les tokens sont les suites de
-lettres du texte, en minuscules. La reconnaissance accepte le token tel
-quel, le trait d'union remplacé par un tiret bas, ou l'apostrophe
-retirée, sans lemmatisation et sans recomposer un concept de plusieurs
-mots. Un token absent est ignoré.
+SenticNet~5 \cite{cambria2018senticnet} associe à un concept une
+intensité signée, dans $[-1, 1]$, et non une catégorie d'émotion. Le
+texte est mis en minuscules, puis découpé en suites de lettres qui
+peuvent contenir une apostrophe. Un trait d'union sépare le mot avant
+la recherche, si bien qu'un concept écrit avec un trait d'union ou en
+plusieurs mots n'est pas retrouvé d'un bloc. Le token est cherché tel
+quel, puis sans son apostrophe. Il n'y a pas de lemme. Un token sans
+entrée ne contribue pas.
 
-Si aucun token n'est reconnu, les cinq descripteurs du vecteur $c$
-($d_c{=}5$) sont nuls : intensité moyenne, intensité maximale, intensité
-minimale, fraction de tokens couverts, nombre de tokens distincts. La
-variante par étiquette réutilise le tableau~\ref{tab:nrc-goemotions}.
-L'intensité, ramenée à $[0, 1]$ par $(\mathrm{intensité}+1)/2$, est
-moyennée sur les tokens dont une catégorie NRC pointe vers l'étiquette,
-et \emph{neutral} reste à zéro.
+Les tokens reconnus fournissent les cinq descripteurs du vecteur $c$
+($d_c{=}5$) : l'intensité moyenne, le maximum, le minimum, la fraction
+de tokens reconnus parmi tous les tokens du texte, et le nombre de
+tokens distincts qui ont une entrée. Si aucun n'est reconnu, les cinq
+valeurs sont nulles.
 
-M3 reçoit l'un ou l'autre vecteur par la même porte. Passer de NRC à
-SenticNet change $d_c$ et le contenu de $c$, et laisse la segmentation,
-M1 et M2 en place. L'injection est commune, les nombres de départ ne le
-sont pas : un écart de F1-macro ne s'attribue donc pas, à lui seul, à
-la qualité du lexique. Cet écart se lit à part de celui entre classes
-fréquentes et rares, une moyenne pouvant bouger alors que les classes
-rares restent en place.
+La variante par étiquette construit, pour chaque étiquette GoEmotions,
+une moyenne à part, à l'aide du tableau~\ref{tab:nrc-goemotions}. Seuls
+les tokens présents à la fois dans SenticNet et dans NRC y entrent.
+Leur intensité est ramenée à $[0, 1]$ par $(\mathrm{intensité}+1)/2$.
+Chaque catégorie NRC du token qui figure dans la ligne de l'étiquette
+ajoute cette valeur une fois, puis on en prend la moyenne. Une
+étiquette sans aucune contribution reçoit $0$, et \emph{neutral} reçoit
+$0$ dans tous les cas. Ces moyennes ne sont pas ramenées à une somme
+égale à un, contrairement au vecteur NRC par étiquette.
+
+NRC et SenticNet sont ensuite injectés dans M3 de la même façon
+(section~\ref{sec:conception-m3}). Seuls la dimension et le contenu de
+$c$ changent. La segmentation, M1 et M2 restent ceux de la pile sans
+lexique. Une différence de F1-macro mêle donc le contenu du vecteur et
+ce mode d'injection commun. Elle ne dit pas, à elle seule, laquelle des
+deux ressources est la meilleure. Le F1-macro et les scores par classe
+répondent à deux questions distinctes : le premier dit si la moyenne
+bouge, les seconds disent quelles émotions bougent.
 
 \section{Module 1 : Encodage Hiérarchique}
 \label{sec:conception-m1}
