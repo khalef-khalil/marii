@@ -11,8 +11,8 @@ le test.
 \addcontentsline{toc}{section}{Synthèse des résultats}
 La question était de savoir si le découpage en phrases, le lien entre
 émotions, puis un lexique, changeaient le F1-macro par rapport à un
-encodeur plat. Le tableau~\ref{tab:expe-val-test-selection} y répond par
-des moyennes sur trois graines. Segmenter le commentaire sans le reste
+encodeur plat. Le tableau~\ref{tab:expe-val-test-selection} donne la
+moyenne et l'écart-type sur trois graines. Segmenter le commentaire sans le reste
 de la pile ne produit pas le gain attendu par H1 : M1 seul passe sous
 le flat, et le recul est net avec DistilBERT. Ce que la validation
 retient, sur les deux encodeurs, est M1+M2. Sur le test, cette pile
@@ -30,15 +30,17 @@ Le lexique occupait une place à part dans le sujet : NRC et SenticNet
 devaient apporter un signal que le commentaire ne formule pas
 explicitement. Lorsqu'il est injecté comme un même vecteur pour toutes
 les émotions, le F1-macro de M1+M2 ne bouge pas, ni avec NRC ni avec
-SenticNet. H3 prévoyait pourtant un écart dû à ce vecteur commun. La
+SenticNet. H3 posait que ce prior, NRC ou SenticNet, modifierait le
+F1-macro, sans désigner une ressource d'avance. La
 variante qui distribue NRC étiquette par étiquette obtient une moyenne
 un peu plus haute. Trois graines seulement, et aucun test statistique,
 empêchent de savoir si cet écart dépasse la variation d'une
-initialisation à l'autre. M4, qui repondère chaque
-représentation d'émotion, suit le lexique qui l'accompagne. Avec
+initialisation à l'autre. M4 repondère chaque représentation
+d'émotion. H4 attendait, à lexique fixé, une hausse du F1-macro. Avec
 SenticNet la moyenne descend. Avec NRC elle dépasse M3 seul, tout en
-restant proche de M1+M2, et cette branche n'a pas été reprise sur
-RoBERTa. H4 ne se généralise donc pas d'une ressource à l'autre.
+restant proche de M1+M2. Cette branche NRC n'a pas été lancée sur
+RoBERTa. La hausse par rapport à M3 seul n'est donc connue que sur
+DistilBERT.
 
 Le F1-macro met chaque émotion au même poids, si bien que les classes
 fréquentes ne décident pas seules du score. Il ne nomme pas les
@@ -51,8 +53,8 @@ ne décrivent pas le reste de la distribution.
 \section*{Recommandations}
 \addcontentsline{toc}{section}{Recommandations}
 Là où le F1-macro doit départager les modèles, la pile à utiliser est
-\textbf{M1+M2}. RoBERTa-base apporte environ deux points de plus que
-DistilBERT-base sur le test. Si ce supplément ne paie pas un encodeur
+\textbf{M1+M2}. RoBERTa-base apporte environ deux points de F1-macro
+test de plus que DistilBERT-base ($0{,}526$ contre $0{,}505$). Si ce supplément ne paie pas un encodeur
 plus lourd, DistilBERT convient. Lorsque la simplicité du déploiement
 compte davantage que ces points, l'encodage plat se justifie encore :
 il cède du F1-macro, et il évite la segmentation comme les têtes par
@@ -81,7 +83,7 @@ extérieures, donc à un protocole distinct de la ladder.
       de fonction de perte avec un changement d'architecture.
 \item \textbf{Connaissances externes.} La projection de NRC étiquette
       par étiquette était déjà une façon de ne plus donner le même
-      signal à toute la taxonomie. Le F1-macro n'a presque pas suivi.
+      signal à toute la taxonomie. Le F1-macro n'en varie que très peu.
       Un graphe comme ConceptNet, ou un modèle de connaissances de sens
       commun \cite{speer2017,ghosal2020cosmic}, introduirait un autre
       type d'information. La porte apprise ne serait plus le seul
@@ -110,9 +112,10 @@ extérieures, donc à un protocole distinct de la ladder.
 Le sujet déposé donnait aux connaissances externes le même rang qu'à la
 structure du texte. Au moment de la conception, M3 et M4 me semblaient
 les modules les plus fidèles à ce sujet, l'un pour le lexique, l'autre
-pour l'intensité. Les campagnes ont gardé M1+M2. Les scores leur
-laissent peu de place, et c'est cette distance entre la piste et la
-mesure que je garde de ce travail. L'autre difficulté
+pour l'intensité. Les campagnes ont gardé M1+M2. Les scores ne montrent pas une hausse
+de F1-macro qui justifierait de les garder à la place de M1+M2, et
+c'est cette
+distance entre la piste et la mesure que je garde de ce travail. L'autre difficulté
 est venue de la métrique. Le F1-macro égalise les classes. Un léger
 écart de moyenne, ou une porte différente de zéro, ressemble à une
 raison de conserver un module. Trois graines ne suffisent pas à
