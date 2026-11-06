@@ -186,7 +186,7 @@ Step~0 PLM & $0{,}491 \pm 0{,}002$ & $0{,}486 \pm 0{,}005$ & $0{,}488 \pm 0{,}00
 \hline
 +M1+M2+M3+M4 (SenticNet) & $0{,}504 \pm 0{,}004$ & $0{,}499 \pm 0{,}006$ & $0{,}515 \pm 0{,}005$ & $0{,}521 \pm 0{,}005$ \\
 \hline
-+M1+M2+M3+M4 (NRC) & $0{,}508 \pm 0{,}002$ & $0{,}510 \pm 0{,}003$ & {---} & {---} \\
++M1+M2+M3+M4 (NRC) & $0{,}508 \pm 0{,}002$ & $0{,}510 \pm 0{,}003$ & absent & absent \\
 \hline
 \end{tabular}
 \end{table}
@@ -221,11 +221,11 @@ tableau~\ref{tab:expe-baseline-step0}.
 
 L'évaluation principale reprend la progression du
 tableau~\ref{tab:conception-ablation} sur chaque backbone. Le
-tableau~\ref{tab:expe-ablation-flags} explicite les drapeaux.
+tableau~\ref{tab:expe-ablation-flags} explicite les modules activés.
 
 \begin{table}[H]
 \centering
-\caption{Drapeaux d'ablation cumulative}
+\caption{Modules activés dans l'ablation cumulative}
 \label{tab:expe-ablation-flags}
 \renewcommand{\arraystretch}{1.25}
 \begin{tabular}{|c|c|c|c|c|c|p{3.6cm}|}
@@ -324,7 +324,7 @@ sur les deux encodeurs (section~\ref{sec:expe-roberta-ablation}) afin de
 
 L'objectif~2 (section~\ref{sec:objectifs}) exige de séparer les
 effets d'architecture de ceux du pré-entraînement. Au-delà du Step~0
-(tableau~\ref{tab:expe-baseline-step0}), les mêmes drapeaux M1 à M4
+(tableau~\ref{tab:expe-baseline-step0}), les mêmes modules M1 à M4
 (NRC, SenticNet, M4) sont relancés sur RoBERTa-base avec les
 hyperparamètres du tableau~\ref{tab:expe-hyperparams} et les trois
 graines $42$, $123$, $456$. Le tableau~\ref{tab:expe-roberta-ablation}

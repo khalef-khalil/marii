@@ -258,13 +258,9 @@ d'abord les segments, puis les agrègent au niveau du document.
 
 Sur GoEmotions, les commentaires Reddit annotés au niveau document
 peuvent néanmoins enchaîner plusieurs phrases aux fonctions discursives
-différentes \cite{demszky2020}. Un encodeur de type BERT qui ne
-retient, pour la décision finale, qu'un unique vecteur
-\texttt{[CLS]} par commentaire \cite{devlin2019} peut mêler des indices
-affectifs qui ne sont pas localisés au même segment. La hiérarchisation
-vise à les rendre accessibles séparément avant la tête
-multi-étiquettes, plutôt qu'à augmenter seule la capacité du
-classificateur.
+différentes \cite{demszky2020}. La hiérarchisation vise à rendre ces
+indices accessibles séparément avant la tête multi-étiquettes, plutôt
+qu'à augmenter seule la capacité du classificateur.
 
 \subsection{Travaux fondateurs et extensions Transformer}
 
