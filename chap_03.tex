@@ -199,30 +199,29 @@ après l'entraînement, sans modifier l'architecture décrite ici.
 
 \subsection{Extraction NRC et correspondance GoEmotions}
 
-Pour le NRC Emotion Lexicon \cite{mohammad2013}, chaque token de surface
-couvert par le lexique contribue aux émotions de Plutchik qu'il porte.
-Huit dimensions sont retenues : \emph{anger}, \emph{anticipation},
-\emph{disgust}, \emph{fear}, \emph{joy}, \emph{sadness}, \emph{surprise}
-et \emph{trust}. Les deux polarités de sentiment du lexique ne sont pas
-utilisées. Au niveau du document, chaque dimension est la part des
-associations de cette émotion parmi toutes les associations relevées.
-Si aucun mot n'est couvert, le vecteur est nul. Ce vecteur à huit
-dimensions alimente le prior principal de M3 : une projection apprise,
-identique pour toutes les émotions, décrite à la
-section~\ref{sec:conception-m3}.
+Le NRC Emotion Lexicon \cite{mohammad2013} range les tokens de surface
+qu'il couvre dans les émotions de Plutchik. M3 en garde huit,
+\emph{anger}, \emph{anticipation}, \emph{disgust}, \emph{fear},
+\emph{joy}, \emph{sadness}, \emph{surprise} et \emph{trust}, et laisse
+de côté les deux polarités de sentiment. Sur un document, chaque
+dimension est la part des associations de cette émotion parmi toutes
+les associations relevées. Si aucun mot n'est couvert, le vecteur est
+nul. Ces huit nombres alimentent le prior principal, par la projection
+apprise commune à toutes les émotions
+(section~\ref{sec:conception-m3}).
 
-La variante par étiquette construit un autre score, un par étiquette
-GoEmotions. La correspondance du tableau~\ref{tab:nrc-goemotions} est
-fixée pour ce mémoire. Elle n'appartient pas au lexique publié. Une
-étiquette peut recevoir plusieurs catégories NRC, et une catégorie NRC
-peut alimenter plusieurs étiquettes. Les vingt-sept émotions ont au
-moins une catégorie. \emph{Neutral} n'en a aucune.
+La variante par étiquette construit un score pour chaque étiquette
+GoEmotions. Le tableau~\ref{tab:nrc-goemotions} fixe cette
+correspondance pour le mémoire, en dehors du lexique publié. Une
+étiquette peut citer plusieurs catégories NRC, une catégorie peut
+alimenter plusieurs étiquettes, les vingt-sept émotions en ont au moins
+une, et \emph{neutral} aucune.
 
 Un mot couvert répartit une masse unitaire à parts égales entre ses
 catégories NRC, parmi les huit retenues. Chaque catégorie ajoute cette
 part aux étiquettes qui la citent. Le vecteur des vingt-huit scores est
-ensuite ramené à une somme égale à un lorsqu'il n'est pas nul.
-\emph{Neutral} reste à zéro.
+ensuite ramené à une somme égale à un lorsqu'il n'est pas nul,
+\emph{neutral} restant à zéro.
 
 {\small
 \renewcommand{\arraystretch}{1.15}
@@ -303,34 +302,29 @@ neutral & aucune \\
 
 \subsection{Extraction SenticNet}
 
-Pour SenticNet~5 \cite{cambria2018senticnet}, la polarité retenue est
-l'intensité signée du concept, dans l'intervalle $[-1, 1]$, et non
-l'étiquette catégorielle positif ou négatif. Les tokens sont les suites
-de lettres du texte, passées en minuscules. Un token est reconnu s'il
-figure tel quel, si un trait d'union y est remplacé par un tiret bas, ou
-si l'apostrophe en est retirée. Il n'y a pas de lemmatisation. Un concept
-de plusieurs mots n'est pas reconstruit à partir de tokens séparés. Les
-concepts absents sont ignorés.
+SenticNet~5 \cite{cambria2018senticnet} ne range pas le mot dans une
+émotion. Il lui associe une intensité signée, dans $[-1, 1]$, à la
+place de l'étiquette positif ou négatif. Les tokens sont les suites de
+lettres du texte, en minuscules. La reconnaissance accepte le token tel
+quel, le trait d'union remplacé par un tiret bas, ou l'apostrophe
+retirée, sans lemmatisation et sans recomposer un concept de plusieurs
+mots. Un token absent est ignoré.
 
-Cinq descripteurs, nuls lorsqu'aucun token n'est reconnu, forment le
-vecteur $c$ ($d_c{=}5$) du prior principal : intensité moyenne des tokens
-reconnus, intensité maximale, intensité minimale, fraction de tokens
-couverts, nombre de tokens distincts reconnus. Les deux vecteurs entrent
-dans la même porte, mais un vecteur de fréquences sur huit émotions et
-un vecteur d'intensités signées n'ont pas les mêmes propriétés
-statistiques. La variante par étiquette réutilise le
-tableau~\ref{tab:nrc-goemotions}. L'intensité est d'abord ramenée à
-$[0, 1]$ par la transformation (intensité $+ 1)/2$, puis moyennée sur
-les tokens dont une catégorie NRC pointe vers l'étiquette.
-\emph{Neutral} reste à zéro.
+Si aucun token n'est reconnu, les cinq descripteurs du vecteur $c$
+($d_c{=}5$) sont nuls : intensité moyenne, intensité maximale, intensité
+minimale, fraction de tokens couverts, nombre de tokens distincts. La
+variante par étiquette réutilise le tableau~\ref{tab:nrc-goemotions}.
+L'intensité, ramenée à $[0, 1]$ par $(\mathrm{intensité}+1)/2$, est
+moyennée sur les tokens dont une catégorie NRC pointe vers l'étiquette,
+et \emph{neutral} reste à zéro.
 
-NRC et SenticNet produisent ce vecteur $c$, que seul le module~3 voit.
-Passer de l'un à l'autre change $d_c$ et le contenu de $c$, pas la
-segmentation, ni M1, ni M2. Le mécanisme d'injection reste le même, alors
-que les représentations initiales diffèrent : un écart de F1-macro ne
-s'attribue donc pas, à lui seul, à la qualité du lexique. La macro et
-l'écart entre classes fréquentes et rares se lisent à part, un gain
-moyen pouvant laisser les classes rares inchangées.
+M3 reçoit l'un ou l'autre vecteur par la même porte. Passer de NRC à
+SenticNet change $d_c$ et le contenu de $c$, et laisse la segmentation,
+M1 et M2 en place. L'injection est commune, les nombres de départ ne le
+sont pas : un écart de F1-macro ne s'attribue donc pas, à lui seul, à
+la qualité du lexique. Cet écart se lit à part de celui entre classes
+fréquentes et rares, une moyenne pouvant bouger alors que les classes
+rares restent en place.
 
 \section{Module 1 : Encodage Hiérarchique}
 \label{sec:conception-m1}

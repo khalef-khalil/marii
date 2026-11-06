@@ -531,10 +531,10 @@ dynamique prolongent cette ligne.
 \subsection{Ablation M1+M2+M3 (NRC, H3)}
 \label{sec:expe-m3-nrc-h3}
 
-L'étape +M3 NRC injecte un vecteur documentaire à huit dimensions
-(frequences d'affects NRCLex sur tokens couverts) dans les requêtes
-d'émotions via la porte $g$ (initialisée à $0$, \SecRef{sec:conception-m3}).
-Protocole d'affinage inchangé.
+Le prior NRC ajouté ici est le vecteur de document à huit parts
+d'émotions de Plutchik. Il est sommé à chaque requête par la porte $g$,
+nulle au départ (\SecRef{sec:conception-m3}), sous le même affinage que
+M1+M2.
 
 \begin{table}[H]
 \centering
@@ -552,21 +552,20 @@ Protocole d'affinage inchangé.
 \end{tabular}
 \end{table}
 
-Le F1-macro test reste au niveau de M1+M2
-(tableau~\ref{tab:expe-m3-nrc-distilbert}) : la moyenne sur trois graines
-n'indique pas de gain net du prior NRC. Une graine surperforme tandis que
-les deux autres restent sous la baseline, d'où un écart-type plus élevé.
-La valeur absolue de la porte apprise reste modeste en fin
-d'entraînement : le modèle
-utilise une part du signal NRC sans améliorer la macro de façon stable.
+La moyenne de F1-macro sur le test reste celle de M1+M2
+(tableau~\ref{tab:expe-m3-nrc-distilbert}). L'écart-type est plus large
+que sur la baseline, parce qu'une graine la dépasse et que les deux
+autres restent en dessous. En fin d'entraînement, la valeur absolue de
+la porte est encore modeste : une part du signal NRC entre dans les
+requêtes, sans hausse stable de la macro.
 
 \subsection{Ablation M1+M2+M3 (SenticNet, H3)}
 \label{sec:expe-m3-senticnet-h3}
 
-L'étape +M3 SenticNet injecte un vecteur documentaire à cinq dimensions
-(polarités et couverture SenticNet~5, \SecRef{sec:conception-choix})
-dans les requêtes d'émotions via la même porte $g$ (initialisée à $0$).
-Protocole d'affinage inchangé.
+SenticNet n'apporte pas ces parts d'émotions. La porte, toujours nulle
+au départ, reçoit les cinq descripteurs d'intensité signée
+(\SecRef{sec:conception-choix}) : moyenne, maximum, minimum, fraction de
+tokens couverts, nombre de tokens distincts.
 
 \begin{table}[H]
 \centering
@@ -584,12 +583,12 @@ Protocole d'affinage inchangé.
 \end{tabular}
 \end{table}
 
-Le F1-macro test reste au niveau de M1+M2 et de la branche NRC
-(tableau~\ref{tab:expe-m3-senticnet-distilbert}). Les trois répétitions
-vont dans le même sens, avec un écart-type inter-graines plus faible
-que pour NRC.
-La porte $|g|$ indique un usage lexique légèrement plus faible qu'avec
-NRC. Le mAP progresse sans traduction nette en F1-macro.
+Les trois graines donnent ici la même lecture, et l'écart-type est plus
+serré que sur NRC
+(tableau~\ref{tab:expe-m3-senticnet-distilbert}). La macro reste au
+niveau de M1+M2. La valeur absolue de $g$ est un peu plus faible que
+sur la branche NRC. Le mAP, en revanche, passe de $0{,}504$ à
+$0{,}515$ sans que le F1-macro suive.
 
 \subsection{Synthèse H3 (NRC vs SenticNet)}
 \label{sec:expe-h3-synthese}
@@ -652,29 +651,24 @@ campagnes.
 \end{tabular}
 \end{table}
 
-Le prior NRC par étiquette présente une moyenne de F1-macro légèrement
-supérieure à celle de M1+M2
-(tableau~\ref{tab:expe-m3-per-label-distilbert}). Avec trois graines
-seulement, et sans test statistique dédié, cet écart ne permet pas de
-conclure à une amélioration robuste. L'écart-type reporté n'est pas un
-intervalle de confiance. SenticNet par
-étiquette reste au niveau du prior document. La valeur absolue des portes reste modeste. Cet écart ne remplace pas
-M2 comme levier principal.
+Parmi ces essais, seul le prior NRC par étiquette dépasse un peu la
+moyenne de M1+M2, $0{,}508$ contre $0{,}505$
+(tableau~\ref{tab:expe-m3-per-label-distilbert}). Trois graines et
+l'absence de test statistique laissent cet écart non établi. L'écart-type
+reporté n'est pas un intervalle de confiance. SenticNet par étiquette
+reste sur la moyenne du prior de document, et les portes gardent une
+valeur absolue modeste. Rien de cela ne remplace M2.
 
-H3 demandait si le prior de document modifie le F1-macro, pour NRC et
-pour SenticNet, et si l'un des deux réduit mieux l'écart entre classes
-fréquentes et rares. Aucune ressource n'était désignée d'avance. Sur le
-prior document (tableau~\ref{tab:expe-h3-lexicons}), la macro reste au
-niveau de M1+M2 pour les deux. L'écart fréquent-rare n'a pas été exporté
-sur ces piles.
-L'extension prior par étiquette mesure cet écart en partie
-(tableau~\ref{tab:expe-freq-rare-gap}) : NRC abaisse légèrement $\Delta$
-par rapport à SenticNet, tous deux proches de M1+M2, sans écart décisif
-entre lexiques. Au global, \textbf{H3 n'est pas soutenue pour le prior document} : NRC
-et SenticNet laissent la macro au niveau de M1+M2. L'extension NRC par
-étiquette est un peu plus haute, sans que trois graines suffisent à
-conclure. $\Delta$, sur les groupes retenus, baisse légèrement pour NRC,
-sans écarter SenticNet de façon nette. M2 demeure le levier principal.
+H3 comparait le prior de document, NRC et SenticNet, au F1-macro de
+M1+M2, et demandait en outre si l'un des deux réduisait mieux l'écart
+entre classes fréquentes et rares. Aucune ressource n'était désignée à
+l'avance. Le tableau~\ref{tab:expe-h3-lexicons} laisse les deux macros
+au niveau de M1+M2. L'écart fréquent-rare n'a pas été exporté sur ces
+piles de document. Sur l'extension par étiquette
+(tableau~\ref{tab:expe-freq-rare-gap}), NRC abaisse un peu $\Delta$ par
+rapport à SenticNet, les deux restant proches de M1+M2. Le prior de
+document ne confirme donc pas H3, et ni le léger avantage macro du NRC
+par étiquette ni ce petit recul de $\Delta$ ne désignent un lexique.
 
 \subsection{Ablation M1+M2+M3+M4 (H4)}
 \label{sec:expe-m4-h4}
