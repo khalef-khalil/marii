@@ -3,10 +3,16 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Après le \ChapRef{etat_art}, on formalise ici \textbf{HAKE-MER}
+Le \ChapRef{etat_art} laisse trois leviers sans définition opératoire.
+Une lecture par émotion peut faire interagir les étiquettes (L1). Des
+vecteurs de phrases peuvent garder des indices qu'un seul vecteur de
+document agrège (L2). Un signal lexical, ou une repondération des
+représentations d'émotion, peut être mesuré sur les classes rares (L3),
+sans en faire une correction. Ce chapitre fixe \textbf{HAKE-MER}
 (\emph{Hierarchical Attention with Knowledge modules for Multi-Emotion
-Recognition}) : tâche, modules M1 à M4 et hypothèses H1 à H4, évaluées
-au \ChapRef{experimentation}.
+Recognition}), l'architecture qui assemble ces leviers, et les
+hypothèses H1 à H4. L'ablation du \ChapRef{experimentation} les comparera
+à budget d'affinage constant.
 
 \section{Formulation du problème et limites existantes}
 \label{sec:conception-formulation}
@@ -17,8 +23,9 @@ La classification multi-étiquettes apprend une
 fonction $f : x \mapsto Y \subseteq \mathcal{E}$, réalisée par $K$
 sorties sigmoïdes $\hat{y}_k = \sigma(z_k)$ entraînées par entropie
 croisée binaire, variante de la \emph{binary relevance}
-\cite{zhang2014multilabel,boutell2004multilabel} (une perte par
-étiquette, sans modèle explicite des co-occurrences) :
+\cite{zhang2014multilabel,boutell2004multilabel}. La perte est appliquée
+aux sorties. Elle ne comporte pas, par elle-même, de terme qui lierait
+les étiquettes.
 \begin{equation}
 \mathcal{L}_{\mathrm{BCE}}
 = -\frac{1}{K}\sum_{k=1}^{K}
@@ -27,38 +34,43 @@ croisée binaire, variante de la \emph{binary relevance}
 \end{equation}
 Une étiquette est prédite si $\hat{y}_k > 0{,}5$.
 
-Trois limites des approches standards motivent la conception :
+Les trois limites du \ChapRef{contexte} se retrouvent dans cette
+formulation.
 
 \begin{itemize}
-\item \textbf{L1 : Indépendance des étiquettes} : La tête
-  « pertinence binaire » sur un vecteur global partagé ignore les
-  co-occurrences d'émotions, pourtant systématiques dans les données
-  \cite{demszky2020} ;
-\item \textbf{L2 : Cécité à la structure du texte} : Une
-  représentation plate (le seul vecteur \texttt{[CLS]} d'un encodeur
-  type BERT \cite{devlin2019}) agrège la décision alors que les
-  couches internes récupèrent des niveaux linguistiques distincts
-  \cite{tenney2019bert} ; elle mélange ainsi les signaux portés par des
-  phrases différentes ; les commentaires Reddit
-  de GoEmotions comportent souvent plusieurs phrases \cite{demszky2020} ;
-\item \textbf{L3 : Pauvreté du signal pour les émotions rares} : Les
-  fréquences d'émotions restent très inégales (par exemple l'admiration
-  environ trente fois plus fréquente que le deuil sur le corpus)
-  \cite{demszky2020}, ce qui limite l'apprentissage purement supervisé
-  sur la longue traîne.
+\item \textbf{L1, indépendance des étiquettes.} La perte ci-dessus
+  décide chaque émotion à part. Une relation entre étiquettes,
+  cooccurrence ou exclusion, peut informer la décision. L'établir sur
+  GoEmotions reste une question empirique, pas une loi générale
+  \cite{zhang2014multilabel,read2019classifier}.
+\item \textbf{L2, structure du texte.} Si la décision ne voit qu'une
+  représentation globale unique, telle que le vecteur \texttt{[CLS]} ou
+  un vecteur obtenu par pooling, les indices portés par des phrases
+  différentes sont agrégés dans cette représentation
+  \cite{devlin2019}. Leur contribution devient moins directe. Les
+  commentaires de GoEmotions enchaînent souvent plusieurs phrases
+  \cite{demszky2020}.
+\item \textbf{L3, déséquilibre.} Sur le corpus annoté, l'admiration est
+  environ trente fois plus fréquente que \emph{grief}, et la catégorie
+  \emph{neutral} pèse parmi les étiquettes assignées
+  \cite{demszky2020}. Le F1-macro et l'analyse par classe mesurent cet
+  écart. M3 et M4 sont les mécanismes par lesquels l'architecture
+  l'interroge. Ils n'en sont pas, par construction, la correction.
 \end{itemize}
 
 \section{Vue d'ensemble de l'architecture}
 \label{sec:conception-vue}
 
-HAKE-MER ajoute quatre modules optionnels sur un backbone partagé
-(RoBERTa-base et DistilBERT-base \cite{liu2019roberta,sanh2019distilbert},
-affinage type BERT \cite{devlin2019,sun2019}, figure~\ref{fig:hakemer-archi}) :
-\textbf{M1} garde la structure par phrases (L2) ; \textbf{M2} modélise
-les interactions entre émotions (L1) ; \textbf{M3} injecte NRC ou
-SenticNet (L3) ; \textbf{M4} pondère chaque émotion selon le contexte.
-Chaque module s'active par un drapeau, ce qui permet l'ablation du
-tableau~\ref{tab:conception-ablation} et du \ChapRef{experimentation}.
+HAKE-MER empile ces réponses sur un backbone partagé, DistilBERT-base
+ou RoBERTa-base \cite{sanh2019distilbert,liu2019roberta}, affiné comme
+un modèle de langue pré-entraîné \cite{devlin2019,sun2019}. La
+figure~\ref{fig:hakemer-archi} en donne l'ordre. M1 produit un vecteur
+par phrase. M2 lit ces phrases une fois par émotion, puis laisse les
+émotions interagir. M3 peut ajouter un prior lexical aux requêtes de
+cette lecture. M4 peut ensuite changer l'amplitude de chaque
+représentation d'émotion avant la décision. Chaque module peut être
+retiré. L'ablation du tableau~\ref{tab:conception-ablation} compare
+donc des piles qui ne diffèrent que par le module ajouté.
 
 \begin{figure}[H]
 \centering
@@ -78,7 +90,7 @@ tableau~\ref{tab:conception-ablation} et du \ChapRef{experimentation}.
 \node[box, fill=gray!22, right=of input, minimum width=30mm] (plm)
   {Backbone partagé\\[-2pt]{\footnotesize RoBERTa / DistilBERT}};
 \node[mod, fill=red!14, right=of plm] (m1)
-  {\textbf{Module 1}\\[-2pt]{\footnotesize Encodage hiérarchique}\\[-2pt]{\footnotesize attention mot$\to$phrase}};
+  {\textbf{Module 1}\\[-2pt]{\footnotesize Encodage hiérarchique}\\[-2pt]{\footnotesize pooling par phrase}};
 \node[mod, fill=blue!12, right=of m1] (xatt)
   {\textbf{Module 2}\\[-2pt]{\footnotesize Attention croisée}\\[-2pt]{\footnotesize émotion $\to$ phrases}};
 \node[mod, fill=blue!10, right=of xatt, minimum width=28mm] (inter)
@@ -143,11 +155,11 @@ $\gamma_k \equiv 1$.
 \subsection{Limites, modules, ablation et hypothèses}
 \label{sec:conception-synthese}
 
-Le tableau~\ref{tab:conception-ablation} relie les limitations L1 à
-L3 aux modules, à la progression d'ablation prévue et aux hypothèses
-H1 à H4. Les comparaisons internes seront interprétées uniquement à
-budget d'affinage identique (détail au
-\ChapRef{experimentation}).
+Le tableau~\ref{tab:conception-ablation} relie L1 à L3 aux modules, à
+la pile testée et à l'hypothèse correspondante. M3 et M4 y répondent à
+L3 comme des contributions à mesurer, pas comme une correction acquise.
+Les comparaisons se lisent à budget d'affinage identique. Le détail est
+au \ChapRef{experimentation}.
 
 \begin{table}[H]
 \centering
@@ -158,7 +170,7 @@ budget d'affinage identique (détail au
 \hline
 \textbf{Limite} & \textbf{Module} & \textbf{Rôle} & \textbf{Configuration (cumul)} & \textbf{Hyp.} \\
 \hline
-L2 & M1 & Encodage mot$\to$phrase & Baseline PLM ; puis +M1 & H1 \\
+L2 & M1 & Vecteurs de phrases & Baseline PLM, puis +M1 & H1 \\
 \hline
 L1 & M2 & Attention par émotion + interactions & M1+M2 & H2 \\
 \hline
@@ -172,18 +184,19 @@ L3 & M4 & Pondération dynamique des $r_k$ & M1+M2+M3+M4 & H4 \\
 \section{Choix de conception communs}
 \label{sec:conception-choix}
 
-Segmentation et lexiques (NRC, SenticNet) sont communs à tous les modules ;
-les sous-sections suivantes détaillent M1 à M4.
+Les choix ci-dessous sont tenus fixes, pour qu'une ablation ne change
+qu'un module à la fois. La segmentation et les lexiques sont communs
+aux piles qui les utilisent. Les sections suivantes définissent M1 à M4.
 
 \subsection{Segmentation et décision}
 
-Les commentaires sont segmentés en phrases (découpage linguistique
-standard, ordre conservé), tronqués à $M{=}4$ phrases et 32 tokens
-sous-mots par phrase avant encodage. Les phrases excédentaires sont
-ignorées ; les phrases courtes sont complétées par padding masqué.
-Une étiquette est prédite si $\hat{y}_k > 0{,}5$ ; un seuil appris sur
-validation pourra être testé au \ChapRef{experimentation},
-sans changer l'architecture.
+Les commentaires sont découpés en phrases par Punkt, dans l'ordre du
+texte, puis tronqués à $M{=}4$ phrases et 32 tokens sous-mots par phrase.
+Les phrases au-delà de $M$ sont ignorées. Les phrases courtes sont
+complétées par un padding masqué. Une étiquette est prédite si
+$\hat{y}_k > 0{,}5$. Le \ChapRef{experimentation} rapporte en outre une
+étude de seuil menée après l'entraînement. Elle ne change pas
+l'architecture.
 
 \subsection{Extraction NRC et correspondance GoEmotions}
 
@@ -314,16 +327,15 @@ gagnante.
 \section{Module 1 : Encodage Hiérarchique}
 \label{sec:conception-m1}
 
-Le module~1 matérialise la réponse à la limitation L2 identifiée au
-\ChapRef{etat_art} : conserver une représentation par phrase
-avant toute décision multi-étiquettes. Le texte est segmenté comme en
-section~\ref{sec:conception-choix}, puis encodé par le backbone en un
-seul appel vectorisé sur l'ensemble des phrases du mini-batch (tokens
-masqués, longueurs variables tronquées). Le module s'inspire de
-l'agrégation mot vers phrase des réseaux d'attention hiérarchiques
-\cite{yang2016}, avec une couche d'\emph{attention additive}
-\cite{bahdanau2015}. Pour une phrase de représentations de tokens
-$H=(h_1,\dots,h_T)$ et de masque $m$, cette couche calcule :
+Le module~1 répond à L2 en gardant une représentation par phrase avant
+la décision. Le texte est segmenté comme en
+section~\ref{sec:conception-choix}. Le backbone produit les états de
+tokens. M1 ne leur ajoute pas d'encodeur récurrent mot vers phrase. Il
+les résume par une \emph{attention additive} \cite{bahdanau2015}, dans
+l'esprit du premier niveau des réseaux d'attention hiérarchiques
+\cite{yang2016}, sans en reprendre l'empilement complet. Pour une phrase
+de représentations $H=(h_1,\dots,h_T)$ et d'un masque, cette couche
+calcule :
 \begin{equation}
 u_t = v^\top \tanh(W h_t), \qquad
 \alpha_t = \frac{\exp(u_t)}{\sum_{t'} \exp(u_{t'})}, \qquad
@@ -331,17 +343,14 @@ s = \sum_t \alpha_t\, h_t,
 \label{eq:attnpool}
 \end{equation}
 les positions masquées recevant un score $-\infty$ avant le softmax.
-On obtient les vecteurs de phrases $s_1,\dots,s_M$. Contrairement au
-HAN complet \cite{yang2016}, HAKE-MER ne réalise pas, lorsque M2 est
-actif, d'agrégation des phrases au niveau document : M2 remplace ce
-pooling global par une lecture \emph{par émotion}. En configuration M1
-seul (ablation), une seconde attention agrège les phrases au niveau
-document et une tête linéaire partagée sert de ligne intermédiaire
-avant la comparaison M1+M2. Cette tête document intermédiaire n'existe
-pas dans la pile M1+M2 (M2 remplace le pooling global). L'hypothèse H1
-reste la comparaison Step~0 flat vs +M1 ; interpréter M1 seul comme
-« hiérarchie sans attention par émotion » ne doit pas occulter cet
-artefact de tête lorsque l'on discute des écarts avec +M1+M2.
+On obtient les vecteurs de phrases $s_1,\dots,s_M$. Lorsque M2 est
+actif, ces vecteurs restent séparés : M2 les lit par émotion, et il n'y
+a pas de second pooling vers un vecteur de document. Lorsque M1 est seul,
+une seconde attention agrège les phrases, et une tête linéaire partagée
+produit les $K$ logits. Cette tête n'existe pas dans la pile M1+M2, où
+chaque émotion a ses propres paramètres. H1 compare le document plat à
+cette configuration M1 seul. L'écart entre M1 seul et M1+M2 change donc
+à la fois la lecture du texte et la tête de décision.
 
 \section{Module 2 : Attention Croisée Multi-Émotions}
 \label{sec:conception-m2}
@@ -360,12 +369,13 @@ r_k = \mathrm{MHA}\big(q_k,\; [s_1,\dots,s_M],\; [s_1,\dots,s_M]\big),
 produisant une représentation contextuelle \emph{par émotion}, sur le
 modèle des lectures \emph{label-specific}
 \cite{mullenbach2018}. Une couche d'encodeur Transformer
-\cite{vaswani2017} appliquée sur l'axe des $K$ émotions modélise
-ensuite leurs interactions (renforcement ou inhibition mutuels), en
-complément des chaînes de classificateurs
-\cite{read2009classifier,read2019classifier,dembczynski2012}. La tête de
-classification
-est \emph{par étiquette} : $z_k = w_k^\top r_k + b_k$.
+\cite{vaswani2017}, appliquée sur l'axe des $K$ émotions, peut ensuite
+faire interagir ces représentations, dans la ligne des chaînes de
+classificateurs
+\cite{read2009classifier,read2019classifier,dembczynski2012}. Cette
+couche et l'attention vers les phrases peuvent être retirées séparément.
+La tête de classification est \emph{par étiquette} :
+$z_k = w_k^\top r_k + b_k$.
 
 \section{Module 3 : Enrichissement Sémantique}
 \label{sec:conception-m3}
@@ -404,14 +414,12 @@ de la pile identiques : seule la construction des $c_k$ change.
 \section{Module 4 : Pondération Dynamique}
 \label{sec:conception-m4}
 
-Le module M3 injecte un signal \emph{a priori} ; M4 adapte, pour
-chaque exemple, l'amplitude des représentations $r_k$ avant la
-classification finale. L'objectif est de laisser le modèle atténuer ou
-renforcer certaines émotions lorsque le contexte global
-($\bar{r} = \frac{1}{K}\sum_k r_k$) indique un mélange affectif
-atypique ou des scores peu fiables sur la longue traîne, sans
-confondre cet effet avec l'ajout de connaissance lexicale (H3 vs H4).
-Une porte d'intensité par émotion calcule :
+M3 ajoute un signal extérieur aux requêtes. M4 agit plus tard, sur les
+représentations $r_k$ déjà calculées. Pour chaque exemple, une porte
+change leur amplitude avant la décision. Le contexte utilisé est la
+moyenne $\bar{r} = \frac{1}{K}\sum_k r_k$. H4 demande si cette
+modulation améliore le F1-macro une fois le lexique fixé. Elle ne
+suppose pas un gain sur les classes rares. La porte calcule :
 \begin{equation}
 \gamma_k = \sigma\!\big(W_2\,\mathrm{ReLU}(W_1 [r_k ; \bar{r}]) + b_2\big),
 \qquad r_k \leftarrow \gamma_k \cdot r_k,
@@ -424,33 +432,34 @@ progressivement l'intensité de chaque émotion selon le texte.
 \section{Hypothèses de recherche}
 \label{sec:conception-hypotheses}
 
-Le \ChapRef{experimentation} évalue les hypothèses suivantes par ablation
-cumulative (tableau~\ref{tab:conception-ablation}), à protocole d'affinage
-identique (quatre époques, hyperparamètres fixés au
-tableau~\ref{tab:expe-hyperparams}, meilleur checkpoint selon le
-F1-macro validation) et avec F1-macro comme métrique principale.
+Les hypothèses suivantes disent l'effet attendu. Le
+\ChapRef{experimentation} dit s'il est observé. L'ablation est cumulative
+(tableau~\ref{tab:conception-ablation}), à protocole d'affinage identique :
+quatre époques, hyperparamètres du tableau~\ref{tab:expe-hyperparams},
+meilleur modèle selon le F1-macro de validation. Le F1-macro
+reste la métrique principale.
 
 \begin{itemize}
-\item[\textbf{H1.}] \textbf{M1 vs baseline PLM} : sous l'implémentation
-  hiérarchique retenue (quatre phrases de $32$ tokens), M1 améliore le
-  F1-macro test par rapport au flat $128$ tokens à backbone fixé ;
-\item[\textbf{H2.}] \textbf{M1+M2 vs M1} : la pile M1+M2 (requêtes par
-  émotion, blocs M2 et têtes par étiquette) améliore le F1-macro par
-  rapport à M1 seul ; les contrôles mécanistiques
-  (tableau~\ref{tab:expe-m2-controls}) indiquent que l'encodeur
-  inter-émotions porte l'essentiel du gain, l'attention croisée phrase
-  seule ne dégradant pas nettement la macro dans ce protocole ;
-\item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : (i) prior lexical
-  \emph{document} global (NRC ou SenticNet) ; (ii) extension exploratoire,
-  prior par étiquette (NRC, ou SenticNet via la même correspondance) ;
-  la macro et l'écart fréquent vs rare sont interprétés séparément ;
+\item[\textbf{H1.}] \textbf{M1 vs baseline} : avec quatre phrases de $32$
+  tokens, M1 améliore le F1-macro test par rapport au document plat de
+  $128$ tokens, à backbone fixé. La comparaison inclut la tête partagée
+  propre à M1 seul.
+\item[\textbf{H2.}] \textbf{M1+M2 vs M1} : la pile M1+M2 améliore le
+  F1-macro par rapport à M1 seul. L'encodeur entre émotions et l'attention
+  vers les phrases sont retirés séparément au
+  \ChapRef{experimentation}, pour situer l'écart.
+\item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : (i) un prior lexical de
+  document, NRC ou SenticNet, modifie le F1-macro ; (ii) l'extension par
+  étiquette, NRC ou SenticNet via la correspondance du
+  tableau~\ref{tab:nrc-goemotions}, est lue à part. La macro et l'écart
+  entre classes fréquentes et rares ne se confondent pas.
 \item[\textbf{H4.}] \textbf{M1+M2+M3+M4 vs M1+M2+M3} : la pondération
-  dynamique améliore le F1-macro test, à ressource lexicale fixée (NRC et
-  SenticNet testés lorsque les campagnes correspondantes sont disponibles).
+  dynamique améliore le F1-macro test, à ressource lexicale fixée. NRC et
+  SenticNet sont testés lorsque la campagne correspondante existe.
 \end{itemize}
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
-Tâche, modules, segmentation et hypothèses H1 à H4 sont fixés. Le
-\ChapRef{experimentation} reporte protocole, résultats (Step~0, ladder
-M1 à M4, DistilBERT et RoBERTa), bilan H1 à H4 et recommandations.
+L'architecture peut maintenant être comparée module par module, y
+compris la tête qui distingue M1 seul de M1+M2. Le \ChapRef{experimentation}
+applique un seul budget d'affinage et lit H1 à H4 sur le F1-macro.
