@@ -1,0 +1,17 @@
+---
+description: After mémoire edits, commit, push, rebuild the PDF, and reopen it
+alwaysApply: true
+---
+
+# Report delivery
+
+The user asked for this sequence whenever a turn changes the mémoire (`.tex`, class, bibliography, or other files that affect `Mariem_ElWedani_PFE.pdf`).
+
+Before ending that turn:
+
+1. Commit the report changes. Do not commit secrets. Do not commit if there is nothing to commit.
+2. Push to the tracked remote.
+3. Rebuild with `./build.sh build`.
+4. Reopen `Mariem_ElWedani_PFE.pdf` (close the existing Preview window for that file, then open it).
+
+Do this without waiting for a separate "commit / push / rebuild" message. A question that does not change the report does not need a commit.
