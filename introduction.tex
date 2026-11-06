@@ -14,22 +14,24 @@ binaire, présente ou absente.
 
 Formuler la tâche ainsi n'en simplifie pas l'apprentissage. Les étiquettes
 cooccurrent, et leurs effectifs sont très inégaux : quelques émotions
-fréquentes dominent une longue traîne de classes rares. Un indicateur
-global peut donc sembler satisfaisant alors que le modèle échoue là où
-les exemples manquent. GoEmotions illustre ce régime. Environ 17\,\%
-des textes y portent au moins deux émotions \cite{demszky2020}.
+fréquentes dominent une longue traîne de classes rares. Une métrique
+globale peut ainsi masquer les difficultés du modèle sur les émotions
+représentées par peu d'exemples. GoEmotions illustre ce régime. Sur les
+58\,009 exemples annotés, les auteurs rapportent qu'environ 17\,\%
+portent au moins deux étiquettes \cite{demszky2020}.
 
 Ce mémoire s'inscrit dans le Mastère de Recherche de l'Institut
 Supérieur d'Informatique (ISI), sous l'encadrement de M.~Sahbi Bahroun.
-La question qui l'organise est la suivante. Un modèle qui respecte
-l'organisation du texte, relie les émotions entre elles et peut recevoir
-un signal lexical externe reconnaît-il mieux les émotions multiples, y
-compris les plus rares, qu'un encodeur contextuel affiné de façon
-standard \cite{howard2018ulmfit,devlin2019} ?
+La question qui l'organise est la suivante. Par rapport à un encodeur
+contextuel affiné de façon standard \cite{howard2018ulmfit,devlin2019},
+un modèle qui respecte l'organisation du texte, relie les émotions entre
+elles et peut recevoir un signal lexical externe reconnaît-il mieux les
+émotions multiples, y compris les plus rares ?
 
-HAKE-MER (\emph{Hierarchical Attention with Knowledge modules
-for Multi-Emotion Recognition}) est le cadre construit pour trancher
-cette question pièce par pièce. L'encodage hiérarchique, noté M1, garde
+Pour examiner cette question, nous avons développé HAKE-MER
+(\emph{Hierarchical Attention with Knowledge modules
+for Multi-Emotion Recognition}), une architecture dont les composants
+sont évalués progressivement par ablation. L'encodage hiérarchique, noté M1, garde
 une représentation des phrases au lieu d'écraser le document dans un
 vecteur unique. M2 y ajoute une attention croisée, de sorte que la
 décision sur une émotion puisse dépendre des autres. Deux modules
@@ -47,8 +49,9 @@ métrique principale, parce qu'il ne laisse pas les classes fréquentes
 absorber les classes rares
 \cite{bond2022multilabel,wu2021multilabelranking,zhang2014multilabel}.
 
-Dans ce cadre, la pile M1+M2 porte l'essentiel du gain en F1-macro, par
-rapport au flat comme par rapport à M1 seul. Le mécanisme n'est pas
+Les résultats expérimentaux indiquent que la combinaison de M1 et M2
+contribue à l'essentiel de l'amélioration du F1-macro, comparativement
+à l'encodage plat et à M1 seul. Le mécanisme n'est pas
 uniforme à l'intérieur de M2. Retirer l'encodeur inter-émotions fait
 reculer le score ; retirer seulement l'attention de phrase le laisse
 presque au même niveau. M3 et M4 n'améliorent pas la macro de façon
@@ -67,10 +70,11 @@ tête de volume en donne une version courte.
       un empilement dont on ne peut plus distinguer les pièces.
 \item Un protocole tenu constant (graines, hyperparamètres, campagnes
       archivées). Le Step~0 sur DistilBERT-base et RoBERTa-base sépare
-      le choix de l'encodeur de l'effet des modules. Les contrôles de
-      M2, l'analyse par cardinalité gold, la synthèse H1 à H4 et le F1
-      par émotion indiquent où la macro résume le comportement du
-      modèle, et où elle le masque.
+      le choix de l'encodeur de l'effet des modules. Il comprend aussi
+      des contrôles sur M2, une analyse selon la cardinalité des
+      étiquettes de référence, la synthèse H1 à H4 et le F1 de chaque
+      émotion. Ces analyses complètent le score global et précisent le
+      comportement sur les différentes classes.
 \item Un bilan d'usage à la fin de l'évaluation : quelle configuration
       retenir, et pourquoi M3 et M4 ne se justifient pas dans le
       protocole testé. La conclusion générale en dégage les

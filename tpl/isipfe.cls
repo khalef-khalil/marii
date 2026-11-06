@@ -134,7 +134,9 @@
     %style=authoryear-comp, % Author 1999, 2010
     %style=authoryear,%
     %style=alphabetic,%
-    style=ieee,
+    bibstyle=ieee,
+    citestyle=numeric,
+    sortcites=true,
     %bibstyle=authoryear,dashed=false, % dashed: substitute rep. author with ---
     %sorting=nty, % name, year, title
     sorting=none, % name, year, title
