@@ -3,20 +3,19 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-On part de HAKE-MER et des hypothèses H1 à H4 (\ChapRef{conception}) pour
-fixer le \textbf{protocole expérimental} : données, hyperparamètres,
-ablations, correspondance NRC et statistiques de corpus. L'affinage suit
-le tableau~\ref{tab:expe-hyperparams} ; Step~0 et M1 à M4 partagent ce
-cadre. Les scores test principaux comparent DistilBERT-base et
-RoBERTa-base (section~\ref{sec:expe-roberta-ablation}).
+Le \ChapRef{conception} a fixé HAKE-MER et les hypothèses H1 à H4, avec
+deux précautions de lecture. H1 aligne un budget nominal de 128 tokens,
+sans garantir que les mêmes tokens sont retenus. Le passage de M1 seul à
+M1+M2 change à la fois la lecture du texte et la tête de décision. Ce
+chapitre applique un seul protocole d'affinage, sur DistilBERT-base et
+RoBERTa-base, et lit chaque hypothèse sur le F1-macro
+(tableau~\ref{tab:expe-hyperparams},
+section~\ref{sec:expe-roberta-ablation}).
 
-\ParHead{Synthèse des scores test :}Sous ce protocole, le Step~0 flat sert de référence ; +M1 seul recule ;
-+M1+M2 porte le F1-macro test sur les deux encodeurs
-(tableau~\ref{tab:expe-val-test-selection}). Les variantes +M3 (prior
-\emph{document}) restent au niveau de M1+M2 ; +M4 SenticNet recule ;
-NRC+M4 ne change pas la pile retenue. Le reste du chapitre déroule le
-cadre, les ablations, l'analyse par classe, puis le bilan des hypothèses
-et les recommandations pratiques en fin de chapitre.
+Sous ce protocole, M1 seul recule. M1+M2 porte le F1-macro test sur les
+deux encodeurs (tableau~\ref{tab:expe-val-test-selection}). Le prior de
+document et M4 n'ajoutent pas de gain macro stable. Les campagnes, puis
+l'analyse par classe, précisent ces lectures.
 
 \section{Cadre expérimental}
 \label{sec:expe-cadre}
@@ -43,7 +42,7 @@ test. Résultats approximatifs sur l'ensemble d'entraînement (validation
 et test sont du même ordre) :
 \begin{itemize}
 \item environ \textbf{42\,\%} des commentaires comportent plus d'une
-      phrase, ce qui justifie M1 ;
+      phrase, ce qui motive une représentation par phrase ;
 \item seulement \textbf{0{,}27\,\%} des exemples perdent plus de
       $M{=}4$ phrases (queue tronquée) ;
 \item environ \textbf{0{,}74\,\%} des exemples requièrent une
@@ -105,7 +104,7 @@ Sélection de modèle & Meilleur F1-macro validation sur les quatre époques \\
 \hline
 Graines & $42$, $123$, $456$ (trois répétitions, intervalles de confiance non reportés) \\
 \hline
-Troncature (Step~0) & $128$ tokens document (quatre phrases de $32$ tokens, ch.~\ref{sec:conception-choix}) \\
+Troncature (Step~0) & $128$ tokens, document plat \\
 \hline
 Segmentation (M1+) & $M{=}4$ phrases, $32$ tokens/phrase \\
 \hline
@@ -212,8 +211,8 @@ tableau~\ref{tab:expe-roberta-ablation}).
 \label{sec:expe-baseline-pilot}
 
 Des entraînements préliminaires (budget en époques ou taux d'apprentissage
-non alignés sur \cite{demszky2020}) ont validé le pipeline Colab ;
-ils ne servent pas de référence pour H1 ni pour le
+non alignés sur \cite{demszky2020}) ont servi à mettre au point le
+protocole. Ils ne servent pas de référence pour H1 ni pour le
 tableau~\ref{tab:expe-baseline-step0}.
 
 \section{Ablation cumulative}
@@ -308,16 +307,19 @@ tableau~\ref{tab:expe-hyperparams}. Trois graines ($42$, $123$, $456$)
 sont lancées pour \textbf{DistilBERT-base} \cite{sanh2019distilbert} et
 \textbf{RoBERTa-base} \cite{liu2019roberta} ; le checkpoint retenu
 maximise le F1-macro validation parmi les quatre époques. Le
-tableau~\ref{tab:expe-baseline-step0} reporte les métriques test
-(moyenne $\pm$ écart-type sur les trois graines) : référence interne pour H1,
-comparaison externe prudente avec le F1-macro $0{,}46$ de BERT-base sur GoEmotions
-\cite{demszky2020} (encodeur et fenêtre de contexte différents).
-DistilBERT-base et RoBERTa-base dépassent cette référence externe avec des
-écarts-types faibles entre graines.
+tableau~\ref{tab:expe-baseline-step0} reporte les métriques test, en
+moyenne et écart-type sur les trois graines, et sert de référence
+interne pour H1. Demszky et al. rapportent un F1-macro de $0{,}46$ pour
+BERT-base \cite{demszky2020}. L'encodeur, le partage et les
+hyperparamètres y sont autres. Sur notre test, le même tableau donne
+$0{,}486$ et $0{,}487$. Ces valeurs ne se comparent pas directement à ce
+$0{,}46$.
 RoBERTa l'emporte légèrement en F1-micro et en mAP ; l'écart macro reste
-modeste. RoBERTa sert de deuxième baseline flat ; la ladder M1 à M4 est reproduite
-sur les deux encodeurs (section~\ref{sec:expe-roberta-ablation}) afin de
-évaluer H1 à H4 indépendamment de la capacité du pré-entraînement.
+modeste. RoBERTa sert de deuxième baseline flat. La ladder M1 à M4 est
+reproduite sur les deux encodeurs
+(section~\ref{sec:expe-roberta-ablation}) pour voir si les mêmes modules
+se comportent de façon semblable, sans supposer le même coût ni la même
+capacité.
 
 \subsection{Ladder multi-backbone (M1 à M4)}
 \label{sec:expe-roberta-ablation}
@@ -386,9 +388,11 @@ $32$ tokens par phrase et l'agrégation additive mot vers phrase puis
 phrase vers document (\SecRef{sec:conception-m1}), sans M2 à M4.
 Le budget d'affinage reste celui du tableau~\ref{tab:expe-hyperparams}
 (quatre époques, trois graines, sélection au F1-macro validation).
-La comparaison porte sur la \textbf{même} baseline DistilBERT Step~0 :
-cap de $128$ sous-mots, mais répartition phrase par phrase plutôt que
-fenêtre document unique (voir section~\ref{sec:expe-corpus-stats}).
+La comparaison porte sur la baseline DistilBERT du Step~0. Les deux
+côtés annoncent 128 sous-mots : le flat en une fenêtre, M1 en quatre
+phrases de 32. Le découpage, la troncature et le padding peuvent retenir
+d'autres tokens que cette fenêtre
+(section~\ref{sec:expe-corpus-stats}).
 
 \begin{table}[H]
 \centering
@@ -632,12 +636,13 @@ nettlement l'incertitude inter-graines de cette baseline. SenticNet par
 étiquette reste au niveau du prior document. Les portes $|g|$ restent
 modestes. Ce gain marginal ne remplace pas M2 comme levier principal.
 
-H3 pose trois questions : (i)~NRC améliore-t-il M1+M2 en macro~?
-(ii)~SenticNet améliore-t-il M1+M2 en macro~? (iii)~NRC réduit-il
-mieux que SenticNet l'écart fréquent vs rare~? Pour le prior
-\emph{document} (tableau~\ref{tab:expe-h3-lexicons}), (i) et (ii) sont
-négatifs. Pour (iii), $\Delta$ n'a pas été exporté sur ces piles.
-L'extension prior par étiquette mesure (iii) partiellement
+H3 demandait si le prior de document modifie le F1-macro, pour NRC et
+pour SenticNet, et si l'un des deux réduit mieux l'écart entre classes
+fréquentes et rares. Aucune ressource n'était désignée d'avance. Sur le
+prior document (tableau~\ref{tab:expe-h3-lexicons}), la macro reste au
+niveau de M1+M2 pour les deux. L'écart fréquent-rare n'a pas été exporté
+sur ces piles.
+L'extension prior par étiquette mesure cet écart en partie
 (tableau~\ref{tab:expe-freq-rare-gap}) : NRC abaisse légèrement $\Delta$
 par rapport à SenticNet, tous deux proches de M1+M2, sans écart décisif
 entre lexiques. Au global, \textbf{H3 reste prudente} : prior document
@@ -768,9 +773,10 @@ graines), campagne archivée.}
 \subsection{Fréquence des étiquettes et F1 par classe}
 \label{sec:expe-per-class}
 
-Le F1-macro masque des écarts forts entre émotions fréquentes et rares.
-Sur le split test ($n{=}5\,427$), les cooccurrences positives par
-étiquette suivent une loi longue traîne : huit labels comptent moins
+Le F1-macro donne le même poids à chaque classe. La moyenne ne dit pas,
+à elle seule, quelles émotions restent faibles.
+Sur le split test ($n{=}5\,427$), les effectifs positifs par étiquette
+sont très inégaux : huit labels comptent moins
 de $100$ exemples positifs (\emph{grief}, \emph{relief}, \emph{pride},
 etc.), tandis que \emph{neutral} domine ($1\,787$ mentions positives,
 tableau~\ref{tab:expe-test-label-support}). Cette asymétrie motive
@@ -1029,13 +1035,18 @@ tableau~\ref{tab:expe-h1-h4-summary}.
 \section{Discussion et menaces à la validité}
 \label{sec:expe-discussion}
 
+Les limites qui suivent portent sur ce que l'ablation isole, sur ce que
+le F1-macro mesure, et sur le domaine des textes.
+
 \subsection{Validité interne}
 Passer de M1 à M1+M2 change plusieurs choses en même temps (pooling,
 attention phrase, encodeur inter-émotions, têtes). H1 compare une
-hiérarchie en quatre segments de $32$ tokens (128 tokens au total) à un
-flat limité à $128$ tokens : le résultat négatif concerne cette
-implémentation, pas toute hiérarchie possible. Trois graines aident à
-voir les tendances, mais ce n'est pas un test statistique formel.
+hiérarchie en quatre segments de $32$ tokens à un document plat de
+$128$ tokens. Le budget annoncé est le même. Les tokens retenus peuvent
+différer, à cause du découpage et du padding. Le résultat négatif
+concerne cette implémentation, pas toute hiérarchie possible. Trois
+graines aident à voir les tendances, mais ce n'est pas un test
+statistique formel.
 
 \subsection{Validité de construit}
 Le F1-macro à seuil $0{,}5$ peut cacher des gains de rang (mAP) quand M3
@@ -1092,15 +1103,15 @@ Sur M3 SenticNet (tableau~\ref{tab:expe-lexicon-ablation}), un lexique
 nul fait baisser nettement la macro : une partie du score vient du prior
 documentaire. Sur M3 NRC, normal, nul et permuté restent proches. Sur
 M3+M4 NRC, l'ablation lexicale ne change presque pas la macro malgré une
-porte $|g|$ non nulle. Certaines lignes M3 viennent de checkpoints Colab
-séparés ; on compare seulement normal / zero / shuffle \emph{dans la même
-ligne}.
+porte $|g|$ non nulle. Certaines lignes M3 viennent de campagnes
+distinctes. On compare seulement normal, nul et permuté dans la même
+ligne.
 
 \subsection{Reproductibilité}
 Les campagnes archivées fixent graines, hyperparamètres et métriques.
 Le code utilise PyTorch, \emph{Transformers}, NLTK Punkt et scikit-learn
-pour F1 et mAP. Les versions exactes et le GPU sont ceux des notebooks
-Colab (annexe B). La table NRC / GoEmotions est fixée à la main pour
+pour F1 et mAP. Les versions des bibliothèques et le matériel sont
+indiqués en annexe. La table NRC / GoEmotions est fixée à la main pour
 l'extension par étiquette, elle n'est pas apprise.
 
 \section{Enseignements méthodologiques et bilan des hypothèses}
@@ -1118,8 +1129,9 @@ tableaux d'ablation. Quatre principes ont structuré le protocole :
       budget token comparable. Les gains viennent surtout de M1+M2 ; les
       contrôles M2 montrent que l'encodeur inter-émotions compte plus que
       l'attention phrase seule.
-\item \textbf{Métriques par classe} : Le F1-macro cache des différences
-      fortes (tableau~\ref{tab:expe-per-class-f1}). M2 aide surtout des
+\item \textbf{Métriques par classe} : Le F1-macro accorde le même poids
+      à chaque classe, sans montrer lesquelles restent faibles
+      (tableau~\ref{tab:expe-per-class-f1}). M2 aide surtout des
       émotions de fréquence moyenne, pas les plus rares (\emph{grief},
       \emph{relief}).
 \item \textbf{Comparaisons externes} : Dépasser le $0{,}46$ macro de
@@ -1134,10 +1146,13 @@ ainsi, en cohérence avec le tableau~\ref{tab:expe-h1-h4-summary} :
 \item \textbf{H1 non soutenue} : l'encodage hiérarchique sans M2 ne
       remplace pas le \texttt{[CLS]} flat dans ce protocole ; M1 seul
       n'est pas conseillé pour le F1-macro.
-\item \textbf{H2 soutenue} : M2 rattrape et dépasse le flat sur les deux
-      encodeurs (tableaux~\ref{tab:expe-m1-m2-distilbert},
-      \ref{tab:expe-roberta-ablation}), avec un rôle net de l'encodeur
-      inter-émotions (tableaux~\ref{tab:expe-m2-controls}
+\item \textbf{H2 soutenue au niveau de la pile} : M1+M2 dépasse M1 seul
+      et le flat sur les deux encodeurs
+      (tableaux~\ref{tab:expe-m1-m2-distilbert},
+      \ref{tab:expe-roberta-ablation}). L'écart ne vient pas de
+      l'attention seule : la tête et le pooling changent en même temps.
+      L'encodeur inter-émotions compte davantage que l'attention phrase
+      seule (tableaux~\ref{tab:expe-m2-controls}
       et~\ref{tab:expe-m2-controls-roberta}).
 \item \textbf{H3 prudente} : prior \emph{document} neutre en macro ;
       NRC \emph{par étiquette} : gain marginal, SenticNet neutre.
@@ -1185,8 +1200,7 @@ l'analyse de troncature (section~\ref{sec:expe-corpus-stats}).
 \addcontentsline{toc}{section}{Conclusion}
 GoEmotions a été évalué sous protocole fixe (DistilBERT et RoBERTa,
 tableaux~\ref{tab:expe-baseline-step0} et~\ref{tab:expe-roberta-ablation}).
-La pile retenue sur validation est M1+M2 ; M3 document et M4 SenticNet
-n'ajoutent pas de gain macro stable ; NRC+M4 reste marginal.
-Cardinalité gold, contrôles M2, analyse par classe et confusions
-complètent la lecture de la macro. La conclusion générale reprend la
-contribution du mémoire et ouvre les perspectives de recherche.
+La pile retenue sur validation est M1+M2. Le prior de document et M4
+SenticNet n'ajoutent pas de gain macro stable. NRC+M4 reste marginal.
+La conclusion générale reprend ce qui, hors de ce protocole, reste à
+examiner.
