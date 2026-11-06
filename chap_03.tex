@@ -36,19 +36,19 @@ Les trois limites du \ChapRef{contexte} se retrouvent dans cette
 formulation.
 
 \begin{itemize}
-\item \textbf{L1, indépendance des étiquettes.} La perte ci-dessus
+\item \textbf{L1, indépendance des étiquettes} : La perte ci-dessus
   décide chaque émotion à part. Une relation entre étiquettes,
   cooccurrence ou exclusion, peut informer la décision. L'établir sur
   GoEmotions reste une question empirique, pas une loi générale
   \cite{zhang2014multilabel,read2019classifier}.
-\item \textbf{L2, structure du texte.} Si la décision ne voit qu'une
+\item \textbf{L2, structure du texte} : Si la décision ne voit qu'une
   représentation globale unique, telle que le vecteur \texttt{[CLS]} ou
   un vecteur obtenu par pooling, les indices portés par des phrases
   différentes sont agrégés dans cette représentation
   \cite{devlin2019}. Leur contribution devient moins directe. Les
   commentaires de GoEmotions enchaînent souvent plusieurs phrases
   \cite{demszky2020}.
-\item \textbf{L3, déséquilibre.} Sur le corpus annoté, l'admiration est
+\item \textbf{L3, déséquilibre} : Sur le corpus annoté, l'admiration est
   environ trente fois plus fréquente que \emph{grief}, et la catégorie
   \emph{neutral} pèse parmi les étiquettes assignées
   \cite{demszky2020}. Le F1-macro et l'analyse par classe mesurent cet

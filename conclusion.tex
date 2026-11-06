@@ -72,27 +72,27 @@ d'autres corpus, des graphes de connaissances, et un gain d'environ
 progression. Le sujet la liait à d'autres corpus et à des références
 extérieures, donc à un protocole distinct de la ladder.
 \begin{itemize}
-\item \textbf{Classes rares.} \emph{Grief} et \emph{relief} n'ont qu'une
+\item \textbf{Classes rares} : \emph{Grief} et \emph{relief} n'ont qu'une
       poignée d'exemples, et un F1 calculé sur si peu de cas se déplace
       au moindre changement de prédiction. Une perte qui repondère les
       exemples difficiles, un rééchantillonnage, ou un seuil par émotion
       \cite{lin2017focal,chawla2002smote} pourraient être essayés. Ils
       ont été laissés hors de ce budget pour ne pas mêler un changement
       de fonction de perte avec un changement d'architecture.
-\item \textbf{Connaissances externes.} La projection de NRC étiquette
+\item \textbf{Connaissances externes} : La projection de NRC étiquette
       par étiquette était déjà une façon de ne plus donner le même
       signal à toute la taxonomie. Le F1-macro n'a presque pas suivi.
       Un graphe comme ConceptNet, ou un modèle de connaissances de sens
       commun \cite{speer2017,ghosal2020cosmic}, introduirait un autre
       type d'information. La porte apprise ne serait plus le seul
       élément nouveau.
-\item \textbf{Autres corpus.} SemEval-2018 \cite{mohammad2018semeval},
+\item \textbf{Autres corpus} : SemEval-2018 \cite{mohammad2018semeval},
       EmoContext \cite{semeval2019emocontext}, EmoInt, ou un corpus hors
       Reddit, n'ont ni les mêmes étiquettes ni le même partage. Y
       transporter les moyennes de ce mémoire sans reprendre le protocole
       mélangerait des écarts que l'ablation a précisément cherché à
       tenir séparés.
-\item \textbf{Mécanisme et autres modèles.} Pour savoir quelle part de
+\item \textbf{Mécanisme et autres modèles} : Pour savoir quelle part de
       l'écart entre M1 et M1+M2 vient de la tête, il faudrait un M1 qui
       possède déjà une tête par émotion, sans attention de phrase et
       sans encodeur inter-émotions. Une comparaison avec un grand modèle

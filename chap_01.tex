@@ -116,19 +116,19 @@ Ces constats se résument en trois limites, notées L1 à L3. Le chapitre~2
 les retrouve dans la littérature.
 
 \begin{itemize}
-\item \textbf{L1, indépendance supposée des étiquettes.} Certaines approches
+\item \textbf{L1, indépendance supposée des étiquettes} : Certaines approches
   classiques de classification multi-étiquettes traitent chaque émotion
   comme une décision distincte, sans modéliser explicitement les relations
   entre les étiquettes \cite{zhang2014multilabel,read2019classifier}.
   Ces relations, cooccurrence ou exclusion, peuvent pourtant informer la
   décision. Les établir sur un corpus donné est une question empirique,
   pas une loi générale.
-\item \textbf{L2, perte de la structure du texte.} Lorsqu'un document est
+\item \textbf{L2, perte de la structure du texte} : Lorsqu'un document est
   représenté par un vecteur global, les informations émotionnelles
   localisées dans certaines phrases peuvent être moins directement
   accessibles au classifieur. Une représentation hiérarchique conserve
   explicitement ce qui vient de chaque segment.
-\item \textbf{L3, déséquilibre sévère des classes.} La distribution des
+\item \textbf{L3, déséquilibre sévère des classes} : La distribution des
   émotions dans les corpus présente souvent un déséquilibre marqué.
   Quelques émotions fréquentes, et la catégorie \emph{neutral}, qui n'est
   pas elle-même une émotion, dominent des étiquettes rares comme
@@ -156,22 +156,22 @@ Quatre objectifs rendent cette question vérifiable. Ils vont de la forme
 du modèle à la lecture des erreurs.
 
 \begin{itemize}
-\item \textbf{Concevoir.} HAKE-MER est modulaire. L'encodage hiérarchique,
+\item \textbf{Concevoir} : HAKE-MER est modulaire. L'encodage hiérarchique,
   l'attention croisée entre émotions, l'enrichissement par un lexique et
   la pondération dynamique de la représentation de chaque émotion
   s'empilent. L'ablation peut ainsi retirer un
   mécanisme sans reconstruire le modèle.
-\item \textbf{Évaluer.} Les mesures portent sur GoEmotions, avec le même
+\item \textbf{Évaluer} : Les mesures portent sur GoEmotions, avec le même
   budget d'affinage à chaque étape. Le Step~0, puis M1, puis M1+M2, sont
   menés sur DistilBERT et sur RoBERTa. La ladder M1 à M4 suit sur chaque
   encodeur. L'effet de l'architecture se distingue alors de la capacité
   du modèle pré-entraîné.
-\item \textbf{Comparer.} NRC et SenticNet sont intégrés à la même
+\item \textbf{Comparer} : NRC et SenticNet sont intégrés à la même
   architecture, dans le module M3, afin d'étudier l'influence de leur
   représentation des connaissances sur les performances. L'objectif est
   d'examiner leur contribution, y compris si elle est nulle, et non de
   désigner à l'avance une ressource gagnante.
-\item \textbf{Analyser.} Les performances sont lues au niveau de chaque
+\item \textbf{Analyser} : Les performances sont lues au niveau de chaque
   émotion, en complément du F1-macro, à partir du tableau principal et
   de l'annexe des $28$ F1 (les $27$ émotions de GoEmotions et la
   catégorie \emph{neutral}). Les principales confusions sont analysées
