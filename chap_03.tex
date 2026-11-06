@@ -187,38 +187,129 @@ sans changer l'architecture.
 
 \subsection{Extraction NRC et correspondance GoEmotions}
 
-Pour le NRC Emotion Lexicon \cite{mohammad2013}, chaque token du
-texte (lookup de surface, complémentaire aux embeddings statiques
-\cite{pennington2014glove,mikolov2013word2vec}) reçoit, lorsqu'il est
-couvert par le lexique, un score par
-émotion Plutchik ($d_c{=}8$). Au niveau document, on retient la
-moyenne des scores par dimension sur les tokens couverts (zéro si aucun
-mot n'est couvert). Une table de correspondance \emph{many-to-one}
-projette ensuite ces huit dimensions vers les $K{=}28$ étiquettes
-GoEmotions : chaque étiquette fine est rattachée à une ou plusieurs
-émotions NRC d'après le nom sémantique de la classe et les regroupements
-utilisés dans la littérature sur GoEmotions \cite{demszky2020}. La
-classe \emph{neutral} est traitée à part (aucun signal NRC obligatoire).
-Le détail ligne à ligne de la table et les statistiques de couverture
-lexicale seront reportés avec le protocole d'implémentation.
+Pour le NRC Emotion Lexicon \cite{mohammad2013}, chaque token de surface
+couvert par le lexique contribue aux émotions de Plutchik qu'il porte.
+Huit dimensions sont retenues : \emph{anger}, \emph{anticipation},
+\emph{disgust}, \emph{fear}, \emph{joy}, \emph{sadness}, \emph{surprise}
+et \emph{trust}. Les deux polarités de sentiment du lexique ne sont pas
+utilisées. Au niveau du document, chaque dimension est la part des
+associations de cette émotion parmi toutes les associations relevées.
+Si aucun mot n'est couvert, le vecteur est nul. Ce vecteur à huit
+dimensions alimente le prior principal de M3 : une projection apprise,
+identique pour toutes les émotions, décrite à la
+section~\ref{sec:conception-m3}.
+
+La variante par étiquette construit un autre score, un par étiquette
+GoEmotions. La correspondance du tableau~\ref{tab:nrc-goemotions} est
+fixée pour ce mémoire. Elle n'appartient pas au lexique publié. Une
+étiquette peut recevoir plusieurs catégories NRC, et une catégorie NRC
+peut alimenter plusieurs étiquettes. Les vingt-sept émotions ont au
+moins une catégorie. \emph{Neutral} n'en a aucune.
+
+Un mot couvert répartit une masse unitaire à parts égales entre ses
+catégories NRC, parmi les huit retenues. Chaque catégorie ajoute cette
+part aux étiquettes qui la citent. Le vecteur des vingt-huit scores est
+ensuite ramené à une somme égale à un lorsqu'il n'est pas nul.
+\emph{Neutral} reste à zéro.
+
+\begin{table}[H]
+\centering
+\caption{Correspondance GoEmotions vers catégories NRC, définie pour ce mémoire}
+\label{tab:nrc-goemotions}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Étiquette} & \textbf{Catégories NRC} \\
+\hline
+admiration & trust, joy \\
+\hline
+amusement & joy \\
+\hline
+anger & anger \\
+\hline
+annoyance & anger \\
+\hline
+approval & trust \\
+\hline
+caring & trust, joy \\
+\hline
+confusion & surprise \\
+\hline
+curiosity & anticipation \\
+\hline
+desire & anticipation, joy \\
+\hline
+disappointment & sadness, surprise \\
+\hline
+disapproval & anger, disgust \\
+\hline
+disgust & disgust \\
+\hline
+embarrassment & fear, sadness \\
+\hline
+excitement & joy, anticipation \\
+\hline
+fear & fear \\
+\hline
+gratitude & joy, trust \\
+\hline
+grief & sadness \\
+\hline
+joy & joy \\
+\hline
+love & joy, trust \\
+\hline
+nervousness & fear, anticipation \\
+\hline
+optimism & anticipation, joy \\
+\hline
+pride & joy, trust \\
+\hline
+realization & surprise \\
+\hline
+relief & joy, trust \\
+\hline
+remorse & sadness, fear \\
+\hline
+sadness & sadness \\
+\hline
+surprise & surprise \\
+\hline
+neutral & aucune \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{Extraction SenticNet}
 
-Pour SenticNet~5 \cite{cambria2018senticnet}, les tokens ou lemmes sont
-appariés à des concepts lorsque possible ; les concepts absents du graphe
-sont ignorés. On calcule cinq descripteurs documentaires continus
-($d_c{=}5$, choix de protocole pour comparer à NRC à taille comparable) :
-polarité moyenne des concepts reconnus, polarité maximale, polarité
-minimale, fraction de tokens couverts et nombre de concepts distincts
-(matchés). Ces cinq valeurs forment le vecteur $c$ avant projection M3.
-Comme pour NRC, l'hypothèse H3 porte sur l'\emph{alignement} avec la
-taxonomie GoEmotions, pas sur la richesse abstraite du graphe seul.
+Pour SenticNet~5 \cite{cambria2018senticnet}, la polarité retenue est
+l'intensité signée du concept, dans l'intervalle $[-1, 1]$, et non
+l'étiquette catégorielle positif ou négatif. Les tokens sont les suites
+de lettres du texte, passées en minuscules. Un token est reconnu s'il
+figure tel quel, si un trait d'union y est remplacé par un tiret bas, ou
+si l'apostrophe en est retirée. Il n'y a pas de lemmatisation. Un concept
+de plusieurs mots n'est pas reconstruit à partir de tokens séparés. Les
+concepts absents sont ignorés.
 
-Les deux extractions (NRC et SenticNet) produisent un même type de
-vecteur document $c$ injecté ensuite par le module~3 ; elles ne modifient
-pas le tronc hiérarchique décrit ci-dessous. Cette séparation permet de
-tester H3 à architecture et segmentation identiques, en ne changeant que
-la ressource affective et la dimension $d_c$ avant projection.
+Cinq descripteurs, nuls lorsqu'aucun token n'est reconnu, forment le
+vecteur $c$ ($d_c{=}5$) du prior principal : intensité moyenne des tokens
+reconnus, intensité maximale, intensité minimale, fraction de tokens
+couverts, nombre de tokens distincts reconnus. Ce choix de dimension
+permet de comparer SenticNet à NRC à taille voisine. Ce n'est pas une
+table mot-émotion. La variante par étiquette réutilise le
+tableau~\ref{tab:nrc-goemotions}. L'intensité est d'abord ramenée à
+$[0, 1]$ par la transformation (intensité $+ 1)/2$, puis moyennée
+sur les tokens dont une catégorie NRC pointe vers l'étiquette.
+\emph{Neutral} reste à zéro.
+
+Les deux extractions produisent un vecteur document $c$ injecté ensuite
+par le module~3. Elles ne modifient pas le tronc hiérarchique décrit
+ci-dessous. Cette séparation permet de tester H3 à architecture et
+segmentation identiques, en ne changeant que la ressource affective et
+la dimension $d_c$ avant projection. La macro et l'écart entre classes
+fréquentes et rares se lisent séparément. H3 n'annonce pas de ressource
+gagnante.
 
 \section{Module 1 : Encodage Hiérarchique}
 \label{sec:conception-m1}
@@ -350,9 +441,9 @@ F1-macro validation) et avec F1-macro comme métrique principale.
   inter-émotions porte l'essentiel du gain, l'attention croisée phrase
   seule ne dégradant pas nettement la macro dans ce protocole ;
 \item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : (i) prior lexical
-  \emph{document} global (NRC ou SenticNet) ; (ii) extension exploratoire
-  prior NRC \emph{par étiquette} ; la macro et l'écart fréquent vs rare
-  sont interprétés séparément ;
+  \emph{document} global (NRC ou SenticNet) ; (ii) extension exploratoire,
+  prior par étiquette (NRC, ou SenticNet via la même correspondance) ;
+  la macro et l'écart fréquent vs rare sont interprétés séparément ;
 \item[\textbf{H4.}] \textbf{M1+M2+M3+M4 vs M1+M2+M3} : la pondération
   dynamique améliore le F1-macro test, à ressource lexicale fixée (NRC et
   SenticNet testés lorsque les campagnes correspondantes sont disponibles).

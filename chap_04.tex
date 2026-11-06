@@ -253,102 +253,21 @@ identiques ont été interprétées comme preuve de l'apport d'un module.
 \section{Correspondance NRC et GoEmotions}
 \label{sec:expe-nrc-mapping}
 
-Le module M3 (NRC) produit un vecteur $c \in \mathbb{R}^8$ correspondant
-aux émotions Plutchik du lexique NRC \cite{mohammad2013}. Pour
-documenter l'alignement taxonomique avec GoEmotions (H3), le
-tableau~\ref{tab:nrc-goemotions-map} liste, pour chaque étiquette fine,
-les dimensions NRC associées sémantiquement (relation many-to-one).
-L'étiquette \emph{neutral} n'active aucune dimension NRC. Cette
-correspondance est figée pour toute la campagne expérimentale ; le
-vecteur injecté reste
-\emph{partagé} entre émotions (section~\ref{sec:conception-m3}), la
-table servant à l'analyse et à la justification du protocole.
-
-{\small
-\renewcommand{\arraystretch}{1.12}
-\begin{longtable}{|p{3.2cm}|p{10.8cm}|}
-\caption{Correspondance GoEmotions $\rightarrow$ émotions NRC (Plutchik)}
-\label{tab:nrc-goemotions-map} \\
-\hline
-\textbf{Étiquette GoEmotions} & \textbf{Émotions NRC associées} \\
-\hline
-\endfirsthead
-\multicolumn{2}{|c|}{\emph{(suite du tableau~\ref{tab:nrc-goemotions-map})}} \\
-\hline
-\textbf{Étiquette GoEmotions} & \textbf{Émotions NRC associées} \\
-\hline
-\endhead
-\hline
-\endfoot
-\hline
-\endlastfoot
-admiration & trust, joy \\
-\hline
-amusement & joy, surprise \\
-\hline
-anger & anger \\
-\hline
-annoyance & anger, disgust \\
-\hline
-approval & trust, joy \\
-\hline
-caring & trust, joy \\
-\hline
-confusion & surprise, fear \\
-\hline
-curiosity & anticipation, surprise \\
-\hline
-desire & anticipation, joy \\
-\hline
-disappointment & sadness, surprise \\
-\hline
-disapproval & anger, disgust \\
-\hline
-disgust & disgust \\
-\hline
-embarrassment & fear, sadness, surprise \\
-\hline
-excitement & joy, anticipation, surprise \\
-\hline
-fear & fear \\
-\hline
-gratitude & joy, trust \\
-\hline
-grief & sadness \\
-\hline
-joy & joy \\
-\hline
-love & joy, trust \\
-\hline
-nervousness & fear, anticipation \\
-\hline
-optimism & anticipation, joy, trust \\
-\hline
-pride & joy, trust \\
-\hline
-realization & surprise, anticipation \\
-\hline
-relief & joy, trust \\
-\hline
-remorse & sadness, fear, disgust \\
-\hline
-sadness & sadness \\
-\hline
-surprise & surprise \\
-\hline
-neutral & (aucune) \\
-\hline
-\end{longtable}
-}
+Le prior principal de M3 (NRC) reste le vecteur document à huit dimensions,
+partagé entre les émotions (section~\ref{sec:conception-m3}). La variante
+par étiquette utilise la correspondance du
+tableau~\ref{tab:nrc-goemotions}, figée pour la campagne. \emph{Neutral}
+n'y reçoit aucune catégorie NRC.
 
 \section{Pipeline SenticNet (rappel protocolaire)}
 \label{sec:expe-senticnet}
 
 Pour H3, la branche SenticNet reprend les cinq descripteurs documentaires
-fixés en \SecRef{sec:conception-choix} : polarité moyenne, polarité
-max, polarité min, fraction de tokens couverts, nombre de concepts distincts.
-L'implémentation s'appuie sur SenticNet~5 \cite{cambria2018senticnet} avec
-le même protocole de lookup que pour NRC (lemme puis surface).
+fixés en \SecRef{sec:conception-choix} : intensité moyenne, intensité
+maximale, intensité minimale, fraction de tokens couverts, nombre de
+tokens distincts reconnus. L'intensité est l'intensité signée de
+SenticNet~5 \cite{cambria2018senticnet}, dans $[-1, 1]$. La reconnaissance
+se fait sur le token de surface, comme pour NRC, sans lemmatisation.
 
 \section{Comparaison des ressources externes (H3)}
 \label{sec:expe-ressources-plan}
