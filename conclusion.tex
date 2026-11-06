@@ -5,7 +5,7 @@
 Le \ChapRef{experimentation} a soumis HAKE-MER à un seul budget
 d'affinage, sur DistilBERT-base et RoBERTa-base, avec trois graines. La
 pile a d'abord été choisie par le F1-macro de validation, puis lue sur
-le test. Le bilan part de cette lecture.
+le test.
 
 \section*{Synthèse des résultats}
 \addcontentsline{toc}{section}{Synthèse des résultats}
@@ -23,18 +23,18 @@ Cet écart donne un soutien à H2, pour la configuration entière. Retirer
 l'encodeur inter-émotions fait reculer le score. Retirer seulement
 l'attention de phrase le déplace peu. La comparaison est encore moins
 nette qu'un simple retrait, parce qu'entre M1 seul et M1+M2 la tête de
-décision change en même temps que la façon de lire le texte. On sait
-donc quelle pile gagne. On sait moins quelle brique, à elle seule,
-explique l'écart.
+décision change en même temps que la façon de lire le texte. L'écart
+ne s'attribue donc pas encore à un composant plutôt qu'à un autre.
 
 Le lexique occupait une place à part dans le sujet : NRC et SenticNet
 devaient apporter un signal que le commentaire ne formule pas
 explicitement. Lorsqu'il est injecté comme un même vecteur pour toutes
 les émotions, le F1-macro de M1+M2 ne bouge pas, ni avec NRC ni avec
-SenticNet. H3, sur cette injection de document, ne se confirme pas. La
-variante qui distribue NRC étiquette par étiquette monte un peu. Trois
-graines et l'absence de test statistique laissent cet écart comme une
-piste, pas comme une amélioration acquise. M4, qui repondère chaque
+SenticNet. H3 prévoyait pourtant un écart dû à ce vecteur commun. La
+variante qui distribue NRC étiquette par étiquette obtient une moyenne
+un peu plus haute. Trois graines seulement, et aucun test statistique,
+empêchent de savoir si cet écart dépasse la variation d'une
+initialisation à l'autre. M4, qui repondère chaque
 représentation d'émotion, suit le lexique qui l'accompagne. Avec
 SenticNet la moyenne descend. Avec NRC elle dépasse M3 seul, tout en
 restant proche de M1+M2, et cette branche n'a pas été reprise sur
@@ -56,7 +56,9 @@ DistilBERT-base sur le test. Si ce supplément ne paie pas un encodeur
 plus lourd, DistilBERT convient. Lorsque la simplicité du déploiement
 compte davantage que ces points, l'encodage plat se justifie encore :
 il cède du F1-macro, et il évite la segmentation comme les têtes par
-émotion. M3 et M4 allongent la pile sans gagner leur place ici. Le
+émotion. M3 et M4 n'ont pas été écartés avant les mesures. La moyenne
+de validation donnait déjà l'avantage à M1+M2 sur les deux encodeurs,
+et le test n'a pas donné de raison de revenir sur ce choix. Le
 \ChapRef{experimentation} détaille les situations où l'on garderait
 malgré tout le modèle plat, par exemple quand le coût d'inférence passe
 avant deux points de macro.
@@ -66,8 +68,9 @@ avant deux points de macro.
 Ces chiffres valent pour GoEmotions, en anglais, avec le budget et les
 deux encodeurs de la ladder. Le sujet déposé visait plus large, jusqu'à
 d'autres corpus, des graphes de connaissances, et un gain d'environ
-3 à 5\,\% sur l'état de l'art. Aucun tableau de ce mémoire ne porte ce
-gain. Le chercher demanderait d'autres campagnes.
+3 à 5\,\% sur l'état de l'art. Les campagnes n'ont pas mesuré cette
+progression. Le sujet la liait à d'autres corpus et à des références
+extérieures, donc à un protocole distinct de la ladder.
 \begin{itemize}
 \item \textbf{Classes rares.} \emph{Grief} et \emph{relief} n'ont qu'une
       poignée d'exemples, et un F1 calculé sur si peu de cas se déplace
@@ -105,11 +108,11 @@ gain. Le chercher demanderait d'autres campagnes.
 \section*{Bilan personnel}
 \addcontentsline{toc}{section}{Bilan personnel}
 Le sujet déposé donnait aux connaissances externes le même rang qu'à la
-structure du texte. C'est l'effet que j'attendais de M3, et, pour
-l'intensité, de M4. Les campagnes ont gardé M1+M2. Le lexique et la
-pondération dynamique, pourtant au centre du cadrage, n'ont pas déplacé
-le F1-macro une fois le budget fixé. J'en retiens qu'une idée peut
-organiser le mémoire et rester sans effet mesurable. L'autre difficulté
+structure du texte. Au moment de la conception, M3 et M4 me semblaient
+les modules les plus fidèles à ce sujet, l'un pour le lexique, l'autre
+pour l'intensité. Les campagnes ont gardé M1+M2. Les scores leur
+laissent peu de place, et c'est cette distance entre la piste et la
+mesure que je garde de ce travail. L'autre difficulté
 est venue de la métrique. Le F1-macro égalise les classes. Un léger
 écart de moyenne, ou une porte différente de zéro, ressemble à une
 raison de conserver un module. Trois graines ne suffisent pas à
