@@ -2,93 +2,117 @@
 \addcontentsline{toc}{chapter}{Conclusion générale et perspectives}
 \markboth{Conclusion générale et perspectives}{}
 
-Le protocole du \ChapRef{experimentation} est clos : un budget d'affinage,
-deux encodeurs, trois graines, et le choix de la pile par le F1-macro de
-validation. Le bilan s'en tient aux résultats de ce cadre, puis à ce
-qu'il laisse ouvert.
+Le \ChapRef{experimentation} a soumis HAKE-MER à un seul budget
+d'affinage, sur DistilBERT-base et RoBERTa-base, avec trois graines. La
+pile a d'abord été choisie par le F1-macro de validation, puis lue sur
+le test. Le bilan part de cette lecture.
 
 \section*{Synthèse des résultats}
 \addcontentsline{toc}{section}{Synthèse des résultats}
-Sur GoEmotions, la baseline plate et la ladder M1 à M4 ont été comparées
-par le F1-macro, en moyenne sur les trois graines
-(tableau~\ref{tab:expe-val-test-selection}). M1 seul ne dépasse pas
-l'encodage plat. Avec DistilBERT, il recule. La pile retenue sur
-validation est M1+M2, pour les deux encodeurs. Sur le test, elle atteint
-$0{,}505$ avec DistilBERT-base et $0{,}526$ avec RoBERTa-base, au-dessus
-du flat ($0{,}486$ et $0{,}487$) et de M1 seul.
+La question était de savoir si le découpage en phrases, le lien entre
+émotions, puis un lexique, changeaient le F1-macro par rapport à un
+encodeur plat. Le tableau~\ref{tab:expe-val-test-selection} y répond par
+des moyennes sur trois graines. Segmenter le commentaire sans le reste
+de la pile ne produit pas le gain attendu par H1 : M1 seul passe sous
+le flat, et le recul est net avec DistilBERT. Ce que la validation
+retient, sur les deux encodeurs, est M1+M2. Sur le test, cette pile
+atteint $0{,}505$ et $0{,}526$, là où le flat est à $0{,}486$ et
+$0{,}487$.
 
-H2 est soutenue à ce niveau de pile. Le gain reste celui de l'ensemble.
-Les contrôles donnent davantage à l'encodeur
-inter-émotions qu'à l'attention de phrase, et le passage de M1 seul à
-M1+M2 change aussi la tête de décision. H1 n'est pas soutenue. Le prior
-de document, qu'il vienne de NRC ou de SenticNet, laisse la macro au
-niveau de M1+M2. H3 n'est donc pas soutenue pour cette injection. Le
-prior NRC par étiquette est un peu plus haut. Trois graines, sans test
-statistique dédié, ne permettent pas d'en faire une amélioration
-établie. M4 dépend du lexique. Avec SenticNet, la moyenne baisse. Avec
-NRC, elle monte par rapport à M3 seul, sans gain robuste face à M1+M2,
-et sans la même campagne sur RoBERTa. H4 n'est pas soutenue de manière
-générale.
+Cet écart donne un soutien à H2, pour la configuration entière. Retirer
+l'encodeur inter-émotions fait reculer le score. Retirer seulement
+l'attention de phrase le déplace peu. La comparaison est encore moins
+nette qu'un simple retrait, parce qu'entre M1 seul et M1+M2 la tête de
+décision change en même temps que la façon de lire le texte. On sait
+donc quelle pile gagne. On sait moins quelle brique, à elle seule,
+explique l'écart.
 
-Le F1-macro donne le même poids à chaque émotion. La moyenne ne désigne
-pas celles qui restent difficiles. Les scores par classe situent le
-progrès surtout sur des émotions de fréquence intermédiaire. L'écart
-entre \emph{neutral}, \emph{admiration} et cinq émotions très rares se
-réduit avec M1+M2. Ce groupe ne résume pas toute la distribution des
-effectifs.
+Le lexique occupait une place à part dans le sujet : NRC et SenticNet
+devaient apporter un signal que le commentaire ne formule pas
+explicitement. Lorsqu'il est injecté comme un même vecteur pour toutes
+les émotions, le F1-macro de M1+M2 ne bouge pas, ni avec NRC ni avec
+SenticNet. H3, sur cette injection de document, ne se confirme pas. La
+variante qui distribue NRC étiquette par étiquette monte un peu. Trois
+graines et l'absence de test statistique laissent cet écart comme une
+piste, pas comme une amélioration acquise. M4, qui repondère chaque
+représentation d'émotion, suit le lexique qui l'accompagne. Avec
+SenticNet la moyenne descend. Avec NRC elle dépasse M3 seul, tout en
+restant proche de M1+M2, et cette branche n'a pas été reprise sur
+RoBERTa. H4 ne se généralise donc pas d'une ressource à l'autre.
+
+Le F1-macro met chaque émotion au même poids, si bien que les classes
+fréquentes ne décident pas seules du score. Il ne nomme pas les
+émotions qui restent difficiles. Ce sont les F1 par classe qui le font,
+et ils placent le progrès de M1+M2 surtout sur des émotions de
+fréquence intermédiaire. Entre \emph{neutral}, \emph{admiration} et
+cinq émotions très rares, l'écart de F1 diminue. Ces sept étiquettes
+ne décrivent pas le reste de la distribution.
 
 \section*{Recommandations}
 \addcontentsline{toc}{section}{Recommandations}
-Lorsque le critère est le F1-macro, la configuration d'usage est
-\textbf{M1+M2}. Entre les deux encodeurs, RoBERTa-base dépasse
-DistilBERT-base d'environ deux points de F1-macro test. DistilBERT
-reste adapté si cet écart ne compense pas un
-modèle plus lourd. L'encodage plat reste le choix lorsque la simplicité
-pèse plus que ces points. M3 et M4 ne sont pas retenus dans le protocole
-testé. Le détail des cas limites est au
-\ChapRef{experimentation}.
+Là où le F1-macro doit départager les modèles, la pile à utiliser est
+\textbf{M1+M2}. RoBERTa-base apporte environ deux points de plus que
+DistilBERT-base sur le test. Si ce supplément ne paie pas un encodeur
+plus lourd, DistilBERT convient. Lorsque la simplicité du déploiement
+compte davantage que ces points, l'encodage plat se justifie encore :
+il cède du F1-macro, et il évite la segmentation comme les têtes par
+émotion. M3 et M4 allongent la pile sans gagner leur place ici. Le
+\ChapRef{experimentation} détaille les situations où l'on garderait
+malgré tout le modèle plat, par exemple quand le coût d'inférence passe
+avant deux points de macro.
 
 \section*{Perspectives de recherche}
 \addcontentsline{toc}{section}{Perspectives de recherche}
-Ce bilan vaut pour GoEmotions, en anglais, avec ce budget et ces deux
-encodeurs. Le sujet déposé ouvrait d'autres corpus, des graphes de
-connaissances et un gain de 3 à 5\,\% sur l'état de l'art. Ce gain n'est
-pas revendiqué. Ces directions demandent leur propre protocole.
+Ces chiffres valent pour GoEmotions, en anglais, avec le budget et les
+deux encodeurs de la ladder. Le sujet déposé visait plus large, jusqu'à
+d'autres corpus, des graphes de connaissances, et un gain d'environ
+3 à 5\,\% sur l'état de l'art. Aucun tableau de ce mémoire ne porte ce
+gain. Le chercher demanderait d'autres campagnes.
 \begin{itemize}
-\item \textbf{Classes rares.} Le rééchantillonnage et une perte qui
-      repondère les exemples difficiles
-      \cite{chawla2002smote,lin2017focal} sont restés hors du protocole,
-      de même qu'un seuil propre à chaque émotion. Les effectifs de
-      \emph{grief} ou de \emph{relief} restent trop faibles pour qu'un
-      F1 isolé tranche.
-\item \textbf{Connaissances externes.} Le prior par étiquette a été
-      essayé. Il n'a pas suffi à conclure. Un graphe comme ConceptNet,
-      ou un modèle de connaissances de sens commun
-      \cite{speer2017,ghosal2020cosmic}, changerait le type de signal,
-      pas seulement la porte apprise.
+\item \textbf{Classes rares.} \emph{Grief} et \emph{relief} n'ont qu'une
+      poignée d'exemples, et un F1 calculé sur si peu de cas se déplace
+      au moindre changement de prédiction. Une perte qui repondère les
+      exemples difficiles, un rééchantillonnage, ou un seuil par émotion
+      \cite{lin2017focal,chawla2002smote} pourraient être essayés. Ils
+      ont été laissés hors de ce budget pour ne pas mêler un changement
+      de fonction de perte avec un changement d'architecture.
+\item \textbf{Connaissances externes.} La projection de NRC étiquette
+      par étiquette était déjà une façon de ne plus donner le même
+      signal à toute la taxonomie. Le F1-macro n'a presque pas suivi.
+      Un graphe comme ConceptNet, ou un modèle de connaissances de sens
+      commun \cite{speer2017,ghosal2020cosmic}, introduirait un autre
+      type d'information. La porte apprise ne serait plus le seul
+      élément nouveau.
 \item \textbf{Autres corpus.} SemEval-2018 \cite{mohammad2018semeval},
       EmoContext \cite{semeval2019emocontext}, EmoInt, ou un corpus hors
-      Reddit, ont d'autres étiquettes et un autre partage. Les comparer
-      aux chiffres de ce mémoire sans reprendre le protocole mêlerait
-      des écarts que l'ablation a cherché à séparer.
-\item \textbf{Mécanisme et autres modèles.} Une variante de M1 qui
-      garderait la tête par émotion, sans attention de phrase ni
-      encodeur inter-émotions, isolerait la part de la tête dans l'écart
-      M1 vers M1+M2. Une comparaison à un grand modèle de langue ou à un
-      encodeur de phrases
+      Reddit, n'ont ni les mêmes étiquettes ni le même partage. Y
+      transporter les moyennes de ce mémoire sans reprendre le protocole
+      mélangerait des écarts que l'ablation a précisément cherché à
+      tenir séparés.
+\item \textbf{Mécanisme et autres modèles.} Pour savoir quelle part de
+      l'écart entre M1 et M1+M2 vient de la tête, il faudrait un M1 qui
+      possède déjà une tête par émotion, sans attention de phrase et
+      sans encodeur inter-émotions. Une comparaison avec un grand modèle
+      de langue ou un encodeur de phrases
       \cite{reimers2019sentence,sharma2024deeplearningmlc} n'aurait de
-      sens qu'avec le même budget, le même partage et la même métrique.
-      Des explications locales
-      \cite{ribeiro2016lime,clark2019bert} pourraient relier les erreurs
-      autour de \emph{neutral} aux tokens. Le comptage des paires ne le
-      fait pas.
+      sens qu'à budget, partage et métrique identiques. Des explications
+      locales \cite{ribeiro2016lime,clark2019bert} pourraient relier les
+      erreurs qui entourent \emph{neutral} à des tokens. Le comptage des
+      paires indique seulement quelles étiquettes sont actives ensemble
+      lorsque la prédiction est fausse.
 \end{itemize}
 
 \section*{Bilan personnel}
 \addcontentsline{toc}{section}{Bilan personnel}
-Ce travail a couvert le cadrage, la conception des quatre modules, les
-campagnes et la lecture des scores émotion par émotion. La leçon porte
-sur la manière de conclure. Le F1-macro met chaque classe au même poids.
-Pour savoir lesquelles restent difficiles, il faut les scores par
-étiquette. Une porte non nulle, ou un léger écart de moyenne sur trois
-graines, ne suffit pas à retenir un module.
+Le sujet déposé donnait aux connaissances externes le même rang qu'à la
+structure du texte. C'est l'effet que j'attendais de M3, et, pour
+l'intensité, de M4. Les campagnes ont gardé M1+M2. Le lexique et la
+pondération dynamique, pourtant au centre du cadrage, n'ont pas déplacé
+le F1-macro une fois le budget fixé. J'en retiens qu'une idée peut
+organiser le mémoire et rester sans effet mesurable. L'autre difficulté
+est venue de la métrique. Le F1-macro égalise les classes. Un léger
+écart de moyenne, ou une porte différente de zéro, ressemble alors à
+une raison de conserver un module, alors que trois graines ne suffisent
+pas à l'établir et que la moyenne ne dit pas quelle émotion est en
+cause. Si je relançais les expériences, je commencerais par séparer la
+tête par émotion du reste de M2, avant d'ajouter à nouveau un lexique.
