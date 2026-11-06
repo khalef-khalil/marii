@@ -4,19 +4,25 @@
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
 
-En lien avec la question du \ChapRef{contexte} et les limites L1 à L3,
-on revoit la littérature sur la \textbf{détection multi-étiquettes des
-émotions en texte}
-\cite{mohammad2020sentiment,pang2008,seyeditabari2018} et justifie le
-corpus, les métriques et les familles de modèles retenus.
+Le \ChapRef{contexte} isole trois limites : des décisions d'étiquettes
+traitées comme indépendantes (L1), un vecteur de document qui rend les
+signaux locaux moins accessibles (L2), et un déséquilibre que la moyenne
+globale peut masquer (L3). Ce chapitre cherche dans la littérature ce
+qui a déjà été proposé pour chacune, et ce qui reste à formaliser pour
+HAKE-MER \cite{mohammad2020sentiment,pang2008,seyeditabari2018}.
 
-Nous commençons par la tâche et GoEmotions, puis les modèles neuronaux
-et la baseline PLM, ensuite la hiérarchie et les lexiques (L2, L3), et
-enfin une synthèse vers les modules M1 à M3 (M4 et le protocole complet
-sont aux \ChapRef{conception} et \ChapRef{experimentation}).
+Le corpus et la métrique viennent en premier : ces limites ne se voient
+que sur une tâche multi-étiquettes déséquilibrée. Les modèles neuronaux,
+la hiérarchie du texte et les lexiques viennent ensuite, chacun relié à
+la limite qu'il éclaire.
 
 \section{Tâche, jeux de données et métriques}
 \label{sec:etat-tache-donnees}
+
+La tâche fixe ce que l'on mesure. On distingue la décision
+multi-étiquettes de l'émotion unique, on situe le corpus annoté de
+GoEmotions par rapport au partage expérimental, puis on retient une
+métrique qui ne laisse pas les classes fréquentes absorber les autres.
 
 \subsection{Classification multi-étiquettes vs mono-étiquette}
 
@@ -53,18 +59,17 @@ entre 3 et 30 tokens ; plafond au volume correspondant à la médiane de
 12 tokens) \cite{demszky2020}.
 
 Le tableau~\ref{tab:goemotions-stats} reprend les statistiques
-d'annotation reportées par les auteurs \cite{demszky2020}. Environ
-\textbf{17\,\%} des exemples portent au moins deux étiquettes
-(83\,\% une seule, 15\,\% deux, 2\,\% trois, 0{,}2\,\% quatre ou
-plus). La catégorie \emph{neutral} représente à elle seule 26\,\% de
-toutes les étiquettes émotionnelles assignées, ce qui accentue le
-déséquilibre inter-classes. Pour les expériences de référence du
-papier, les auteurs conservent 93\,\% des exemples après filtrage
-supplémentaire et appliquent un partage aléatoire
-80\,\%/10\,\%/10\,\% train/validation/test \cite{demszky2020}. Des
-exports publics (p.\,ex.\ sur Hugging Face) peuvent différer légèrement
-des effectifs de ce protocole ; le split retenu pour HAKE-MER est
-précisé au \ChapRef{experimentation}.
+d'annotation reportées par les auteurs \cite{demszky2020}. Sur ces
+58\,009 exemples, environ \textbf{17\,\%} portent au moins deux
+étiquettes (83\,\% une seule, 15\,\% deux, 2\,\% trois, 0{,}2\,\%
+quatre ou plus). La catégorie \emph{neutral}, que les auteurs mettent
+à part de l'espace sémantique des émotions, représente 26\,\% de toutes
+les étiquettes assignées, ce qui accentue le déséquilibre. Pour leurs
+expériences de référence, ils conservent 93\,\% des exemples après un
+filtrage supplémentaire et appliquent un partage aléatoire
+80\,\%/10\,\%/10\,\% \cite{demszky2020}. Ce n'est pas le partage de
+HAKE-MER : des exports publics peuvent en différer légèrement, et le
+split retenu est précisé au \ChapRef{experimentation}.
 
 \begin{table}[H]
 \centering
@@ -134,8 +139,9 @@ incluent :
 \item la \textbf{mAP} (moyenne des précisions moyennes par classe).
 \end{itemize}
 Une analyse \textbf{par classe} (F1, confusion avec \emph{neutral},
-classes quasi absentes du train) complétera obligatoirement les
-moyennes globales dans le chapitre de résultats.
+classes quasi absentes du train) accompagne les moyennes globales au
+\ChapRef{experimentation}. Le F1-macro mesure le déséquilibre ; il ne
+le corrige pas.
 
 \section{Approches neuronales multi-étiquettes}
 \label{sec:etat-neural-multilabel}
@@ -144,8 +150,9 @@ Les modèles neuronaux et les modèles de langue pré-entraînés
 constituent le socle sur lequel s'appuient HAKE-MER et la baseline
 obligatoire du protocole \cite{minaee2021textcls,sharma2024deeplearningmlc}.
 Les jeux multi-étiquettes textuels historiques (p.ex. RCV1
-\cite{lewis2004rcv1}) ont préfiguré les défis de déséquilibre et de
-corrélation entre labels que GoEmotions porte à 28 émotions fines.
+\cite{lewis2004rcv1}) ont préfiguré le déséquilibre et la corrélation
+entre labels. GoEmotions porte ce problème à 27 émotions et une
+catégorie \emph{neutral}.
 
 \subsection{De l'ingénierie de traits au deep learning}
 
@@ -190,7 +197,7 @@ d'affinage (warmup, têtes légères) et l'écosystème d'implémentation
 \ChapRef{experimentation}. Cette configuration (encodeur
 contextuel + classifieur binaire par émotion) sert de point de
 comparaison obligatoire dans notre protocole d'ablation : toute
-contribution architecturale (M1, M2, M3) doit être mesurée \emph{à budget
+contribution architecturale (M1 à M4) doit être mesurée \emph{à budget
 et backbone constants} par rapport à cet affinage standard.
 
 Sur la taxonomie complète (28 classes), les auteurs rapportent pour
@@ -203,19 +210,18 @@ internes au protocole du \ChapRef{experimentation}.
 
 \subsection{Dépendances entre émotions (motivation du module M2)}
 
-Traiter chaque émotion comme une sortie indépendante sur un vecteur
-global partagé ignore les \textbf{cooccurrences} et
-\textbf{incompatibilités} entre labels (joie/surprise vs joie/tristesse),
-alors que la multi-étiquette admet des dépendances marginales et
-conditionnelles entre étiquettes \cite{dembczynski2012}. La littérature
+Certaines approches traitent chaque émotion comme une sortie
+indépendante sur un vecteur global partagé, sans terme explicite pour
+les relations entre étiquettes. D'autres modélisent des dépendances
+marginales ou conditionnelles \cite{dembczynski2012}. La littérature
 propose plusieurs réponses : chaînes de classificateurs
-\cite{read2009classifier,read2019classifier}, graphes
-de corrélation entre étiquettes, attention dédiée par émotion,
-encodeurs d'interactions entre représentations d'étiquettes. Ce fil
-justifie le \textbf{module~2} de HAKE-MER
-(attention croisée multi-émotions), qui vise à donner à chaque émotion
-une représentation contextuelle propre tout en modélisant les
-interactions entre émotions.
+\cite{read2009classifier,read2019classifier}, graphes de corrélation
+entre étiquettes, attention dédiée par émotion, encodeurs d'interactions
+entre représentations d'étiquettes. Ce fil motive le \textbf{module~2}
+de HAKE-MER (attention croisée entre émotions), qui vise à donner à
+chaque émotion une représentation propre tout en laissant les émotions
+interagir. Que ces relations soient fréquentes sur un corpus donné reste
+une question empirique, reprise au \ChapRef{experimentation}.
 
 \section{Modélisation hiérarchique du texte}
 \label{sec:etat-hierarchie}
@@ -237,11 +243,11 @@ Sur GoEmotions, les commentaires Reddit annotés au niveau document
 peuvent néanmoins enchaîner plusieurs phrases aux fonctions discursives
 différentes \cite{demszky2020}. Un encodeur de type BERT qui ne
 retient, pour la décision finale, qu'un unique vecteur
-\texttt{[CLS]} par commentaire \cite{devlin2019} superpose alors des
-indices affectifs qui ne sont pas localisés au même segment de texte.
-La hiérarchisation vise précisément à \textbf{isoler} ces signaux
-avant la tête multi-étiquettes, plutôt qu'à augmenter seule la
-capacité paramétrique du classificateur.
+\texttt{[CLS]} par commentaire \cite{devlin2019} peut mêler des indices
+affectifs qui ne sont pas localisés au même segment. La hiérarchisation
+vise à les rendre accessibles séparément avant la tête
+multi-étiquettes, plutôt qu'à augmenter seule la capacité du
+classificateur.
 
 \subsection{Travaux fondateurs et extensions Transformer}
 
@@ -325,10 +331,11 @@ architecture fixée (M1+M2+M3) :
       d'une table mot-émotion alignée sur les $K{=}28$ étiquettes
       GoEmotions comme pour NRC.
 \end{itemize}
-L'hypothèse H3 (\ChapRef{conception}) est que
-l'\textbf{alignement taxonomique} entre lexique et labels cible
-conditionne l'utilité de l'enrichissement, plus que la richesse
-sémantique abstraite de la ressource.
+Les deux ressources n'ont pas la même structure : catégories d'émotions
+d'un côté, scores conceptuels de l'autre. L'hypothèse H3
+(\ChapRef{conception}) demande si un prior lexical, NRC ou SenticNet,
+modifie le F1-macro par rapport à M1+M2, et si les deux se comportent
+de la même façon. Elle n'annonce pas de ressource gagnante.
 
 \subsection{Graphes de connaissances et bon sens (hors périmètre principal)}
 
@@ -336,10 +343,9 @@ Des travaux intègrent ConceptNet \cite{speer2017}, des graphes de
 connaissances de bon sens pour l'émotion en dialogue
 \cite{ghosal2020cosmic}, bases d'inférences
 causales (ATOMIC) ou modèles génératifs de bon sens (COMET) pour les
-émotions implicites. Ces approches sont \textbf{pertinentes pour des prolongements}
-(conclusion générale) mais hors du
-périmètre d'implémentation immédiat de HAKE-MER, qui se concentre
-sur l'injection lexicale NRC/SenticNet.
+émotions implicites. Ils restent des prolongements, repris en
+conclusion générale. HAKE-MER s'en tient à l'injection lexicale NRC
+et SenticNet.
 
 \subsection{Comparaison indicative sur GoEmotions}
 \label{sec:etat-art-comparaison}
@@ -385,7 +391,7 @@ composantes de HAKE-MER.
 
 \begin{table}[H]
 \centering
-\caption{Limites des approches dominantes et réponse architecturale}
+\caption{Limites des approches dominantes et levier étudié dans HAKE-MER}
 \label{tab:limites-modules}
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{|p{4.5cm}|p{4.5cm}|p{5.2cm}|}
@@ -446,14 +452,15 @@ structure, connaissances externes).
     \end{tabular}
 \end{table}
 
-HAKE-MER regroupe ces idées dans une architecture \textbf{modulaire} :
-hiérarchie (M1), interactions entre émotions (M2), lexiques NRC/SenticNet
-(M3), pondération dynamique (M4). Les chiffres viennent au
-\ChapRef{experimentation}.
+Ces familles indiquent d'où viennent les pièces de HAKE-MER. Le
+tableau~\ref{tab:limites-modules} associe chaque limite à un levier
+mis à l'épreuve, sans préjuger de son effet sur le F1-macro. Les scores
+sont au \ChapRef{experimentation}.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
 
-Corpus, métriques, baseline PLM et arguments pour les interactions entre
-émotions, la structure multi-phrases et les lexiques sont en place.
-Le chapitre~3 formalise HAKE-MER et les hypothèses H1 à H4.
+La littérature fournit le corpus annoté, la métrique et la baseline, et
+elle indique un levier pour chaque limite. Le \ChapRef{conception}
+assemble ces leviers en une architecture et en hypothèses H1 à H4,
+comparées à budget d'affinage constant.
