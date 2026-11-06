@@ -144,10 +144,10 @@ $s_m$, tandis que le lexique, NRC ou SenticNet, fournit en parallèle un
 vecteur document $c$ que M3 projette en $\mathrm{prior}$ pour former les
 requêtes $\tilde{Q}_k = Q_k + g\cdot\mathrm{prior}$, avec $g{=}0$ au
 départ. Pour l'émotion $k$, M2 calcule une attention croisée des phrases
-vers $r_k$, puis une auto-attention le long des $K$ émotions. M4 en tire
-les coefficients $\gamma_k$ et remet chaque $r_k$ à l'échelle avant la
-tête sigmoïde. La désactivation de M3 correspond à fixer $g{=}0$, et
-celle de M4 à imposer $\gamma_k \equiv 1$.
+vers $r_k$, puis un encodeur le long des $K$ émotions. La tête lit la
+sortie de cet encodeur. M4, lorsqu'il est actif, met ce vecteur à
+l'échelle avant la sigmoïde. La désactivation de M3 correspond à fixer
+$g{=}0$, et celle de M4 à imposer $\gamma_k \equiv 1$.
 
 \subsection{Limites, modules, ablation et hypothèses}
 \label{sec:conception-synthese}
@@ -172,7 +172,7 @@ L1 & M2 & Attention par émotion + interactions & M1+M2 & H2 \\
 \hline
 L3 & M3 & Prior lexical (NRC ou SenticNet) & M1+M2+M3 & H3 \\
 \hline
-L3 & M4 & Pondération dynamique des $r_k$ & M1+M2+M3+M4 & H4 \\
+L3 & M4 & Pondération avant la tête & M1+M2+M3+M4 & H4 \\
 \hline
 \end{tabular}
 \end{table}
@@ -363,21 +363,33 @@ requête $q_k \in \mathbb{R}^d$, tirée au départ dans
 $\mathcal{N}(0, 0{,}02^2)$ et empilée dans
 $Q \in \mathbb{R}^{K \times d}$ après l'injection de M3. L'attention
 croisée multi-têtes ($8$ têtes, $d$ égal à la dimension cachée du
-backbone, mécanisme Transformer \cite{vaswani2017}) prend cette requête,
-et les vecteurs de phrases $s_1,\dots,s_M$ comme clés et valeurs :
+backbone, mécanisme Transformer \cite{vaswani2017}) reçoit la requête
+déjà modifiée par M3, notée $\tilde{q}_k$, et les vecteurs de phrases
+empilés dans $S = [s_1,\dots,s_M]$ :
 \begin{equation}
-r_k = \mathrm{MHA}\big(q_k,\; [s_1,\dots,s_M],\; [s_1,\dots,s_M]\big),
+r_k = W_O\, \mathrm{Concat}_{j=1}^{8}
+\mathrm{Att}\!\left(
+W_Q^{(j)}\tilde{q}_k,\; S W_K^{(j)},\; S W_V^{(j)}
+\right).
 \label{eq:mha}
 \end{equation}
-La représentation $r_k$ est ainsi propre à l'émotion, dans l'esprit des
-lectures \emph{label-specific} \cite{mullenbach2018}. Un encodeur
-Transformer \cite{vaswani2017}, le long des $K$ émotions, laisse ensuite
-ces représentations se corriger mutuellement, comme le font, par un
-autre mécanisme, les chaînes de classificateurs
-\cite{read2009classifier,read2019classifier,dembczynski2012}. On peut
-retirer cet encodeur sans retirer l'attention vers les phrases, et
-l'inverse. La décision s'écrit émotion par émotion :
-$z_k = w_k^\top r_k + b_k$.
+La requête, les clés et les valeurs sont donc projetées à l'intérieur de
+l'attention, tête par tête, et $W_O$ projette encore la concaténation des
+têtes. Si M3 est absent, $\tilde{q}_k$ se réduit à $q_k$. Le vecteur
+$r_k$ est propre à l'émotion, dans l'esprit des lectures
+\emph{label-specific} \cite{mullenbach2018}.
+
+M2 ne s'arrête pas à $r_k$. Une couche d'encodeur Transformer
+\cite{vaswani2017}, le long des $K$ émotions, produit
+\begin{equation}
+(h_1,\dots,h_K) = \mathrm{Enc}(r_1,\dots,r_K),
+\qquad z_k = w_k^\top h_k + b_k.
+\label{eq:emo-enc}
+\end{equation}
+Dans la configuration retenue, la tête lit $h_k$, la sortie de cet
+encodeur, et non le $r_k$ brut de l'attention croisée. On peut retirer
+l'encodeur sans retirer l'attention vers les phrases, et l'inverse.
+Sans encodeur, la même tête lit $r_k$ à la place de $h_k$.
 
 \section{Module 3 : Enrichissement Sémantique}
 \label{sec:conception-m3}
@@ -385,24 +397,37 @@ $z_k = w_k^\top r_k + b_k$.
 Le vecteur $c$, de dimension $8$ ou $5$ selon la ressource
 (section~\ref{sec:conception-choix}), est projeté par une couche
 linéaire, borné par une tangente hyperbolique, puis ajouté aux requêtes
-par une porte scalaire $g \in \mathbb{R}$, nulle au départ :
+par une porte scalaire $g \in \mathbb{R}$, nulle au départ. $W_c$ envoie
+$\mathbb{R}^{d_c}$ dans $\mathbb{R}^{d}$, la dimension cachée du
+backbone, celle de $q_k$. La somme est donc définie :
 \begin{equation}
 \mathrm{prior} = \tanh(W_c\, c), \qquad
-\tilde{Q}_k = Q_k + g \cdot \mathrm{prior}.
+\tilde{q}_k = q_k + g \cdot \mathrm{prior}.
 \label{eq:gate}
 \end{equation}
 Le même $\mathrm{prior}$ est ajouté aux $K$ requêtes, plutôt qu'un
 profil par émotion dès cette étape, parce que NRC et SenticNet n'ont ni
-la même dimension ni les mêmes unités. Cette configuration permet de
-comparer les deux ressources avec un mécanisme d'injection identique,
-même si leurs représentations initiales restent différentes. À
-l'initialisation, $g{=}0$ : la contribution du prior au passage avant est
-nulle, et M3 recopie M2 sur ce point. La porte $g$ reçoit un gradient dès
-que le prior est non nul. La projection $W_c$ n'en reçoit pas tant que
-$g$ reste exactement nul, et elle n'est mise à jour qu'une fois $g$
-écarté de zéro. La valeur absolue de $g$ indique alors dans quelle mesure
-le lexique est utilisé. Un commentaire sans mot couvert laisse $c$ nul,
-et aucun signal lexical supplémentaire n'est alors injecté.
+la même dimension ni les mêmes unités. Cette configuration compare les
+deux ressources avec un mécanisme d'injection identique, même si leurs
+représentations initiales restent différentes. L'addition a lieu avant
+les projections de l'équation~\ref{eq:mha}. La requête projetée s'écrit
+$W_Q^{(j)}(q_k + g\,\mathrm{prior}) = W_Q^{(j)} q_k + g\, W_Q^{(j)}\mathrm{prior}$.
+Le second terme est commun aux $K$ émotions. Dans les scores d'attention,
+il décale chaque émotion de la même quantité, une quantité qui dépend des
+clés. Le prior partagé déplace donc l'attention sur les phrases de la
+même façon pour toutes les émotions. Il ne construit pas une requête
+lexicale distincte pour chacune.
+
+La porte $g$ est un paramètre libre, mis à jour avec le reste du réseau.
+Rien ne la maintient à zéro. À l'initialisation, sa contribution au
+passage avant est nulle, et M3 recopie M2 sur ce point. Le gradient de
+$g$ ne contient pas $g$ en facteur : dès que le prior est non nul, le
+premier pas peut écarter $g$ de zéro. Le gradient de $W_c$, lui, est
+multiplié par $g$. Il reste nul tant que $g$ est exactement nul, et la
+projection n'est mise à jour qu'ensuite. La valeur absolue de $g$ indique
+alors dans quelle mesure le lexique est utilisé. Un commentaire sans mot
+couvert laisse $c$ nul, et aucun signal lexical supplémentaire n'est alors
+injecté.
 
 Cette injection commune laisse de côté le fait que NRC est déjà organisé
 en catégories. La campagne par étiquette
@@ -410,22 +435,24 @@ en catégories. La campagne par étiquette
 vecteur document $c$ par un score $c_k \geq 0$ pour chaque étiquette
 GoEmotions, via la correspondance du tableau~\ref{tab:nrc-goemotions}, ou
 via l'intensité SenticNet regroupée par le même pont. L'injection devient
-$\tilde{Q}_k = Q_k + g \cdot \tanh(W_c c_k)$. $W_c$, $g$ et le reste de la
+$\tilde{q}_k = q_k + g \cdot \tanh(W_c c_k)$. $W_c$, $g$ et le reste de la
 pile ne bougent pas. Seule la construction des $c_k$ change.
 
 \section{Module 4 : Pondération Dynamique}
 \label{sec:conception-m4}
 
 M3 déplace les requêtes avant la lecture des phrases. M4 intervient
-après l'attention croisée : il voit les représentations $r_k$ produites
-par M2 et peut en changer l'amplitude selon le contexte de l'exemple,
-pris comme leur moyenne $\bar{r} = \frac{1}{K}\sum_k r_k$. Le
-coefficient de l'émotion $k$ dépend de cette moyenne et de $r_k$ :
+après l'encodeur inter-émotions, lorsqu'il est actif : il voit le vecteur
+qui va entrer dans la tête, $h_k$ dans la configuration retenue, et peut
+en changer l'amplitude selon le contexte de l'exemple. Ce contexte est la
+moyenne de ces vecteurs. Le coefficient de l'émotion $k$ en dépend, ainsi
+que du vecteur lui-même. Avec $\bar{h} = \frac{1}{K}\sum_k h_k$ :
 \begin{equation}
-\gamma_k = \sigma\!\big(W_2\,\mathrm{ReLU}(W_1 [r_k ; \bar{r}]) + b_2\big),
-\qquad r_k \leftarrow \gamma_k \cdot r_k,
+\gamma_k = \sigma\!\big(W_2\,\mathrm{ReLU}(W_1 [h_k ; \bar{h}]) + b_2\big),
+\qquad h_k \leftarrow \gamma_k \cdot h_k,
 \label{eq:dyngate}
 \end{equation}
+Si l'encodeur de M2 est retiré, la même porte s'applique à $r_k$.
 Le biais $b_2$ est initialisé à $+3$. Lorsque les autres termes de la
 pré-activation sont nuls ou faibles, $\gamma_k$ vaut environ $0{,}95$,
 et la porte part alors près de l'identité. Cette valeur n'est pas
