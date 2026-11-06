@@ -8,7 +8,7 @@ L'introduction générale demande si un modèle attentif à la structure
 du texte, aux liens entre émotions et à un signal lexical externe
 détecte mieux les émotions multiples qu'un encodeur affiné de façon
 standard. Pour que cette question soit testable, il faut d'abord fixer
-où le travail se situe, ce que le sujet déposé est devenu, et quelles
+où le travail se situe, l'évolution du périmètre initial, et quelles
 limites justifient l'architecture. C'est l'objet de ce chapitre.
 
 \section{Cadre général du projet}
@@ -39,10 +39,12 @@ Ce programme mêlait des expériences qui n'auraient pas partagé le même
 budget ni le même protocole. Les écarts seraient alors restés difficiles
 à attribuer. Le périmètre a été resserré autour d'une comparaison
 contrôlée : sur GoEmotions, que change chacun des modules M1 à M4 ?
-NRC et SenticNet prennent la place de ConceptNet et d'EmoNet, parce
-qu'un signal lexical s'injecte dans le modèle et que l'ablation peut
-en isoler l'effet. Deux encodeurs et trois graines tiennent ce protocole
-fixe. Le tableau~\ref{tab:evolution-sujet} rapproche chaque axe du sujet
+Les ressources NRC et SenticNet ont été retenues pour étudier
+l'intégration de connaissances lexicales et affectives externes. Leur
+structure permet de construire des signaux exploitables par le module
+M3 et d'en examiner la contribution par ablation. Ce choix ne reproduit
+pas les fonctionnalités de ConceptNet ni d'EmoNet. Deux encodeurs et
+trois graines tiennent ce protocole fixe. Le tableau~\ref{tab:evolution-sujet} rapproche chaque axe du sujet
 de ce qui a été réalisé.
 
 \begin{table}[H]
@@ -83,17 +85,17 @@ la phrase, le document.
 Le mémoire répond en grande partie au premier et au troisième. GoEmotions
 fournit le cadre multi-étiquettes. La configuration M1+M2 réunit
 l'encodage hiérarchique et l'interaction entre émotions, et c'est elle
-que l'ablation retient. L'intensité dynamique, le module M4, a été
-testée ; elle n'est pas retenue. Le deuxième axe n'est couvert qu'en partie.
-NRC et SenticNet mesurent l'apport d'un signal affectif externe, à la
-place de ConceptNet et d'EmoNet, sans graphe de connaissances ni chaîne
-de raisonnement. SemEval, EmoInt et le benchmark « cinq SOTA » ne sont
+que l'ablation retient. Le module M4, qui pondère dynamiquement la
+représentation de chaque émotion avant la décision, a été testé ; il
+n'est pas retenu. Le deuxième axe n'est que partiellement couvert.
+NRC et SenticNet servent à mesurer l'apport d'un signal affectif
+externe, sans graphe de connaissances ni chaîne de raisonnement. SemEval, EmoInt et le benchmark « cinq SOTA » ne sont
 pas réalisés. La conclusion générale les indique comme perspectives.
 
 \section{Problématique}
 \label{sec:problematique}
 
-Même resserré, le sujet reste lié à un usage. La détection d'émotions
+Même resserré, le sujet conserve une dimension applicative. La détection d'émotions
 dans un texte sert, par exemple, la modération, la lecture des retours
 clients ou les agents conversationnels
 \cite{minaee2021textcls,mohammad2020sentiment}. Un message y mêle souvent
@@ -103,31 +105,44 @@ sont dites ensemble.
 
 Beaucoup de travaux font pourtant une hypothèse plus simple : une seule
 émotion dominante par texte \cite{seyeditabari2018}. Elle ne décrit pas
-GoEmotions. Sur les 58\,009 exemples annotés, les auteurs rapportent
-qu'environ 17\,\% portent au moins deux étiquettes \cite{demszky2020}.
-Une décision mono-étiquette manque donc une part réelle du corpus
+GoEmotions. Sur les 58\,009 exemples du corpus annoté publié par les
+auteurs, environ 17\,\% portent au moins deux étiquettes
+\cite{demszky2020}. Ce chiffre ne décrit pas le partage utilisé pour
+les expériences, qui est précisé au chapitre~4. Une décision
+mono-étiquette manque donc une part réelle de ce corpus annoté
 \cite{zhang2014multilabel,read2019classifier}.
 
 Ces constats se résument en trois limites, notées L1 à L3. Le chapitre~2
 les retrouve dans la littérature.
 
 \begin{itemize}
-\item \textbf{L1, indépendance supposée des étiquettes.} Une classification
-  multi-étiquettes standard décide de chaque émotion à part. La joie et
-  la tristesse sont rarement présentes ensemble, tandis que la surprise
-  accompagne souvent la peur ou la joie. Traiter ces liens comme du bruit,
-  c'est perdre une information que les étiquettes portent déjà.
-\item \textbf{L2, perte de la structure du texte.} Résumer un message par
-  un seul vecteur efface l'endroit où l'émotion est dite. Dans un texte
-  de plusieurs phrases, l'une peut porter la gratitude et l'autre la
-  surprise. Le vecteur global les superpose.
-\item \textbf{L3, déséquilibre sévère des classes.} Dans les corpus réels,
-  la distribution des émotions suit une loi de puissance. Quelques classes
-  fréquentes, la joie ou la neutralité, dominent des classes rares comme
-  le deuil, le soulagement ou la nervosité. L'apprentissage en est
-  pénalisé sur les minoritaires, souvent les plus utiles en pratique
+\item \textbf{L1, indépendance supposée des étiquettes.} Certaines approches
+  classiques de classification multi-étiquettes traitent chaque émotion
+  comme une décision distincte, sans modéliser explicitement les relations
+  entre les étiquettes \cite{zhang2014multilabel,read2019classifier}.
+  Ces relations, cooccurrence ou exclusion, peuvent pourtant informer la
+  décision. Les établir sur un corpus donné est une question empirique,
+  pas une loi générale.
+\item \textbf{L2, perte de la structure du texte.} Lorsqu'un document est
+  représenté par un vecteur global, les informations émotionnelles
+  localisées dans certaines phrases peuvent être moins directement
+  accessibles au classifieur. Une représentation hiérarchique conserve
+  explicitement ce qui vient de chaque segment.
+\item \textbf{L3, déséquilibre sévère des classes.} La distribution des
+  émotions dans les corpus présente souvent un déséquilibre marqué.
+  Quelques émotions fréquentes, et la catégorie \emph{neutral}, qui n'est
+  pas elle-même une émotion, dominent des étiquettes rares comme
+  \emph{grief}, \emph{relief} ou \emph{nervousness}. L'apprentissage en
+  est pénalisé sur ces classes minoritaires
   \cite{lin2017focal,chawla2002smote}.
 \end{itemize}
+
+L1 et L2 sont des questions d'architecture : l'attention croisée entre
+émotions pour la première, l'encodage hiérarchique pour la seconde. L3
+n'est pas traité par ces deux modules. Il est mesuré par le F1-macro et
+par l'analyse par classe, puis interrogé par le prior lexical (M3) et
+par la pondération dynamique des représentations d'émotion (M4), sans
+présumer que ces modules le corrigent.
 
 La question centrale du mémoire réunit ces trois limites :
 \textit{une architecture avec encodage hiérarchique, attention entre
@@ -143,21 +158,25 @@ du modèle à la lecture des erreurs.
 \begin{itemize}
 \item \textbf{Concevoir.} HAKE-MER est modulaire. L'encodage hiérarchique,
   l'attention croisée entre émotions, l'enrichissement par un lexique et
-  la pondération dynamique s'empilent. L'ablation peut ainsi retirer un
+  la pondération dynamique de la représentation de chaque émotion
+  s'empilent. L'ablation peut ainsi retirer un
   mécanisme sans reconstruire le modèle.
 \item \textbf{Évaluer.} Les mesures portent sur GoEmotions, avec le même
   budget d'affinage à chaque étape. Le Step~0, puis M1, puis M1+M2, sont
   menés sur DistilBERT et sur RoBERTa. La ladder M1 à M4 suit sur chaque
   encodeur. L'effet de l'architecture se distingue alors de la capacité
   du modèle pré-entraîné.
-\item \textbf{Comparer.} NRC est un lexique de catégories ; SenticNet est
-  une ressource conceptuelle. Les deux sont branchés sur la même
-  architecture, pour mesurer laquelle s'y intègre le mieux.
-\item \textbf{Analyser.} Le F1-macro ne suffit pas à dire où le modèle se
-  trompe. Les scores sont lus émotion par émotion, dans le tableau
-  principal et dans l'annexe des $28$ F1. Les confusions sont examinées
-  sur \emph{grief}, \emph{relief} et \emph{neutral}, là où l'usage visé
-  par le sujet est le plus sensible.
+\item \textbf{Comparer.} NRC et SenticNet sont intégrés à la même
+  architecture, dans le module M3, afin d'étudier l'influence de leur
+  représentation des connaissances sur les performances. L'objectif est
+  d'examiner leur contribution, y compris si elle est nulle, et non de
+  désigner à l'avance une ressource gagnante.
+\item \textbf{Analyser.} Les performances sont lues au niveau de chaque
+  émotion, en complément du F1-macro, à partir du tableau principal et
+  de l'annexe des $28$ F1 (les $27$ émotions de GoEmotions et la
+  catégorie \emph{neutral}). Les principales confusions sont analysées
+  sur \emph{grief}, \emph{relief} et \emph{neutral}, pour examiner les
+  difficultés de classification associées à ces classes.
 \end{itemize}
 
 \section{Plan de travail}
@@ -167,7 +186,7 @@ La suite suit l'ordre d'un cycle de type CRISP-DM (Cross-Industry
 Standard Process for Data Mining), repris pour une étude d'architecture
 en apprentissage profond. On part du problème et des données, on conçoit
 le modèle, on l'évalue à budget constant, puis on documente ce qui est
-établi. Le tableau~\ref{tab:plan-travail} range ces phases.
+établi. Le tableau~\ref{tab:plan-travail} présente ces phases.
 
 {\small
 \renewcommand{\arraystretch}{1.12}
@@ -203,16 +222,17 @@ quatre modules, définition des hypothèses de recherche H1 à H4
 (chapitre~3). \\
 \hline
 Expérimentation et évaluation &
-Implémentation, protocole d'ablation à budget d'affinage identique (Step~0 et +M1/+M1+M2
-sur DistilBERT et RoBERTa), comparaison
+Implémentation, protocole d'ablation à budget d'affinage identique et trois
+graines (Step~0 et +M1/+M1+M2 sur DistilBERT et RoBERTa), comparaison
 NRC/SenticNet, analyse par classe, bilan H1 à H4, recommandations pratiques
 et annexe complète (chapitre~4). \\
 \hline
 Documentation et valorisation &
 Rédaction du mémoire, synthèse des enseignements méthodologiques et des
 recommandations pratiques (fin du chapitre~4) et perspectives
-(conclusion générale), structuration de l'état de
-l'art en survey autonome en vue d'une valorisation après soutenance. \\
+(conclusion générale). La valorisation de l'état de l'art sous la forme
+d'un article de synthèse est une perspective envisagée après la
+soutenance, et non un résultat de ce mémoire. \\
 \hline
 \end{longtable}
 }
@@ -223,4 +243,5 @@ l'art en survey autonome en vue d'une valorisation après soutenance. \\
 Le cadre et la question sont fixés. Trois limites restent à instruire :
 l'indépendance des étiquettes (L1), la perte de structure du texte (L2)
 et le déséquilibre des classes (L3). Le chapitre~2 examine comment la
-littérature les traite, et ce que cela laisse à concevoir pour HAKE-MER.
+littérature les traite, et quelles limites restent à traiter dans
+la conception de HAKE-MER.
