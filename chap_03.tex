@@ -224,16 +224,24 @@ part aux étiquettes qui la citent. Le vecteur des vingt-huit scores est
 ensuite ramené à une somme égale à un lorsqu'il n'est pas nul.
 \emph{Neutral} reste à zéro.
 
-\begin{table}[H]
-\centering
-\caption{Correspondance GoEmotions vers catégories NRC, définie pour ce mémoire}
-\label{tab:nrc-goemotions}
-\small
+{\small
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{|l|l|}
+\begin{longtable}{|l|l|}
+\caption{Correspondance GoEmotions vers catégories NRC, définie pour ce mémoire}
+\label{tab:nrc-goemotions} \\
 \hline
 \textbf{Étiquette} & \textbf{Catégories NRC} \\
 \hline
+\endfirsthead
+\multicolumn{2}{|c|}{\emph{(suite du tableau~\ref{tab:nrc-goemotions})}} \\
+\hline
+\textbf{Étiquette} & \textbf{Catégories NRC} \\
+\hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
 admiration & trust, joy \\
 \hline
 amusement & joy \\
@@ -290,8 +298,8 @@ surprise & surprise \\
 \hline
 neutral & aucune \\
 \hline
-\end{tabular}
-\end{table}
+\end{longtable}
+}
 
 \subsection{Extraction SenticNet}
 
