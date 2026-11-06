@@ -3,16 +3,15 @@
 
 \section*{Introduction}
 \addcontentsline{toc}{section}{Introduction}
-Le \ChapRef{etat_art} laisse trois leviers sans définition opératoire.
-Une lecture par émotion peut faire interagir les étiquettes (L1). Des
-vecteurs de phrases peuvent garder des indices qu'un seul vecteur de
-document agrège (L2). Un signal lexical, ou une repondération des
-représentations d'émotion, peut être mesuré sur les classes rares (L3),
-sans en faire une correction. Ce chapitre fixe \textbf{HAKE-MER}
-(\emph{Hierarchical Attention with Knowledge modules for Multi-Emotion
-Recognition}), l'architecture qui assemble ces leviers, et les
-hypothèses H1 à H4. L'ablation du \ChapRef{experimentation} les comparera
-à budget d'affinage constant.
+Le \ChapRef{etat_art} a nommé un levier pour chaque limite, sans encore
+écrire les formules. Il reste à dire comment une lecture par émotion
+peut faire interagir les étiquettes, comment des vecteurs de phrases
+évitent d'agréger tous les indices dans un seul vecteur de document, et
+comment un lexique ou une repondération peuvent être mis à l'épreuve sur
+un corpus déséquilibré. \textbf{HAKE-MER} (\emph{Hierarchical Attention
+with Knowledge modules for Multi-Emotion Recognition}) est cette mise en
+forme. Les hypothèses H1 à H4 en découlent. L'ablation du
+\ChapRef{experimentation} les comparera à budget d'affinage constant.
 
 \section{Formulation du problème et limites existantes}
 \label{sec:conception-formulation}
@@ -61,16 +60,17 @@ formulation.
 \section{Vue d'ensemble de l'architecture}
 \label{sec:conception-vue}
 
-HAKE-MER empile ces réponses sur un backbone partagé, DistilBERT-base
+HAKE-MER place ces réponses sur un backbone partagé, DistilBERT-base
 ou RoBERTa-base \cite{sanh2019distilbert,liu2019roberta}, affiné comme
 un modèle de langue pré-entraîné \cite{devlin2019,sun2019}. La
-figure~\ref{fig:hakemer-archi} en donne l'ordre. M1 produit un vecteur
-par phrase. M2 lit ces phrases une fois par émotion, puis laisse les
-émotions interagir. M3 peut ajouter un prior lexical aux requêtes de
-cette lecture. M4 peut ensuite changer l'amplitude de chaque
-représentation d'émotion avant la décision. Chaque module peut être
-retiré. L'ablation du tableau~\ref{tab:conception-ablation} compare
-donc des piles qui ne diffèrent que par le module ajouté.
+figure~\ref{fig:hakemer-archi} suit un commentaire. Les phrases y
+deviennent des vecteurs, c'est M1. Chaque émotion en fait ensuite sa
+lecture, et ces lectures s'échangent de l'information, c'est M2. Un
+lexique peut déplacer les requêtes de cette lecture, c'est M3. Avant la
+sigmoïde, l'amplitude de chaque représentation peut encore varier, c'est
+M4. Retirer un module laisse le reste en place. Le
+tableau~\ref{tab:conception-ablation} compare donc des piles qui
+n'ajoutent qu'une pièce.
 
 \begin{figure}[H]
 \centering
@@ -139,27 +139,24 @@ et branche lexicale (M3) alimentant les requêtes d'émotions.}
 \subsection{Enchaînement des calculs}
 \label{sec:conception-forward}
 
-Le passage avant est le suivant, pour un commentaire tokenisé par le
-backbone. Le texte est découpé en au plus $M$ phrases ; chaque phrase
-est encodée, puis agrégée par M1 en vecteurs $s_1,\dots,s_M$. En
-parallèle, M3 construit un vecteur document $c$ à partir du lexique
-(NRC ou SenticNet), le projette en $\mathrm{prior}$ et forme les
-requêtes $\tilde{Q}_k = Q_k + g\cdot\mathrm{prior}$ (avec $g{=}0$ au
-départ). M2 effectue, pour chaque émotion $k$, une attention croisée
-des phrases vers $r_k$, puis une auto-attention sur l'axe des $K$
-émotions. M4 calcule des coefficients $\gamma_k$ et met à l'échelle
-chaque $r_k$ avant la tête sigmoïde par étiquette. Lorsque M3 est
-désactivé, on fixe $g{=}0$ ; lorsque M4 est désactivé, on impose
-$\gamma_k \equiv 1$.
+Le passage avant suit le même commentaire. Le texte est découpé en au
+plus $M$ phrases. Chaque phrase est encodée, puis M1 la résume en un
+vecteur $s_m$. À côté, le lexique, NRC ou SenticNet, fournit un vecteur
+document $c$. M3 le projette en $\mathrm{prior}$ et forme les requêtes
+$\tilde{Q}_k = Q_k + g\cdot\mathrm{prior}$, avec $g{=}0$ au départ.
+Pour l'émotion $k$, M2 fait une attention croisée des phrases vers
+$r_k$, puis une auto-attention le long des $K$ émotions. M4 en tire des
+coefficients $\gamma_k$ et remet chaque $r_k$ à l'échelle avant la tête
+sigmoïde. Couper M3 revient à laisser $g{=}0$. Couper M4 revient à
+imposer $\gamma_k \equiv 1$.
 
 \subsection{Limites, modules, ablation et hypothèses}
 \label{sec:conception-synthese}
 
-Le tableau~\ref{tab:conception-ablation} relie L1 à L3 aux modules, à
-la pile testée et à l'hypothèse correspondante. M3 et M4 y répondent à
-L3 comme des contributions à mesurer, pas comme une correction acquise.
-Les comparaisons se lisent à budget d'affinage identique. Le détail est
-au \ChapRef{experimentation}.
+Le tableau~\ref{tab:conception-ablation} relie chaque limite au module
+qui la prend en charge, à la pile où ce module apparaît, et à
+l'hypothèse qui tranche. Toutes ces piles partagent le budget
+d'affinage. Le protocole est au \ChapRef{experimentation}.
 
 \begin{table}[H]
 \centering
@@ -192,11 +189,13 @@ aux piles qui les utilisent. Les sections suivantes définissent M1 à M4.
 
 Les commentaires sont découpés en phrases par Punkt, dans l'ordre du
 texte, puis tronqués à $M{=}4$ phrases et 32 tokens sous-mots par phrase.
-Les phrases au-delà de $M$ sont ignorées. Les phrases courtes sont
-complétées par un padding masqué. Une étiquette est prédite si
+Quatre phrases de 32 tokens retombent sur les 128 tokens du document
+plat : H1 ne compare donc pas une fenêtre plus longue à une fenêtre plus
+courte. Les phrases au-delà de $M$ sont ignorées. Les phrases courtes
+sont complétées par un padding masqué. Une étiquette est prédite si
 $\hat{y}_k > 0{,}5$. Le \ChapRef{experimentation} rapporte en outre une
-étude de seuil menée après l'entraînement. Elle ne change pas
-l'architecture.
+étude de seuil menée après l'entraînement. L'architecture reste celle
+décrite ici.
 
 \subsection{Extraction NRC et correspondance GoEmotions}
 
@@ -308,34 +307,33 @@ concepts absents sont ignorés.
 Cinq descripteurs, nuls lorsqu'aucun token n'est reconnu, forment le
 vecteur $c$ ($d_c{=}5$) du prior principal : intensité moyenne des tokens
 reconnus, intensité maximale, intensité minimale, fraction de tokens
-couverts, nombre de tokens distincts reconnus. Ce choix de dimension
-permet de comparer SenticNet à NRC à taille voisine. Ce n'est pas une
-table mot-émotion. La variante par étiquette réutilise le
-tableau~\ref{tab:nrc-goemotions}. L'intensité est d'abord ramenée à
-$[0, 1]$ par la transformation (intensité $+ 1)/2$, puis moyennée
-sur les tokens dont une catégorie NRC pointe vers l'étiquette.
-\emph{Neutral} reste à zéro.
+couverts, nombre de tokens distincts reconnus. Cinq nombres, contre huit
+pour NRC, assez proches pour entrer dans la même porte. La variante par
+étiquette réutilise le tableau~\ref{tab:nrc-goemotions}. L'intensité est
+d'abord ramenée à $[0, 1]$ par la transformation (intensité $+ 1)/2$,
+puis moyennée sur les tokens dont une catégorie NRC pointe vers
+l'étiquette. \emph{Neutral} reste à zéro.
 
-Les deux extractions produisent un vecteur document $c$ injecté ensuite
-par le module~3. Elles ne modifient pas le tronc hiérarchique décrit
-ci-dessous. Cette séparation permet de tester H3 à architecture et
-segmentation identiques, en ne changeant que la ressource affective et
-la dimension $d_c$ avant projection. La macro et l'écart entre classes
-fréquentes et rares se lisent séparément. H3 n'annonce pas de ressource
-gagnante.
+NRC et SenticNet n'entrent pas dans le tronc comme un encodeur de plus.
+Ils produisent ce vecteur $c$, et seul le module~3 le voit. Passer de
+l'un à l'autre change $d_c$ et le contenu de $c$, pas la segmentation,
+ni M1, ni M2. H3 tient ces pièces fixes. La macro et l'écart entre
+classes fréquentes et rares se lisent à part : un gain moyen peut laisser
+les classes rares inchangées.
 
 \section{Module 1 : Encodage Hiérarchique}
 \label{sec:conception-m1}
 
-Le module~1 répond à L2 en gardant une représentation par phrase avant
-la décision. Le texte est segmenté comme en
-section~\ref{sec:conception-choix}. Le backbone produit les états de
-tokens. M1 ne leur ajoute pas d'encodeur récurrent mot vers phrase. Il
-les résume par une \emph{attention additive} \cite{bahdanau2015}, dans
-l'esprit du premier niveau des réseaux d'attention hiérarchiques
-\cite{yang2016}, sans en reprendre l'empilement complet. Pour une phrase
-de représentations $H=(h_1,\dots,h_T)$ et d'un masque, cette couche
-calcule :
+Un commentaire peut remercier dans une phrase et marquer la surprise
+dans la suivante. Le backbone a déjà contextualisé les tokens. M1 ajoute
+un résumé de chaque phrase, avant que la décision ne les confonde. Le
+découpage est celui de la section~\ref{sec:conception-choix}. Il n'y a
+pas d'encodeur récurrent mot vers phrase en plus du modèle
+pré-entraîné. Une \emph{attention additive} \cite{bahdanau2015} résume
+les états de tokens, dans l'esprit du premier niveau d'un réseau
+d'attention hiérarchique \cite{yang2016}, sans l'empilement complet.
+Pour une phrase de représentations $H=(h_1,\dots,h_T)$ et d'un masque,
+cette couche calcule :
 \begin{equation}
 u_t = v^\top \tanh(W h_t), \qquad
 \alpha_t = \frac{\exp(u_t)}{\sum_{t'} \exp(u_{t'})}, \qquad
@@ -343,101 +341,101 @@ s = \sum_t \alpha_t\, h_t,
 \label{eq:attnpool}
 \end{equation}
 les positions masquées recevant un score $-\infty$ avant le softmax.
-On obtient les vecteurs de phrases $s_1,\dots,s_M$. Lorsque M2 est
-actif, ces vecteurs restent séparés : M2 les lit par émotion, et il n'y
-a pas de second pooling vers un vecteur de document. Lorsque M1 est seul,
-une seconde attention agrège les phrases, et une tête linéaire partagée
-produit les $K$ logits. Cette tête n'existe pas dans la pile M1+M2, où
-chaque émotion a ses propres paramètres. H1 compare le document plat à
-cette configuration M1 seul. L'écart entre M1 seul et M1+M2 change donc
-à la fois la lecture du texte et la tête de décision.
+On obtient les vecteurs de phrases $s_1,\dots,s_M$. Si M2 est actif, ces
+vecteurs ne sont pas fondus : chaque émotion les relit, et aucun pooling
+de document ne s'intercale. M1 seul a, lui, besoin d'une décision. Une
+seconde attention agrège alors les phrases, et une tête linéaire
+partagée produit les $K$ logits. Cette tête disparaît dès que M2 est
+présent, où chaque émotion a ses propres paramètres. H1 compare le
+document plat à cette configuration M1 seul, tête comprise. L'écart entre
+M1 seul et M1+M2 change donc à la fois la lecture du texte et la tête de
+décision. Le \ChapRef{experimentation} devra tenir les deux ensemble.
 
 \section{Module 2 : Attention Croisée Multi-Émotions}
 \label{sec:conception-m2}
 
-Chaque émotion $k$ possède une requête apprise $q_k \in \mathbb{R}^d$
-(initialisée en $\mathcal{N}(0, 0{,}02^2)$), empilée en matrice
-$Q \in \mathbb{R}^{K \times d}$ après injection M3. L'attention croisée
-multi-têtes ($8$ têtes, $d$ égal à la dimension cachée du backbone,
-mécanisme Transformer \cite{vaswani2017}) utilise une requête par
-émotion et les vecteurs de phrases $s_1,\dots,s_M$ comme clés et
-valeurs :
+Une fois les phrases séparées, les relire avec une seule requête les
+ramènerait à un vecteur commun. Chaque émotion $k$ reçoit donc sa
+requête $q_k \in \mathbb{R}^d$, tirée au départ dans
+$\mathcal{N}(0, 0{,}02^2)$ et empilée dans
+$Q \in \mathbb{R}^{K \times d}$ après l'injection de M3. L'attention
+croisée multi-têtes ($8$ têtes, $d$ égal à la dimension cachée du
+backbone, mécanisme Transformer \cite{vaswani2017}) prend cette requête,
+et les vecteurs de phrases $s_1,\dots,s_M$ comme clés et valeurs :
 \begin{equation}
 r_k = \mathrm{MHA}\big(q_k,\; [s_1,\dots,s_M],\; [s_1,\dots,s_M]\big),
 \label{eq:mha}
 \end{equation}
-produisant une représentation contextuelle \emph{par émotion}, sur le
-modèle des lectures \emph{label-specific}
-\cite{mullenbach2018}. Une couche d'encodeur Transformer
-\cite{vaswani2017}, appliquée sur l'axe des $K$ émotions, peut ensuite
-faire interagir ces représentations, dans la ligne des chaînes de
-classificateurs
-\cite{read2009classifier,read2019classifier,dembczynski2012}. Cette
-couche et l'attention vers les phrases peuvent être retirées séparément.
-La tête de classification est \emph{par étiquette} :
+La représentation $r_k$ est ainsi propre à l'émotion, dans l'esprit des
+lectures \emph{label-specific} \cite{mullenbach2018}. Un encodeur
+Transformer \cite{vaswani2017}, le long des $K$ émotions, laisse ensuite
+ces représentations se corriger mutuellement, comme le font, par un
+autre mécanisme, les chaînes de classificateurs
+\cite{read2009classifier,read2019classifier,dembczynski2012}. On peut
+retirer cet encodeur sans retirer l'attention vers les phrases, et
+l'inverse. La décision s'écrit émotion par émotion :
 $z_k = w_k^\top r_k + b_k$.
 
 \section{Module 3 : Enrichissement Sémantique}
 \label{sec:conception-m3}
 
-Un vecteur affectif de document $c \in \mathbb{R}^{d_c}$ est extrait
-comme en section~\ref{sec:conception-choix} (NRC : $d_c{=}8$ ;
-SenticNet : $d_c{=}5$). Dans les deux cas, $c$ est projeté, borné, puis
-injecté dans les requêtes d'émotions via une \emph{porte apprise}
-$g \in \mathbb{R}$ initialisée à zéro. Le même vecteur $\mathrm{prior}$
-est ajouté à toutes les émotions (choix de simplicité et d'ablation) :
+Le lexique a déjà produit $c$, de dimension $8$ ou $5$ selon la
+ressource (section~\ref{sec:conception-choix}). Une couche linéaire le
+projette, une tangente hyperbolique le borne, et une porte scalaire
+$g \in \mathbb{R}$, nulle au départ, décide de l'ajouter aux requêtes :
 \begin{equation}
 \mathrm{prior} = \tanh(W_c\, c), \qquad
 \tilde{Q}_k = Q_k + g \cdot \mathrm{prior}.
 \label{eq:gate}
 \end{equation}
-À l'initialisation ($g{=}0$), le module 3 est strictement équivalent
-au module 2 : le modèle apprend la quantité de connaissance à
-injecter. La valeur apprise de $|g|$ sert de sonde d'utilisation du
-lexique (comparaison NRC vs SenticNet sous H3). Les commentaires sans
-couverture lexicale ($c{=}0$) n'ajoutent aucun signal ; la performance
-sur la longue traîne dépend alors du reste de l'architecture.
-\textbf{Limitation} : le même $\mathrm{prior}$ est ajouté à toutes les
-requêtes $Q_k$ : NRC et SenticNet résument le document en vecteurs
-globaux ($d_c{=}8$ ou $5$) avant projection, sans profils lexicaux
-distincts par émotion. Ce choix facilite la comparaison NRC vs
-SenticNet à architecture fixée, mais peut sous-exploiter la structure
-catégorielle du NRC par rapport à une injection mot-émotion plus fine.
+Pourquoi le même $\mathrm{prior}$ pour les $K$ requêtes, plutôt qu'un
+profil par émotion dès cette étape ? NRC et SenticNet n'ont ni la même
+dimension ni les mêmes unités. Leur donner une injection identique, un
+seul vecteur de document ajouté partout, isole la ressource. Si le
+F1-macro bouge, c'est le contenu de $c$ qui a changé, pas la façon dont
+chaque émotion reçoit le lexique. La porte part de zéro, donc M3, à
+l'initialisation, recopie M2 : le modèle n'est pas obligé d'utiliser le
+lexique. La valeur apprise de $|g|$ indique ensuite s'il s'en sert, et
+permet de comparer NRC et SenticNet. Un commentaire sans mot couvert
+laisse $c$ nul, et la porte n'a rien à ajouter.
 
-\ParHead{Variante prior par étiquette :}Une campagne complémentaire
-(\SecRef{sec:expe-m3-per-label}) remplace le vecteur document $c$ unique
-par un score $c_k \geq 0$ par étiquette GoEmotions (pont sémantique vers
-NRC ou polarité SenticNet regroupée via le même pont). L'injection devient
-$\tilde{Q}_k = Q_k + g \cdot \tanh(W_c c_k)$ avec $W_c$, $g$ et le reste
-de la pile identiques : seule la construction des $c_k$ change.
+Cette injection commune laisse de côté le fait que NRC est déjà organisé
+en catégories. La campagne par étiquette
+(\SecRef{sec:expe-m3-per-label}) reprend ce découpage. Elle remplace le
+vecteur document $c$ par un score $c_k \geq 0$ pour chaque étiquette
+GoEmotions, via la correspondance du tableau~\ref{tab:nrc-goemotions}, ou
+via l'intensité SenticNet regroupée par le même pont. L'injection devient
+$\tilde{Q}_k = Q_k + g \cdot \tanh(W_c c_k)$. $W_c$, $g$ et le reste de la
+pile ne bougent pas. Seule la construction des $c_k$ change.
 
 \section{Module 4 : Pondération Dynamique}
 \label{sec:conception-m4}
 
-M3 ajoute un signal extérieur aux requêtes. M4 agit plus tard, sur les
-représentations $r_k$ déjà calculées. Pour chaque exemple, une porte
-change leur amplitude avant la décision. Le contexte utilisé est la
-moyenne $\bar{r} = \frac{1}{K}\sum_k r_k$. H4 demande si cette
-modulation améliore le F1-macro une fois le lexique fixé. Elle ne
-suppose pas un gain sur les classes rares. La porte calcule :
+M3 déplace les requêtes, avant que les phrases ne soient lues. M4
+arrive après cette lecture. Il voit les représentations $r_k$ que M2
+vient de produire, et il peut en changer l'amplitude selon le contexte
+de l'exemple. Ce contexte est leur moyenne
+$\bar{r} = \frac{1}{K}\sum_k r_k$. Le coefficient de l'émotion $k$ en
+dépend, ainsi que de $r_k$ elle-même :
 \begin{equation}
 \gamma_k = \sigma\!\big(W_2\,\mathrm{ReLU}(W_1 [r_k ; \bar{r}]) + b_2\big),
 \qquad r_k \leftarrow \gamma_k \cdot r_k,
 \label{eq:dyngate}
 \end{equation}
-avec $b_2$ initialisé à $+3$ (soit $\gamma_k \approx 0{,}95$) : le
-module démarre proche de l'identité et apprend à moduler
-progressivement l'intensité de chaque émotion selon le texte.
+Le biais $b_2$ vaut $+3$ au départ, donc $\gamma_k \approx 0{,}95$. La
+porte commence près de l'identité. Au départ, $r_k$ est presque inchangé,
+et la modulation s'apprend ensuite. H4 demande si cette modulation, une
+fois le lexique fixé, change le F1-macro.
 
 \section{Hypothèses de recherche}
 \label{sec:conception-hypotheses}
 
-Les hypothèses suivantes disent l'effet attendu. Le
-\ChapRef{experimentation} dit s'il est observé. L'ablation est cumulative
-(tableau~\ref{tab:conception-ablation}), à protocole d'affinage identique :
-quatre époques, hyperparamètres du tableau~\ref{tab:expe-hyperparams},
-meilleur modèle selon le F1-macro de validation. Le F1-macro
-reste la métrique principale.
+Chaque hypothèse fixe le sens de l'écart que l'ablation doit lire. Le
+\ChapRef{experimentation} dira si cet écart est là. Le protocole ne
+change pas d'une pile à l'autre : quatre époques, les hyperparamètres du
+tableau~\ref{tab:expe-hyperparams}, et le modèle retenu est celui dont
+le F1-macro de validation est le meilleur. C'est aussi la métrique sur
+laquelle les hypothèses sont jugées.
 
 \begin{itemize}
 \item[\textbf{H1.}] \textbf{M1 vs baseline} : avec quatre phrases de $32$
@@ -448,11 +446,11 @@ reste la métrique principale.
   F1-macro par rapport à M1 seul. L'encodeur entre émotions et l'attention
   vers les phrases sont retirés séparément au
   \ChapRef{experimentation}, pour situer l'écart.
-\item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : (i) un prior lexical de
-  document, NRC ou SenticNet, modifie le F1-macro ; (ii) l'extension par
-  étiquette, NRC ou SenticNet via la correspondance du
-  tableau~\ref{tab:nrc-goemotions}, est lue à part. La macro et l'écart
-  entre classes fréquentes et rares ne se confondent pas.
+\item[\textbf{H3.}] \textbf{M1+M2+M3 vs M1+M2} : le prior de document,
+  NRC ou SenticNet, modifie le F1-macro. L'extension par étiquette, via
+  le tableau~\ref{tab:nrc-goemotions}, est lue à part. Aucune des deux
+  ressources n'est désignée d'avance. La macro et l'écart entre classes
+  fréquentes et rares restent deux lectures ;
 \item[\textbf{H4.}] \textbf{M1+M2+M3+M4 vs M1+M2+M3} : la pondération
   dynamique améliore le F1-macro test, à ressource lexicale fixée. NRC et
   SenticNet sont testés lorsque la campagne correspondante existe.
