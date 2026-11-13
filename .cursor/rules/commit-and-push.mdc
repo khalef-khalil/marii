@@ -1,0 +1,15 @@
+---
+description: Commit and push every change before the turn ends
+alwaysApply: true
+---
+
+# Commit and push
+
+Whenever a turn changes project files, commit and push before ending the turn. Do not wait for a separate "commit" or "push" message.
+
+- Do not commit secrets.
+- Do not commit if there is nothing to commit.
+- Do not force-push. Do not amend a commit that is already pushed.
+- A question that does not change files does not need a commit.
+
+If the mémoire changed, also rebuild and reopen the PDF, as in the report delivery rule. If the defense deck changed, rebuild the pptx and copy it to the Desktop as `Mariem_ElWedani_Soutenance.pptx`.
