@@ -1,15 +1,17 @@
 ---
-description: Spoken notes for the defense deck stay short, easy, and tied to the slide
+description: Defense notes are spoken sentences, easy French, tied to the slide
 globs: presentation/**/*.py
 alwaysApply: false
 ---
 
 # Defense speaker notes
 
-Mariem presents for 15 to 20 minutes. The notes are what she says. The slide is what she glances at if she loses the sentence.
+The notes are the speech. Mariem reads them as sentences she says to the jury. The slide is the reminder if she loses her place.
 
-- Easy spoken French. Short sentences. The scientific word that is already on the slide stays (F1-macro, ablation, NRC, SenticNet, attention). Do not swap it for a vaguer word, and do not add a harder one.
-- Same order as the blocks on the slide, and the same words, so half a second on the slide restarts the sentence.
-- Do not retell the slide in full. One sentence per block. Leave a number she can see, unless that number is the point.
-- Dividers are one sentence. A result slide is a few sentences. Slides do not all get the same length.
-- Notes she would say only if the jury asks stay on the questions slide, marked as such, and out of the timed talk.
+Write normal spoken French: complete sentences, varied length, words in an order a person would say out loud. Easy language. Keep the scientific word already printed on the slide (F1-macro, ablation, NRC, SenticNet). Do not replace it with a vaguer word, and do not add a harder one.
+
+Do not write telegraphic notes. No label-colon-fragment lines ("Step 0, c'est cet affinage. En bas : ..."). Do not insert filler such as "euh" or "um". The rhythm should leave room for a breath. It should not be written in.
+
+Follow the order of the blocks on the slide, and reuse their words, so a glance restarts the sentence. Do not add a second essay that the slide does not show. Dividers stay to one or two sentences. Result slides stay shorter than design slides. The whole talk fits in 15 to 20 minutes.
+
+Lines she says only if the jury asks stay on the questions slide, each starting with "Si on me demande".
