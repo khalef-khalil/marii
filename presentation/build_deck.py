@@ -26,7 +26,7 @@ VIOLET = (0x6B, 0x4F, 0xA0)
 MINT = (0xB4, 0xE0, 0xC8)
 PALE = (0x9F, 0xB0, 0xC8)
 DIM = (0x3A, 0x55, 0x7E)
-SECTIONS = ["Contexte", "Méthode", "Résultats", "Conclusion"]
+SECTIONS = ["Contexte", "État de l'art", "Approche proposée", "Expérimentation", "Conclusion"]
 
 LABEL = "Mariem El WEDANI  |  HAKE-MER  |  Soutenance de Master, ISI 2025 - 2026"
 
@@ -130,14 +130,18 @@ def divider(active, notes):
     s = new(footer=False, notes=notes)
     s.add(Box(0, 0, 13.333, 7.5, fill=NAVY))
     s.add(Box(0.90, 0.55, 6.5, 2.05, [P(f"{active + 1:02d}", 100, MINT, True, after=0)], margins=(0, 0, 0, 0)))
-    s.add(Box(0.95, 2.70, 11.5, 1.25, [P(SECTIONS[active], 60, WHITE, True, after=0)], anchor="m", margins=(0, 0, 0, 0)))
+    title = SECTIONS[active]
+    title_size = 44 if len(title) > 14 else 56
+    s.add(Box(0.55, 2.70, 12.2, 1.25, [P(title, title_size, WHITE, True, after=0)], anchor="m", margins=(0, 0, 0, 0)))
     s.add(Box(0.98, 4.20, 1.60, 0.07, fill=MINT))
-    x0, bw, gap = 0.95, 2.75, 0.20
+    n = len(SECTIONS)
+    gap, x0 = 0.12, 0.48
+    bw = (13.333 - x0 - 0.40 - gap * (n - 1)) / n
     for i, name in enumerate(SECTIONS):
         x = x0 + i * (bw + gap)
         on = i == active
         s.add(Box(x, 5.75, bw, 0.09, fill=MINT if on else DIM))
-        s.add(Box(x, 5.95, bw, 0.42, [P(name, 16, WHITE if on else PALE, on, after=0)], margins=(0, 0, 0, 0)))
+        s.add(Box(x, 5.95, bw, 0.62, [P(name, 13, WHITE if on else PALE, on, align="l", after=0)], margins=(0, 0, 0, 0)))
     numbox = Box(11.05, 6.85, 1.80, 0.48, [P("00", 24, MINT, True, align="r", after=0)], anchor="m", margins=(0, 0, 0, 0))
     s.add(numbox)
     s._numbox = numbox
@@ -168,25 +172,27 @@ s.add(Box(0.6, 5.05, 12.1, 1.5, [
 
 # ----------------------------------------------------------------------------- Plan
 s = new("Plan", notes=(
-    "Je vais suivre le chemin du travail. Je commence par la dataset et par ce qui manque aux méthodes classiques, "
-    "parce que c'est de là que viennent les hypothèses. "
-    "Ensuite j'explique comment HAKE-MER est construit, et surtout comment j'ai fait les tests pour que les comparaisons soient justes. "
-    "Puis je montre ce qui progresse, et aussi ce qui ne progresse pas. "
+    "Je vais suivre cinq parties. "
+    "Le contexte pose la tâche, puis les embeddings, puis pourquoi l'attention compte. "
+    "L'état de l'art dit ce qui existe déjà, et ce que ces travaux ne règlent pas. "
+    "L'approche proposée détaille HAKE-MER étape par étape, et ce que j'y apporte. "
+    "L'expérimentation fixe le protocole, puis l'étude d'ablation. "
     "Je termine par ce que je retiens, et par ce que je ne peux pas encore affirmer."))
 for i, (title, sub) in enumerate([
-    ("Contexte", "Les données, les limites et les hypothèses"),
-    ("Méthode", "L'architecture et le protocole de test"),
-    ("Résultats", "Les comparaisons, les classes et les erreurs"),
+    ("Contexte", "La tâche, les embeddings et l'attention"),
+    ("État de l'art", "Ce qui a déjà été proposé"),
+    ("Approche proposée", "HAKE-MER, étape par étape"),
+    ("Expérimentation", "Le protocole et l'étude d'ablation"),
     ("Conclusion", "Le bilan et les pistes pour la suite"),
 ]):
-    y = 1.62 + i * 1.25
-    s.add(Box(0.6, y, 0.95, 0.72, [P(f"{i + 1:02d}", 30, GREEN, True, after=0)], anchor="m", margins=(0, 0, 0, 0)))
-    s.add(Box(1.65, y, 4.3, 0.72, [P(title, 30, NAVY, True, after=0)], anchor="m", margins=(0, 0, 0, 0)))
-    s.add(Box(6.15, y, 6.55, 0.72, [P(sub, 18, GRAY, after=0)], anchor="m", margins=(0, 0, 0, 0)))
-    s.add(Box(0.6, y + 0.95, 12.1, 0.015, fill=LINE))
+    y = 1.48 + i * 1.02
+    s.add(Box(0.6, y, 0.85, 0.68, [P(f"{i + 1:02d}", 26, GREEN, True, after=0)], anchor="m", margins=(0, 0, 0, 0)))
+    s.add(Box(1.55, y, 4.85, 0.68, [P(title, 26, NAVY, True, after=0)], anchor="m", margins=(0, 0, 0, 0)))
+    s.add(Box(6.55, y, 6.15, 0.68, [P(sub, 16, GRAY, after=0)], anchor="m", margins=(0, 0, 0, 0)))
+    s.add(Box(0.6, y + 0.82, 12.1, 0.015, fill=LINE))
 
 # ----------------------------------------------------------------------------- 01 Contexte
-divider(0, "Avant de parler du modèle, il faut voir sur quoi j'ai travaillé, et pourquoi les méthodes habituelles ne suffisent pas. C'est ce qui justifie les hypothèses.")
+divider(0, "Avant le modèle, je pose la tâche, puis comment un texte devient un vecteur, et pourquoi l'attention sert à ne pas tout mélanger. C'est de là que viennent les hypothèses.")
 
 # ----------------------------------------------------------------------------- Context and data
 s = new("Contexte : un texte, plusieurs émotions", notes=(
@@ -224,6 +230,45 @@ s.add(Box(0.6, 4.95, 12.1, 1.75, [
       "détecter les émotions multiples et rares qu'un modèle classique ?",
       20, WHITE, True, after=0)], fill=NAVY, anchor="m", margins=(0.35, 0.1, 0.35, 0.1)))
 
+# ----------------------------------------------------------------------------- Embeddings
+s = new("Des méthodes d'embeddings", notes=(
+    "Avant l'architecture, il faut dire comment un texte devient des nombres. "
+    "Les premières méthodes donnent un vecteur fixe à chaque mot. Word2Vec et GloVe sont de cette famille. "
+    "Le vecteur ne change pas avec la phrase, donc l'ironie ou le contexte proche restent difficiles. "
+    "Ensuite sont venus les embeddings contextuels. ELMo, puis BERT. Le même mot n'a plus le même vecteur selon la phrase. "
+    "GoEmotions a été évalué en affinant BERT. Ce mémoire part de cette famille, avec DistilBERT et RoBERTa. "
+    "Un embedding, même contextuel, reste un vecteur. Il ne dit pas encore quelle phrase porte quelle émotion."))
+s.add(*card(0.6, 1.55, 6.05, 5.15, "Un vecteur fixe par mot", [
+    "Word2Vec et GloVe : le mot a le même vecteur dans toutes les phrases",
+    "Utile comme point de départ, et encore présent dans des modèles plus anciens",
+    "Le contexte proche, ou l'ironie, ne déplace pas ce vecteur",
+    "GloVe reste utilisé plus tard, par exemple dans Seq2Emo, à côté d'ELMo"], accent=ORANGE, size=16))
+s.add(*card(6.85, 1.55, 5.85, 5.15, "Un vecteur qui dépend de la phrase", [
+    "ELMo, puis BERT : le vecteur change avec les mots autour",
+    "Les auteurs de GoEmotions affinent BERT-base",
+    "Ce mémoire part de DistilBERT et de RoBERTa",
+    "Le modèle plat, Step 0, est cet affinage, avec une sortie par émotion"], accent=GREEN, size=16))
+
+# ----------------------------------------------------------------------------- Attention
+s = new("Pourquoi le mécanisme d'attention compte", notes=(
+    "Un embedding de phrase est encore une moyenne, si on ne choisit pas quels mots comptent. "
+    "L'attention donne un poids à chaque token selon la prédiction. Le modèle peut s'appuyer sur les mots qui portent l'émotion. "
+    "Dans BERT et RoBERTa, cette idée est déjà à l'intérieur : l'auto-attention rend le vecteur contextuel. "
+    "Pour plusieurs émotions dans un même commentaire, ça ne suffit pas. Une phrase de colère et une phrase de gratitude peuvent se mélanger dans un seul vecteur. "
+    "HAKE-MER ajoute donc une attention au-dessus de l'encodeur. D'abord sur les mots d'une phrase, ensuite entre les émotions et les phrases. "
+    "C'est ce que les modules M1 et M2 vont détailler."))
+s.add(*card(0.6, 1.55, 6.05, 2.35, "Sans poids sur les tokens", [
+    "Tout le commentaire finit dans un seul vecteur",
+    "Deux phrases d'émotions différentes se mélangent"], accent=ORANGE, size=16))
+s.add(*card(6.85, 1.55, 5.85, 2.35, "Avec une attention", [
+    "Chaque token reçoit un poids pour la prédiction",
+    "Le modèle peut s'appuyer sur les mots qui portent l'émotion"], accent=GREEN, size=16))
+s.add(Box(0.6, 4.15, 12.1, 2.55, [
+    P("Deux niveaux, pas le même rôle", 20, NAVY, True, after=8),
+    P("**Dans l'encodeur.** L'auto-attention de BERT et de RoBERTa rend le vecteur dépendant de la phrase. Elle est déjà là avant HAKE-MER.", 17, after=8),
+    P("**Au-dessus de l'encodeur.** M1 résume les tokens d'une phrase. M2 laisse chaque émotion relire ces phrases, puis les émotions se comparent.", 17, after=0)],
+    fill=LIGHT, margins=(0.28, 0.16, 0.28, 0.14)))
+
 # ----------------------------------------------------------------------------- 4. Objectives and hypotheses
 s = new("Objectifs et hypothèses", notes=(
     "Pour répondre, j'ai fixé quatre objectifs. Concevoir HAKE-MER avec quatre modules qu'on ajoute un par un, "
@@ -247,29 +292,54 @@ s.add(Table(5.85, 1.6, [0.7, 1.75, 4.4], [
     [Cell("H4", True), "+M3 contre +M4", "Un poids par émotion améliore le F1-macro"],
 ], size=15, min_row=0.85))
 
-# ----------------------------------------------------------------------------- 5. State of the art
-s = new("Où se place HAKE-MER", notes=(
-    "Avant l'architecture, je situe le travail par rapport à ce qui existe déjà. "
-    "Pour plusieurs étiquettes, BERT est autour de 0,46 sur GoEmotions, et Seq2Emo autour de 0,52. "
-    "L'attention par niveaux, d'abord les mots puis les phrases, répond directement à la structure du texte perdue. "
-    "Les lexiques apportent autre chose. NRC relie un mot à une émotion, et SenticNet décrit des concepts. "
-    "HAKE-MER met ces trois idées ensemble, et je peux allumer chaque module seul pour voir ce qu'il apporte vraiment."))
-cw = 3.9
-s.add(*card(0.6, 1.6, cw, 3.55, "Plusieurs étiquettes",
-            ["GoEmotions : BERT-base, F1-macro ≈ 0,46 (Demszky et al., 2020)",
-             "Seq2Emo : liens entre étiquettes, ≈ 0,52 (Ke et al., 2021)"], accent=ORANGE, size=17))
-s.add(*card(0.6 + cw + 0.2, 1.6, cw, 3.55, "Attention par niveaux",
-            ["HAN : d'abord les mots, puis les phrases (Yang et al., 2016)", "Répond à la structure du texte perdue"], accent=GREEN, size=17))
-s.add(*card(0.6 + 2 * (cw + 0.2), 1.6, cw, 3.55, "Lexiques externes",
-            ["NRC : lien entre un mot et une émotion (Mohammad et Turney, 2013)",
-             "SenticNet : concepts et sentiments (Cambria et al., 2018)"], accent=(0x5B, 0x7B, 0xA6), size=17))
-s.add(Box(0.6, 5.5, 12.1, 1.2, [
-    P("**HAKE-MER** réunit ces trois idées. On peut activer chaque module seul, pour mesurer ce qu'il apporte.",
-      18, NAVY, after=0)],
-    fill=LNAVY, anchor="m", margins=(0.3, 0.1, 0.3, 0.1)))
+# ----------------------------------------------------------------------------- 02 État de l'art
+divider(1, "Ces hypothèses ne partent pas de zéro. Je situe d'abord les chiffres publiés, puis les idées que HAKE-MER reprend, et ce qu'elles ne tranchent pas.")
 
-# ----------------------------------------------------------------------------- 02 Méthode
-divider(1, "La question est maintenant de savoir comment vérifier si ces idées apportent quelque chose. Pour le mesurer, j'ai construit le modèle en modules séparés, avec un protocole commun à tous les tests.")
+s = new("Deux repères publiés, deux protocoles", notes=(
+    "Sur GoEmotions, les auteurs rapportent 0,46 de F1-macro pour BERT-base. "
+    "C'est leur partage, leur filtrage, leurs réglages. "
+    "Seq2Emo rapporte 0,473, avec un biLSTM, GloVe et ELMo, et un vote sur cinq plis. "
+    "Je les cite comme des repères. Je ne dis pas que nos scores les dépassent, parce que le protocole n'est pas le même. "
+    "Un travail de 2025 annonce 0,56 sur un autre partage, avec des traits en plus. Je ne le mets pas dans le tableau. "
+    "La comparaison que je défends est l'ablation, plus loin, avec le même budget pour chaque module."))
+s.add(Table(0.6, 1.6, [4.3, 4.5, 3.3], [
+    ["Travail", "Protocole", "F1-macro"],
+    ["BERT-base, Demszky et al., 2020", "leur partage, 28 classes", "≈ 0,46"],
+    ["Seq2Emo, Ke et al., 2021", "biLSTM, GloVe, ELMo, 5 plis", "0,473"],
+], size=16, min_row=0.7))
+s.add(Box(0.6, 4.15, 12.1, 2.55, [
+    P("Comment lire ces chiffres", 20, NAVY, True, after=8),
+    P("Le partage, le modèle et la façon de voter ne sont pas ceux de ce mémoire. Ces deux lignes ne servent pas de classement.", 17, after=8),
+    P("La comparaison que l'expérimentation défend est interne : le même entraînement, et les modules ajoutés un par un.", 17, after=0)],
+    fill=LNAVY, margins=(0.28, 0.16, 0.28, 0.14)))
+
+s = new("Trois idées reprises, et ce qu'elles laissent ouvert", notes=(
+    "Trois idées existent déjà. "
+    "Relier les étiquettes, pour ne pas décider chaque émotion toute seule. Seq2Emo va dans ce sens, avec un autre modèle. "
+    "Garder la structure du texte. Le HAN de Yang lit d'abord les mots, puis les phrases. "
+    "Ajouter un lexique. NRC relie un mot à une émotion, SenticNet donne une intensité signée. "
+    "Aucune de ces idées n'est reprise telle quelle. M1 n'est pas le HAN complet. M2 n'est pas Seq2Emo. "
+    "Et personne n'a mesuré ces ajouts, ici, avec le même budget sur DistilBERT et sur RoBERTa. C'est le rôle de l'approche proposée."))
+cw = 3.9
+s.add(*card(0.6, 1.55, cw, 3.7, "Lien entre étiquettes", [
+    "Sorties séparées, ou chaînes de classifieurs",
+    "Seq2Emo modélise des liens, avec un biLSTM",
+    "M2 reprend la question, par une attention entre émotions"], accent=ORANGE, size=16))
+s.add(*card(0.6 + cw + 0.2, 1.55, cw, 3.7, "Hiérarchie du texte", [
+    "HAN : mots, puis phrases, puis document (Yang et al., 2016)",
+    "Répond à un vecteur unique qui mélange les phrases",
+    "M1 reprend l'idée, pas le réseau récurrent complet"], accent=GREEN, size=16))
+s.add(*card(0.6 + 2 * (cw + 0.2), 1.55, cw, 3.7, "Lexiques externes", [
+    "NRC : un mot vers une émotion (Mohammad et Turney, 2013)",
+    "SenticNet : une intensité signée (Cambria et al., 2018)",
+    "M3 les injecte comme un prior, par une porte commune"], accent=(0x5B, 0x7B, 0xA6), size=16))
+s.add(Box(0.6, 5.5, 12.1, 1.2, [
+    P("Ces idées ne sont pas encore mesurées ensemble, avec le même budget, sur deux encodeurs. C'est ce que l'approche proposée organise.",
+      17, NAVY, after=0)],
+    fill=LNAVY, anchor="m", margins=(0.28, 0.1, 0.28, 0.1)))
+
+# ----------------------------------------------------------------------------- 03 Approche proposée
+divider(2, "Je peux maintenant montrer comment HAKE-MER est construit. D'abord la carte, puis chaque étape, puis ce que j'apporte dans cette architecture.")
 
 # ----------------------------------------------------------------------------- Architecture
 s = new("Architecture HAKE-MER : quatre modules", notes=(
@@ -316,20 +386,97 @@ s.add(Box(0.6, 5.8, 12.1, 0.95, [
       "**M3** ajoute un lexique (émotions rares).  **M4** donne un poids à chaque émotion.", 16, NAVY, after=0)],
     fill=LIGHT, anchor="m", margins=(0.3, 0.1, 0.3, 0.1)))
 
-# ----------------------------------------------------------------------------- 7. Protocol
-s = new("Protocole : le même entraînement pour tous les tests", notes=(
-    "Pour que la comparaison soit juste, tous les tests ont le même entraînement, sur la dataset GoEmotions, avec le découpage des auteurs. "
-    "Les deux modèles sont DistilBERT et RoBERTa. On part du modèle plat, Step 0, puis on ajoute les modules un par un. "
-    "Le score que je regarde est le F1-macro au test, et je garde le modèle qui était le meilleur en validation. "
-    "Chaque configuration est lancée trois fois, avec trois graines fixes. "
-    "Le reste est simple. Quatre époques, des lots de 16, un taux très faible, et un seuil à 0,5. "
-    "La seule vraie différence de format, c'est que Step 0 lit le texte d'un bloc, alors qu'à partir de M1 on le coupe en quatre phrases courtes."))
+# ----------------------------------------------------------------------------- Step 1
+s = new("Étape 1 : des tokens à un vecteur par phrase", notes=(
+    "Le commentaire est coupé en quatre phrases au plus, de 32 tokens. "
+    "Step 0, lui, lit 128 tokens d'un seul bloc. Le nombre annoncé est le même, mais le découpage peut ne pas garder les mêmes tokens. "
+    "DistilBERT ou RoBERTa lit ensuite chaque phrase. On obtient un état par token, pas un vecteur de mot fixe. "
+    "M1 résume les tokens de la phrase par une attention additive. Une phrase, un vecteur. "
+    "Je n'ajoute pas un deuxième encodeur récurrent. Le modèle pré-entraîné a déjà lu les tokens. "
+    "Cette étape répond à la structure du texte perdue. Elle ne relie pas encore les émotions."))
+s.add(*card(0.6, 1.55, 6.05, 5.15, "Ce que fait cette étape", [
+    "Jusqu'à 4 phrases, 32 tokens chacune",
+    "L'encodeur produit un état par token",
+    "M1 : attention additive, un vecteur par phrase",
+    "Pas d'encodeur récurrent en plus du modèle pré-entraîné"], accent=GREEN, size=17))
+s.add(*card(6.85, 1.55, 5.85, 5.15, "Ce que cette étape ne fait pas", [
+    "Step 0 reste un bloc de 128 tokens",
+    "Le budget annoncé est le même, les tokens gardés peuvent différer",
+    "Les émotions ne se comparent pas encore",
+    "La décision, à ce stade, n'a pas de tête par émotion"], accent=ORANGE, size=17))
+
+# ----------------------------------------------------------------------------- Step 2
+s = new("Étape 2 : chaque émotion lit, puis les émotions se comparent", notes=(
+    "M2 commence par une attention croisée. Chaque émotion regarde les vecteurs de phrases, et elle ne retient pas la même chose. "
+    "Les 28 vecteurs passent ensuite dans un petit encodeur, qui les laisse se comparer. La joie et la tristesse ne sont plus deux sorties isolées. "
+    "La décision se fait par émotion, sur la sortie de cet encodeur. "
+    "Il faut le dire tout de suite. En passant de M1 seul à M1+M2, la tête change aussi. Le gain qu'on mesurera est celui de la pile, pas d'une seule pièce. "
+    "Le contrôle, dans l'ablation, enlève l'encodeur entre émotions sans enlever le reste."))
+s.add(*card(0.6, 1.55, 6.05, 5.15, "Deux mouvements", [
+    "Chaque émotion regarde les phrases : attention croisée",
+    "Les 28 vecteurs se comparent dans un encodeur",
+    "La sortie utilisée est celle de cet encodeur, pas le vecteur brut",
+    "Une tête par émotion, au lieu d'une tête partagée"], accent=GREEN, size=17))
+s.add(*card(6.85, 1.55, 5.85, 5.15, "Ce qu'on pourra en conclure", [
+    "Cette étape répond aux émotions décidées seules",
+    "De M1 à M1+M2, la tête change en même temps",
+    "Le gain mesuré est celui de l'ensemble",
+    "Le contrôle enlève seulement l'encodeur entre émotions"], accent=(0x5B, 0x7B, 0xA6), size=17))
+
+# ----------------------------------------------------------------------------- Step 3
+s = new("Étape 3 : un prior lexical, puis un poids par émotion", notes=(
+    "M3 et M4 arrivent après, et ils ne changent pas le découpage. "
+    "M3 lit un lexique et construit un vecteur pour tout le commentaire. "
+    "Avec NRC, ce sont huit parts d'émotions de Plutchik. Avec SenticNet, cinq descripteurs d'intensité signée. "
+    "Une projection apprise et une porte g, nulle au départ, ajoutent ce vecteur aux requêtes de toutes les émotions. "
+    "Si g reste près de zéro, le lexique n'entre presque pas. "
+    "M4 calcule ensuite un poids par émotion, à partir de son vecteur et de la moyenne, juste avant la décision. "
+    "Le même branchement sert les deux lexiques. Seul le contenu du vecteur change."))
+s.add(*card(0.6, 1.55, 6.05, 5.15, "M3 : le prior", [
+    "NRC : huit parts, sur les émotions de Plutchik",
+    "SenticNet : moyenne, max, min, couverture, tokens distincts",
+    "Projection apprise, porte g nulle au départ",
+    "Le prior est ajouté aux requêtes, le même pour toutes les émotions"], accent=GREEN, size=16))
+s.add(*card(6.85, 1.55, 5.85, 5.15, "M4 : le poids", [
+    "Un poids par émotion, après M2",
+    "Il dépend du vecteur de l'émotion et de la moyenne",
+    "Il s'applique juste avant la décision",
+    "Si l'encodeur de M2 est éteint, le poids porte sur l'autre vecteur"], accent=VIOLET, size=16))
+
+# ----------------------------------------------------------------------------- Contribution
+s = new("Ce que j'apporte dans cette architecture", notes=(
+    "L'encodeur, l'idée du HAN et les deux lexiques existent déjà. Je ne les réinvente pas. "
+    "Ce que je construis, c'est l'enchaînement. Des phrases résumées par attention, une lecture par émotion, un prior lexical passé par une porte, puis un poids par émotion. "
+    "La correspondance entre les 28 classes de GoEmotions et les catégories NRC est définie pour ce mémoire. Elle n'est pas dans le lexique publié. "
+    "Chaque module peut être éteint. L'étude d'ablation sert à dire lequel mérite d'être gardé, au lieu de supposer que les quatre aident."))
+s.add(*card(0.6, 1.55, 6.05, 5.15, "Déjà disponible", [
+    "DistilBERT et RoBERTa, et leur affinage",
+    "L'idée d'une attention mots puis phrases",
+    "NRC et SenticNet, comme lexiques publiés",
+    "L'auto-attention, déjà dans l'encodeur"], accent=(0x5B, 0x7B, 0xA6), size=17))
+s.add(*card(6.85, 1.55, 5.85, 5.15, "Construit pour ce mémoire", [
+    "Quatre modules qu'on allume un par un",
+    "M1 sur les états du modèle, sans HAN complet",
+    "M2 : lecture par émotion, puis échange",
+    "M3 par une porte, et la table vers les 28 classes"], accent=GREEN, size=17))
+
+# ----------------------------------------------------------------------------- 04 Expérimentation
+divider(3, "Le protocole est le même pour tous les modules. L'étude d'ablation dit ensuite ce que chacun change, d'abord sur DistilBERT, puis sur RoBERTa.")
+
+# ----------------------------------------------------------------------------- Protocol
+s = new("Protocole d'évaluation", notes=(
+    "Pour que la comparaison soit juste, tous les tests ont le même entraînement, sur GoEmotions, avec le découpage des auteurs. "
+    "Les deux modèles sont DistilBERT et RoBERTa. On part du modèle plat, Step 0, puis on ajoute les modules un par un. C'est l'étude d'ablation. "
+    "Le score que je regarde est le F1-macro au test. Pour chaque graine, je garde l'époque qui était la meilleure en validation. "
+    "Chaque configuration est lancée trois fois, avec trois graines fixes. L'écart-type n'est pas un intervalle de confiance, et je n'ai pas fait de test statistique. "
+    "Quatre époques, des lots de 16, un taux très faible, et un seuil à 0,5. "
+    "Step 0 lit le texte d'un bloc. À partir de M1, on le coupe en quatre phrases courtes."))
 s.add(Box(0.6, 1.55, 6.3, 5.2, [
-    P("**Dataset** : GoEmotions, 28 classes, découpage des auteurs", 19, bullet=True, after=14),
-    P("**Modèles** : DistilBERT-base et RoBERTa-base", 19, bullet=True, after=14),
-    P("**Tests** : Step 0, +M1, +M1+M2, +M3, +M4, même entraînement", 19, bullet=True, after=14),
-    P("**Score principal** : F1-macro au test. On choisit le meilleur modèle sur la validation.", 19, bullet=True, after=14),
-    P("**Trois essais** : graines 42, 123 et 456. On donne la moyenne et l'écart-type.", 19, bullet=True, after=0)],
+    P("**Dataset** : GoEmotions, 28 classes, découpage des auteurs", 18, bullet=True, after=12),
+    P("**Modèles** : DistilBERT-base et RoBERTa-base", 18, bullet=True, after=12),
+    P("**Ablation** : Step 0, puis +M1, +M1+M2, +M3, +M4", 18, bullet=True, after=12),
+    P("**Score** : F1-macro au test. L'époque retenue est la meilleure en validation, pour chaque graine.", 18, bullet=True, after=12),
+    P("**Trois essais** : graines 42, 123 et 456. Moyenne et écart-type, pas un test statistique.", 18, bullet=True, after=0)],
     margins=(0, 0, 0, 0)))
 s.add(Table(7.2, 1.6, [2.6, 2.9], [
     ["Paramètre commun", "Valeur"],
@@ -343,11 +490,8 @@ s.add(Table(7.2, 1.6, [2.6, 2.9], [
     ["Texte (M1 et plus)", "4 phrases × 32 tokens"],
 ], size=14, min_row=0.5))
 
-# ----------------------------------------------------------------------------- 03 Résultats
-divider(2, "Avec ce protocole, on peut voir ce que chaque module change vraiment. Je regarde d'abord DistilBERT, puis je vérifie que RoBERTa raconte la même histoire.")
-
-# ----------------------------------------------------------------------------- Results DistilBERT
-s = new("Résultat 1 : M1+M2 est la seule étape qui progresse", notes=(
+# ----------------------------------------------------------------------------- Ablation DistilBERT
+s = new("Étude d'ablation : DistilBERT-base", notes=(
     "Ce qu'on voit ici, c'est que le premier module, à lui seul, ne suffit pas. "
     "Le score baisse même par rapport au modèle de départ, de 0,486 à 0,457. "
     "En revanche, quand j'ajoute M2, le résultat change, et on arrive à 0,505. "
@@ -359,7 +503,7 @@ s.add(*card(8.6, 3.3, 4.1, 1.55, "M1+M2 progresse", [f"{fr(mean(ROWS['m12'][0]))
 s.add(*card(8.6, 5.0, 4.1, 1.75, "M3 et M4 sans gain", ["0,499 à 0,504, aucun ne dépasse M1+M2"], accent=(0x5B, 0x7B, 0xA6), size=17))
 
 # ----------------------------------------------------------------------------- 9. Results RoBERTa
-s = new("Résultat 2 : le même profil sur RoBERTa-base", notes=(
+s = new("La même ablation sur RoBERTa-base", notes=(
     "La question qui suit est de savoir si ce profil vient seulement de DistilBERT. "
     "On retrouve la même forme avec RoBERTa. M1 seul ne dépasse le modèle plat sur aucun des deux. "
     "M1+M2 monte des deux côtés, jusqu'à 0,505 et 0,526. "
@@ -378,7 +522,7 @@ s.add(Box(7.5, 4.0, 5.2, 2.7, [
     P("Le gain de M2 apparaît sur les deux modèles", 18, bullet=True, after=0)], margins=(0, 0, 0, 0)))
 
 # ----------------------------------------------------------------------------- 10. M2 controls
-s = new("Pourquoi M2 aide : deux contrôles", notes=(
+s = new("Ablation interne de M2 : deux contrôles", notes=(
     "M2 aide, et je veux comprendre pourquoi. "
     "Si on enlève le lien entre les émotions, la perte est nette, près de 0,03 sur DistilBERT et environ 0,02 sur RoBERTa. "
     "Si on enlève seulement le regard vers les phrases, les scores restent proches, et l'écart tient dans l'écart-type. "
@@ -448,12 +592,12 @@ s.add(Box(0.6, 5.95, 12.1, 0.85, [P("Modèle retenu, d'après la validation : **
           fill=LNAVY, anchor="m", margins=(0.3, 0.08, 0.3, 0.08)))
 
 # ----------------------------------------------------------------------------- 04 Conclusion
-divider(3, "Ces scores ont un sens seulement si je dis aussi ce qu'ils ne permettent pas de conclure. Je les replace d'abord par rapport à d'autres travaux, puis je dis ce que je retiens.")
+divider(4, "Ces scores ont un sens seulement si je dis aussi ce qu'ils ne permettent pas de conclure. Je les replace d'abord par rapport à d'autres travaux, puis je dis ce que je retiens.")
 
 # ----------------------------------------------------------------------------- Discussion and limits
 s = new("Discussion : comparaison et limites", notes=(
     "Nos scores M1+M2 sont un peu au-dessus de 0,50 pour DistilBERT, et un peu plus haut pour RoBERTa. "
-    "BERT sur GoEmotions est autour de 0,46, et Seq2Emo autour de 0,52. "
+    "BERT sur GoEmotions est autour de 0,46, et Seq2Emo est à 0,473. "
     "Je les montre comme des repères, pas comme une compétition, parce que les modèles et les réglages ne sont pas les mêmes. "
     "Ce qui compte, ce sont nos comparaisons, faites avec le même entraînement. "
     "Il faut quand même garder à l'esprit que ces résultats ont leurs limites. "
@@ -465,7 +609,7 @@ s.add(Box(0.6, 1.5, 5.9, 0.45, [P("Comparaison avec la littérature (F1-macro)",
 s.add(Table(0.6, 2.05, [3.3, 2.6], [
     ["Travail", "F1-macro"],
     ["BERT-base, GoEmotions (2020)", "≈ 0,46"],
-    ["Seq2Emo (2021)", "≈ 0,52"],
+    ["Seq2Emo (2021)", "0,473"],
     [Cell("HAKE-MER M1+M2, DistilBERT", True, LGREEN), Cell(fr(mean(ROWS["m12"][0])), True, LGREEN)],
     [Cell("HAKE-MER M1+M2, RoBERTa", True, LGREEN), Cell(fr(mean(ROWS["m12"][1])), True, LGREEN)],
 ], size=15, min_row=0.55))
@@ -520,41 +664,6 @@ s.add(Box(0.6, 2.4, 12.1, 1.4, [P("Merci de votre attention", 44, WHITE, True, a
 s.add(Box(0.6, 3.9, 12.1, 0.9, [P("Questions et discussion", 26, (0xB4, 0xE0, 0xC8), align="c", after=0)], anchor="m", margins=(0, 0, 0, 0)))
 s.add(Box(0.6, 5.7, 12.1, 0.9, [P("Mariem El WEDANI  |  Encadrant : Sahbi BAHROUN  |  Institut Supérieur d'Informatique, 2025 - 2026", 14, (0xC9, 0xD1, 0xDC), align="c", after=0)],
           anchor="m", margins=(0, 0, 0, 0)))
-
-# ----------------------------------------------------------------------------- A1. Full results
-s = new("Annexe A : tous les résultats", notes=(
-    "Cette annexe sert si on me demande un chiffre précis. "
-    "Chaque ligne est le F1-macro au test, en moyenne et en écart-type, sur les trois essais. "
-    "La ligne que je retiens est M1+M2. "
-    "La dernière, NRC avec M4, s'arrête à DistilBERT, parce qu'elle n'a pas été testée sur RoBERTa."))
-s.add(Table(0.6, 1.6, [5.0, 3.55, 3.55], [
-    ["Configuration", "DistilBERT-base", "RoBERTa-base"],
-    ["Step 0 (flat)", D("step0"), R("step0")],
-    ["+M1", D("m1"), R("m1")],
-    [Cell("+M1+M2", True, LGREEN), Cell(D("m12"), True, LGREEN), Cell(R("m12"), True, LGREEN)],
-    ["+M1+M2+M3 (NRC)", D("nrc"), R("nrc")],
-    ["+M1+M2+M3 (SenticNet)", D("sent"), R("sent")],
-    ["+M1+M2+M3+M4 (SenticNet)", D("m4s"), R("m4s")],
-    ["+M1+M2+M3+M4 (NRC)", D("m4n"), R("m4n")],
-], size=15, min_row=0.55))
-s.add(Box(0.6, 6.2, 12.1, 0.6, [P("F1-macro au test, moyenne ± écart-type sur trois essais (42, 123, 456), avec les mêmes réglages.", 13, GRAY, italic=True, after=0)],
-          margins=(0, 0, 0, 0)))
-
-# ----------------------------------------------------------------------------- A2. Recommendations
-s = new("Annexe B : quel modèle choisir", notes=(
-    "Si on me demande quel modèle choisir, je pars de M1+M2. "
-    "RoBERTa si un gain d'environ 0,02 vaut le coût en calcul, et DistilBERT si on veut quelque chose de plus léger. "
-    "On peut rester sur le modèle plat quand on veut un système simple, et je n'ajoute ni M3 ni M4 si seul le F1-macro compte. "
-    "M1+M2 lit jusqu'à quatre phrases. Si on change ce découpage, les chiffres d'aujourd'hui ne tiennent plus, et il faut refaire les tests."))
-s.add(*card(0.6, 1.6, 5.95, 2.4, "Choix par défaut", [
-    f"M1+M2 avec RoBERTa si le gain d'environ {fr(gap_bb)} vaut le coût",
-    "M1+M2 avec DistilBERT si on veut un modèle plus léger"], accent=GREEN, size=18))
-s.add(*card(6.75, 1.6, 5.95, 2.4, "Quand simplifier", [
-    "Le modèle plat (Step 0) si on veut un système simple",
-    "Pas de M3 ni de M4 si seul le F1-macro compte"], accent=(0x5B, 0x7B, 0xA6), size=18))
-s.add(*card(0.6, 4.2, 12.1, 2.5, "Coût et risques", [
-    "M1+M2 lit jusqu'à quatre phrases par commentaire : le coût reste modéré",
-    "Si on change le nombre de phrases ou la limite de 32 tokens, il faut refaire les tests"], accent=ORANGE, size=18))
 
 # ----------------------------------------------------------------------------- build
 for i, sl in enumerate(slides, 1):
