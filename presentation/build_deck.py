@@ -285,30 +285,26 @@ s.add(Box(0.55, 5.45, 12.2, 1.2, [
     P("HAKE-MER ajoute une attention au-dessus. D'abord la phrase, ensuite chaque émotion qui la relit.", 16, NAVY, True, after=0)],
     fill=LIGHT, anchor="m", margins=(0.25, 0.1, 0.25, 0.1)))
 
-# ----------------------------------------------------------------------------- 4. Objectives and hypotheses
-s = new("Objectifs et hypothèses", notes=(
-    "Pour répondre, j'ai fixé quatre objectifs. Concevoir HAKE-MER en quatre parties, tester chaque ajout, comparer deux lexiques, et lire les résultats émotion par émotion. "
-    "Chaque partie a une hypothèse. "
-    "H1, séparer les phrases améliore le modèle plat, celui qui met tout le commentaire dans un seul vecteur. H2, relier les émotions améliore encore. "
-    "H3, un lexique améliore encore. H4, un poids par émotion fait mieux. "
-    "Les résultats ne vont pas toutes les confirmer."))
-s.add(Box(0.6, 1.55, 4.9, 5.2, [
-    P("Objectifs", 20, NAVY, True, after=10),
-    P("**Concevoir** HAKE-MER en quatre parties, ajoutées une par une", 18, bullet=True, after=12),
-    P("**Tester** chaque ajout avec le même entraînement, sur deux modèles", 18, bullet=True, after=12),
-    P("**Comparer** deux lexiques externes", 18, bullet=True, after=12),
-    P("**Lire** les résultats émotion par émotion, pas seulement le score global", 18, bullet=True, after=0)],
-    margins=(0, 0, 0, 0)))
-s.add(Table(5.85, 1.6, [0.7, 2.15, 4.0], [
-    ["Hyp.", "Comparaison", "Énoncé testé"],
-    [Cell("H1", True), "Plat contre phrases", "Séparer les phrases améliore le score"],
-    [Cell("H2", True), "Phrases contre lien", "Relier les émotions améliore le score"],
-    [Cell("H3", True), "Sans contre avec lexique", "Un lexique externe améliore encore"],
-    [Cell("H4", True), "Sans contre avec poids", "Un poids par émotion améliore le score"],
-], size=15, min_row=0.85))
+# ----------------------------------------------------------------------------- Four questions
+s = new("Quatre questions", notes=(
+    "L'expérience répond à quatre questions. "
+    "Séparer le commentaire en phrases améliore-t-il le modèle plat, celui qui met tout le commentaire dans un seul vecteur ? "
+    "Relier les émotions entre elles améliore-t-il encore ? "
+    "Un lexique externe ajoute-t-il quelque chose ? "
+    "Un poids par émotion, juste avant la décision, ajoute-t-il quelque chose ?"))
+s.add(Box(0.6, 1.48, 12.1, 0.4, [P("L'expérience répond à quatre questions.", 18, NAVY, True, after=0)], margins=(0, 0, 0, 0)))
+for i, q in enumerate([
+    "Séparer le commentaire en phrases améliore-t-il le modèle plat ?",
+    "Relier les émotions entre elles améliore-t-il encore ?",
+    "Un lexique externe ajoute-t-il quelque chose ?",
+    "Un poids par émotion, juste avant la décision, ajoute-t-il quelque chose ?",
+]):
+    y = 2.05 + i * 1.15
+    s.add(Box(0.6, y, 0.7, 0.95, [P(str(i + 1), 26, GREEN, True, align="c", after=0)], anchor="m"))
+    s.add(Box(1.5, y, 11.2, 0.95, [P(q, 20, NAVY, True, after=0)], anchor="m", margins=(0.15, 0.06, 0.15, 0.06)))
 
 # ----------------------------------------------------------------------------- 02 État de l'art
-divider(1, "Ces hypothèses ne partent pas de zéro. Je montre d'abord les chiffres déjà publiés, puis les idées que je reprends.")
+divider(1, "Ces questions ne partent pas de zéro. Je montre d'abord les chiffres déjà publiés, puis les idées que je reprends.")
 
 s = new("Deux repères publiés, deux protocoles", notes=(
     "Sur GoEmotions, BERT-base est autour de 0,46, et Seq2Emo est à 0,473. "
@@ -489,6 +485,24 @@ for i, (name, accent, fill, line) in enumerate(built):
     s.add(Box(0.55, y, 1.45, 1.08, [P(name, 22, accent, True, align="c", after=0)], fill=fill, anchor="m"))
     s.add(Box(2.15, y, 10.6, 1.08, [P(line, 16, INK, after=0)], anchor="m", margins=(0.2, 0.08, 0.15, 0.08)))
 
+# ----------------------------------------------------------------------------- Questions to comparisons
+s = new("Chaque question a une comparaison", notes=(
+    "Chaque question a une comparaison. "
+    "Séparer le commentaire en phrases se teste avec M1, contre le modèle plat. "
+    "Relier les émotions entre elles se teste avec M2, contre M1 seul. "
+    "Un lexique externe se teste avec M3, contre M1+M2. "
+    "Un poids par émotion, juste avant la décision, se teste avec M4, contre M3."))
+for i, (q, cmp, accent, fill) in enumerate([
+    ("Séparer le commentaire en phrases", "M1, contre le modèle plat", GREEN, LGREEN),
+    ("Relier les émotions entre elles", "M2, contre M1 seul", (0x5B, 0x7B, 0xA6), LNAVY),
+    ("Un lexique externe", "M3, contre M1+M2", GREEN, LGREEN),
+    ("Un poids par émotion, juste avant la décision", "M4, contre M3", VIOLET, LILAC),
+]):
+    y = 1.55 + i * 1.28
+    s.add(Box(0.55, y, 0.7, 1.1, [P(str(i + 1), 26, accent, True, align="c", after=0)], fill=fill, anchor="m"))
+    s.add(Box(1.4, y, 6.55, 1.1, [P(q, 18, NAVY, True, after=0)], anchor="m", margins=(0.18, 0.08, 0.12, 0.08)))
+    s.add(Box(8.15, y, 4.55, 1.1, [P(cmp, 18, accent, True, align="c", after=0)], fill=fill, anchor="m", margins=(0.12, 0.08, 0.12, 0.08)))
+
 # ----------------------------------------------------------------------------- 04 Expérimentation
 divider(3, "Le protocole est le même pour tous les modules. L'ablation dit ensuite ce que chacun change, d'abord sur DistilBERT, puis sur RoBERTa.")
 
@@ -588,19 +602,20 @@ s.add(*card(9.0, 1.6, 3.7, 2.4, "Constat", ["Les dix motifs impliquent tous neut
 s.add(*card(9.0, 4.2, 3.7, 2.4, "Lecture", ["Limite floue entre une émotion faible et pas d'émotion", "Piste : mieux séparer neutral"], accent=GREEN, size=15))
 
 # ----------------------------------------------------------------------------- 13. Hypotheses verdict
-s = new("Bilan des hypothèses : une seule est soutenue", notes=(
-    "Je reviens aux hypothèses. "
-    "H1 n'est pas soutenue, parce que M1 baisse. H2 est soutenue, parce que M1+M2 monte. "
-    "H3 et H4 restent prudentes. Il n'y a pas de gain stable. "
+s = new("Bilan : une seule question est soutenue", notes=(
+    "Je reviens aux quatre questions. "
+    "Séparer le commentaire en phrases n'est pas soutenu, parce que M1 baisse. "
+    "Relier les émotions entre elles est soutenu, parce que M1+M2 monte. "
+    "Un lexique externe, et un poids par émotion, restent prudents. Il n'y a pas de gain stable. "
     "Le modèle que je retiens, c'est M1+M2. NRC avec M4 est un peu plus haut, mais seulement sur DistilBERT."))
 assert abs((mean(ROWS["m12"][0]) - mean(ROWS["m1"][0])) - 0.048) < 0.0015 and abs((mean(ROWS["m12"][1]) - mean(ROWS["m1"][1])) - 0.041) < 0.0015
-s.add(Table(0.6, 1.6, [0.7, 2.7, 3.3, 3.1, 2.3], [
-    ["Hyp.", "Comparaison", "DistilBERT", "RoBERTa", "Verdict"],
-    [Cell("H1", True), "Plat contre +M1", f"{D('step0')} contre {D('m1')}", f"{R('step0')} contre {R('m1')}", Cell("Non soutenue", True, fill=LORANGE)],
-    [Cell("H2", True), "+M1 contre +M1+M2", f"{D('m1')} contre {D('m12')}", f"{R('m1')} contre {R('m12')}", Cell("Soutenue", True, fill=LGREEN)],
-    [Cell("H3", True), "+M1+M2 contre +M3", f"{D('m12')} contre NRC {D('nrc')} ; SenticNet {D('sent')}", f"{R('m12')} contre NRC {R('nrc')} ; SenticNet {R('sent')}", Cell("Prudente : pas de gain stable", True, fill=LIGHT)],
-    [Cell("H4", True), "+M3 contre +M4, SenticNet", f"{D('sent')} contre {D('m4s')}", f"{R('sent')} contre {R('m4s')}", Cell("Prudente : M4 non retenu", True, fill=LIGHT)],
-], size=14, min_row=0.8))
+s.add(Table(0.55, 1.55, [2.55, 2.35, 2.7, 2.45, 2.05], [
+    ["Question", "Comparaison", "DistilBERT", "RoBERTa", "Verdict"],
+    [Cell("Séparer le commentaire en phrases", True), "Plat contre +M1", f"{D('step0')} contre {D('m1')}", f"{R('step0')} contre {R('m1')}", Cell("Non soutenue", True, fill=LORANGE)],
+    [Cell("Relier les émotions entre elles", True), "+M1 contre +M1+M2", f"{D('m1')} contre {D('m12')}", f"{R('m1')} contre {R('m12')}", Cell("Soutenue", True, fill=LGREEN)],
+    [Cell("Un lexique externe", True), "+M1+M2 contre +M3", f"{D('m12')} contre NRC {D('nrc')} ; SenticNet {D('sent')}", f"{R('m12')} contre NRC {R('nrc')} ; SenticNet {R('sent')}", Cell("Prudente : pas de gain stable", True, fill=LIGHT)],
+    [Cell("Un poids par émotion", True), "+M3 contre +M4, SenticNet", f"{D('sent')} contre {D('m4s')}", f"{R('sent')} contre {R('m4s')}", Cell("Prudente : M4 non retenu", True, fill=LIGHT)],
+], size=13, min_row=0.72))
 s.add(Box(0.6, 5.95, 12.1, 0.85, [P("Modèle retenu, d'après la validation : **M1+M2**, sur DistilBERT comme sur RoBERTa. "
                                     "NRC avec M4 fait 0,510 ± 0,003 sur DistilBERT seulement. Ce test n'existe pas pour RoBERTa.", 16, NAVY, after=0)],
           fill=LNAVY, anchor="m", margins=(0.3, 0.08, 0.3, 0.08)))
