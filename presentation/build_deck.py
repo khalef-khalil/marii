@@ -175,7 +175,8 @@ s.add(Box(0.6, 5.05, 12.1, 1.5, [
 
 # ----------------------------------------------------------------------------- Plan
 s = new("Plan", notes=(
-    "Tout d'abord, le contexte général de notre travail, ensuite l'état de l'art.\n\n"
+    "Le plan de notre présentation sera le suivant.\n\n"
+    "Tout d'abord, le contexte général, ensuite l'état de l'art.\n\n"
     "Puis, je présenterai notre approche proposée, HAKE-MER, suivie des expérimentations et des résultats obtenus.\n\n"
     "Enfin, je terminerai par une conclusion et les perspectives de ce travail."))
 for i, (title, sub) in enumerate([
