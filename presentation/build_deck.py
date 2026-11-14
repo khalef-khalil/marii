@@ -220,7 +220,7 @@ s = new("Trois limites des méthodes classiques", notes=(
     "D'où la question en bas. Est-ce qu'on fait mieux si on sépare les phrases, si on relie les émotions, et si on ajoute un lexique ?"))
 cw = 3.9
 s.add(*card(0.6, 1.6, cw, 3.0, "Émotions décidées seules",
-            ["Une sortie par émotion, sans lien entre elles", "La joie et la tristesse vont rarement ensemble"], size=17))
+            ["Un score pour chaque émotion, sans lien entre elles", "La joie et la tristesse vont rarement ensemble"], size=17))
 s.add(*card(0.6 + cw + 0.2, 1.6, cw, 3.0, "Structure du texte perdue",
             ["Un seul vecteur pour tout le commentaire", "Les phrases différentes se mélangent"], size=17))
 s.add(*card(0.6 + 2 * (cw + 0.2), 1.6, cw, 3.0, "Émotions rares",
@@ -236,13 +236,13 @@ s = new("Des méthodes d'embeddings", notes=(
     "Avant l'architecture, il faut dire comment un texte devient des nombres.\n\n"
     "Au début, on avait un vecteur fixe par mot, avec Word2Vec et GloVe. Le mot garde le même vecteur, quelle que soit la phrase.\n\n"
     "Ensuite, avec ELMo, le mot bouge selon les mots autour.\n\n"
-    "Puis BERT. GoEmotions part de cet affinage, avec une sortie par émotion.\n\n"
+    "Puis BERT. GoEmotions part de cet affinage, avec un score pour chaque émotion.\n\n"
     "Ce mémoire utilise DistilBERT et RoBERTa, deux modèles de la même famille que BERT. C'est le point de départ.\n\n"
     "Et même avec un vecteur qui dépend de la phrase, on ne sait pas encore quelle phrase porte l'émotion."))
 gens = [
     ("01", "Vecteur fixe", "Word2Vec, GloVe", "Le mot garde le même vecteur, quelle que soit la phrase.", LORANGE, ORANGE),
     ("02", "La phrase compte", "ELMo", "Le même mot bouge selon les mots qui l'entourent.", LNAVY, (0x5B, 0x7B, 0xA6)),
-    ("03", "Affinage", "BERT", "GoEmotions part de BERT, avec une sortie par émotion.", LIGHT, NAVY),
+    ("03", "Affinage", "BERT", "GoEmotions part de BERT, avec un score pour chaque émotion.", LIGHT, NAVY),
     ("04", "Ce mémoire", "DistilBERT, RoBERTa", "Même famille que BERT. C'est le point de départ.", LGREEN, GREEN),
 ]
 gw, ggap = 2.85, 0.32
