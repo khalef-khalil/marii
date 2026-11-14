@@ -150,9 +150,12 @@ def divider(active, notes):
 
 # ----------------------------------------------------------------------------- 1. Title
 s = new(footer=False, notes=(
-    "Bonjour. Je m'appelle Mariem El Wedani, et je présente mon mémoire de master, encadré par M. Sahbi Bahroun. "
-    "Le problème est simple. Un même texte peut exprimer plusieurs émotions en même temps. "
-    "Le modèle que j'ai construit pour ça s'appelle HAKE-MER."))
+    "Bonjour à tous.\n\n"
+    "Tout d'abord, je tiens à vous remercier pour votre présence et pour l'intérêt que vous portez à mon travail.\n\n"
+    "Je me présente, je suis Mariem El Wedani,\n\n"
+    "Aujourd'hui, j'ai le plaisir de vous présenter mon mémoire de recherche, réalisé sous l'encadrement de Monsieur Sahbi Bahroun, "
+    "et qui porte sur le sujet suivant :\n\n"
+    "« Détection des Émotions Multiples dans les Textes par Fusion d'Attentions Hiérarchiques et Connaissances Sémantiques Externes »."))
 s.add(Pic(IMG / "logo-isi.png", 0.6, 0.35, h=0.95), Pic(IMG / "Logo_UTM.png", 11.75, 0.35, h=0.95))
 s.add(Box(2.9, 0.3, 7.5, 1.1, [
     P("République Tunisienne", 12, GRAY, True, align="c", after=1),
