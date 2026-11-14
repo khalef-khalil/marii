@@ -236,13 +236,13 @@ s = new("Des méthodes d'embeddings", notes=(
     "Au début, on avait un vecteur fixe par mot, avec Word2Vec et GloVe. Le mot garde le même vecteur, quelle que soit la phrase. "
     "Ensuite, avec ELMo, le mot bouge selon les mots autour. "
     "Puis BERT. GoEmotions part de cet affinage, avec une sortie par émotion. "
-    "Ce mémoire utilise DistilBERT et RoBERTa. Step 0, c'est exactement cet affinage. "
+    "Ce mémoire utilise DistilBERT et RoBERTa. C'est le point de départ, avant l'architecture. "
     "Et même avec un vecteur qui dépend de la phrase, on ne sait pas encore quelle phrase porte l'émotion."))
 gens = [
     ("01", "Vecteur fixe", "Word2Vec, GloVe", "Le mot garde le même vecteur, quelle que soit la phrase.", LORANGE, ORANGE),
     ("02", "La phrase compte", "ELMo", "Le même mot bouge selon les mots qui l'entourent.", LNAVY, (0x5B, 0x7B, 0xA6)),
     ("03", "Affinage", "BERT", "GoEmotions part de BERT, avec une sortie par émotion.", LIGHT, NAVY),
-    ("04", "Ce mémoire", "DistilBERT, RoBERTa", "Step 0 est cet affinage. Les modules viennent après.", LGREEN, GREEN),
+    ("04", "Ce mémoire", "DistilBERT, RoBERTa", "Le point de départ. L'architecture vient après.", LGREEN, GREEN),
 ]
 gw, ggap = 2.85, 0.32
 for i, (num, title, name, line, fill, accent) in enumerate(gens):
@@ -265,7 +265,7 @@ s = new("Pourquoi le mécanisme d'attention compte", notes=(
     "Sans poids sur les tokens, « merci pour l'aide » et « mais je suis déçu » tombent dans le même vecteur. "
     "Avec une attention de phrase, chaque phrase a son propre vecteur. "
     "Cette attention existe déjà dans BERT et dans RoBERTa. "
-    "M1 et M2 en ajoutent une au-dessus. D'abord sur la phrase, ensuite pour que chaque émotion la relise."))
+    "HAKE-MER en ajoute une au-dessus. D'abord sur la phrase, ensuite pour que chaque émotion la relise."))
 s.add(Box(0.55, 1.5, 2.3, 0.4, [P("Sans poids", 14, ORANGE, True, after=0)], margins=(0, 0, 0, 0)))
 s.add(Box(0.55, 1.95, 12.2, 1.35, [
     P("merci pour l'aide,   mais je suis déçu", 22, INK, align="c", after=4),
@@ -282,28 +282,29 @@ s.add(Box(6.55, 3.95, 6.2, 1.25, [
     fill=LGREEN, line=GREEN, line_w=1.25, shape="round", anchor="m"))
 s.add(Box(0.55, 5.45, 12.2, 1.2, [
     P("Dans BERT et RoBERTa, l'auto-attention est déjà là : elle rend le vecteur dépendant de la phrase.", 16, INK, after=4),
-    P("M1 et M2 ajoutent une attention au-dessus. D'abord la phrase, ensuite chaque émotion qui la relit.", 16, NAVY, True, after=0)],
+    P("HAKE-MER ajoute une attention au-dessus. D'abord la phrase, ensuite chaque émotion qui la relit.", 16, NAVY, True, after=0)],
     fill=LIGHT, anchor="m", margins=(0.25, 0.1, 0.25, 0.1)))
 
 # ----------------------------------------------------------------------------- 4. Objectives and hypotheses
 s = new("Objectifs et hypothèses", notes=(
-    "Pour répondre, j'ai fixé quatre objectifs. Concevoir HAKE-MER, tester chaque ajout, comparer NRC et SenticNet, et lire les résultats classe par classe. "
-    "Chaque module a aussi une hypothèse. "
-    "H1, M1 améliore le modèle plat. H2, M2 améliore M1. H3, un lexique améliore encore. H4, un poids par émotion fait mieux. "
+    "Pour répondre, j'ai fixé quatre objectifs. Concevoir HAKE-MER en quatre parties, tester chaque ajout, comparer deux lexiques, et lire les résultats émotion par émotion. "
+    "Chaque partie a une hypothèse. "
+    "H1, séparer les phrases améliore le modèle plat. H2, relier les émotions améliore encore. "
+    "H3, un lexique améliore encore. H4, un poids par émotion fait mieux. "
     "Les résultats ne vont pas toutes les confirmer."))
 s.add(Box(0.6, 1.55, 4.9, 5.2, [
     P("Objectifs", 20, NAVY, True, after=10),
-    P("**Concevoir** HAKE-MER : quatre modules qu'on ajoute un par un", 18, bullet=True, after=12),
+    P("**Concevoir** HAKE-MER en quatre parties, ajoutées une par une", 18, bullet=True, after=12),
     P("**Tester** chaque ajout avec le même entraînement, sur deux modèles", 18, bullet=True, after=12),
-    P("**Comparer** deux lexiques externes : NRC et SenticNet", 18, bullet=True, after=12),
-    P("**Lire** les résultats classe par classe, pas seulement le F1-macro", 18, bullet=True, after=0)],
+    P("**Comparer** deux lexiques externes", 18, bullet=True, after=12),
+    P("**Lire** les résultats émotion par émotion, pas seulement le score global", 18, bullet=True, after=0)],
     margins=(0, 0, 0, 0)))
-s.add(Table(5.85, 1.6, [0.7, 1.75, 4.4], [
+s.add(Table(5.85, 1.6, [0.7, 2.15, 4.0], [
     ["Hyp.", "Comparaison", "Énoncé testé"],
-    [Cell("H1", True), "Plat contre +M1", "M1 améliore le F1-macro par rapport au modèle plat"],
-    [Cell("H2", True), "+M1 contre +M1+M2", "M2 améliore le F1-macro par rapport à M1 seul"],
-    [Cell("H3", True), "+M1+M2 contre +M3", "Un lexique (NRC ou SenticNet) améliore M1+M2"],
-    [Cell("H4", True), "+M3 contre +M4", "Un poids par émotion améliore le F1-macro"],
+    [Cell("H1", True), "Plat contre phrases", "Séparer les phrases améliore le score"],
+    [Cell("H2", True), "Phrases contre lien", "Relier les émotions améliore le score"],
+    [Cell("H3", True), "Sans contre avec lexique", "Un lexique externe améliore encore"],
+    [Cell("H4", True), "Sans contre avec poids", "Un poids par émotion améliore le score"],
 ], size=15, min_row=0.85))
 
 # ----------------------------------------------------------------------------- 02 État de l'art
@@ -312,7 +313,7 @@ divider(1, "Ces hypothèses ne partent pas de zéro. Je montre d'abord les chiff
 s = new("Deux repères publiés, deux protocoles", notes=(
     "Sur GoEmotions, BERT-base est autour de 0,46, et Seq2Emo est à 0,473. "
     "Je les montre comme des repères, pas comme un classement, parce que le protocole n'est pas le même. "
-    "La comparaison que je défends, c'est l'ablation, avec le même entraînement pour chaque module."))
+    "La comparaison que je défends, c'est l'ablation, avec le même entraînement à chaque ajout."))
 s.add(Table(0.6, 1.6, [4.3, 4.5, 3.3], [
     ["Travail", "Protocole", "F1-macro"],
     ["BERT-base, Demszky et al., 2020", "leur partage, 28 classes", "≈ 0,46"],
@@ -321,20 +322,20 @@ s.add(Table(0.6, 1.6, [4.3, 4.5, 3.3], [
 s.add(Box(0.6, 4.15, 12.1, 2.55, [
     P("Comment lire ces chiffres", 20, NAVY, True, after=8),
     P("Le partage, le modèle et la façon de voter ne sont pas ceux de ce mémoire. Ces deux lignes ne servent pas de classement.", 17, after=8),
-    P("La comparaison que l'expérimentation défend est interne : le même entraînement, et les modules ajoutés un par un.", 17, after=0)],
+    P("La comparaison que l'expérimentation défend est interne : le même entraînement, et les ajouts testés un par un.", 17, after=0)],
     fill=LNAVY, margins=(0.28, 0.16, 0.28, 0.14)))
 
 s = new("Trois idées reprises, et ce qu'elles laissent ouvert", notes=(
     "Trois idées existent déjà. "
-    "Pour le lien entre étiquettes, Seq2Emo le fait avec un biLSTM. Ici, c'est M2, avec une attention entre émotions. "
-    "Pour la hiérarchie du texte, le HAN lit les mots, puis les phrases. M1 reprend l'idée, pas tout le réseau. "
-    "Pour les lexiques, NRC et SenticNet existent déjà. M3 les passe par une porte commune. "
+    "Pour le lien entre étiquettes, Seq2Emo le fait avec un biLSTM. Ici, ce sera une attention entre émotions. "
+    "Pour la hiérarchie du texte, le HAN lit les mots, puis les phrases. On reprend l'idée, pas tout le réseau. "
+    "Pour les lexiques, NRC relie un mot à une émotion, et SenticNet donne une intensité. On les ajoutera comme un signal commun. "
     "Ces idées n'ont pas été mesurées ensemble, ici, avec le même budget sur deux modèles."))
 s.add(Table(0.55, 1.55, [3.1, 4.5, 4.6], [
     ["Idée", "Déjà publié", "Dans HAKE-MER"],
-    ["Lien entre étiquettes", "Chaînes de classifieurs. Seq2Emo le fait avec un biLSTM.", "M2 : une attention entre émotions. Ce n'est pas leur modèle."],
-    ["Hiérarchie du texte", "HAN : mots, puis phrases, puis document (Yang et al., 2016).", "M1 reprend l'idée, pas le réseau récurrent complet."],
-    ["Lexiques", "NRC, un mot vers une émotion (2013). SenticNet, une intensité signée (2018).", "M3 : un prior de document, passé par une porte commune."],
+    ["Lien entre étiquettes", "Chaînes de classifieurs. Seq2Emo le fait avec un biLSTM.", "Une attention entre émotions. Ce n'est pas leur modèle."],
+    ["Hiérarchie du texte", "HAN : mots, puis phrases, puis document (Yang et al., 2016).", "L'idée est reprise, pas le réseau récurrent complet."],
+    ["Lexiques", "NRC, un mot vers une émotion (2013). SenticNet, une intensité signée (2018).", "Un signal commun à toutes les émotions."],
 ], size=15, min_row=1.05))
 s.add(Box(0.55, 6.0, 12.2, 0.75, [
     P("Ces idées ne sont pas mesurées ensemble, ici, avec le même budget sur deux encodeurs.", 16, NAVY, after=0)],
