@@ -175,12 +175,9 @@ s.add(Box(0.6, 5.05, 12.1, 1.5, [
 
 # ----------------------------------------------------------------------------- Plan
 s = new("Plan", notes=(
-    "Je vais suivre cinq parties. "
-    "Je commence par le contexte, donc la tâche, les embeddings, et pourquoi l'attention compte. "
-    "Ensuite l'état de l'art, ce qui existe déjà. "
-    "Puis l'approche proposée, où je détaille HAKE-MER étape par étape. "
-    "Après, l'expérimentation, avec le protocole et l'ablation. "
-    "Et je termine par la conclusion."))
+    "Tout d'abord, le contexte général de notre travail, ensuite l'état de l'art.\n\n"
+    "Puis, je présenterai notre approche proposée, HAKE-MER, suivie des expérimentations et des résultats obtenus.\n\n"
+    "Enfin, je terminerai par une conclusion et les perspectives de ce travail."))
 for i, (title, sub) in enumerate([
     ("Contexte", "La tâche, les embeddings et l'attention"),
     ("État de l'art", "Ce qui a déjà été proposé"),
@@ -195,7 +192,7 @@ for i, (title, sub) in enumerate([
     s.add(Box(0.6, y + 0.82, 12.1, 0.015, fill=LINE))
 
 # ----------------------------------------------------------------------------- 01 Contexte
-divider(0, "Je commence par la tâche. Ensuite je montre comment un texte devient un vecteur, et pourquoi l'attention compte.")
+divider(0, "Commençons par la première partie : le contexte général.")
 
 # ----------------------------------------------------------------------------- Context and data
 s = new("Contexte : un texte, plusieurs émotions", notes=(
