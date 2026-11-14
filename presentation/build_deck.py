@@ -237,13 +237,13 @@ s = new("Des méthodes d'embeddings", notes=(
     "Au début, on avait un vecteur fixe par mot, avec Word2Vec et GloVe. Le mot garde le même vecteur, quelle que soit la phrase.\n\n"
     "Ensuite, avec ELMo, le mot bouge selon les mots autour.\n\n"
     "Puis BERT. GoEmotions part de cet affinage, avec un score pour chaque émotion.\n\n"
-    "Ce mémoire utilise DistilBERT et RoBERTa, deux modèles de la même famille que BERT. C'est le point de départ.\n\n"
+    "Ce travail utilise DistilBERT et RoBERTa, deux modèles de la même famille que BERT. C'est le point de départ.\n\n"
     "Et même avec un vecteur qui dépend de la phrase, on ne sait pas encore quelle phrase porte l'émotion."))
 gens = [
     ("01", "Vecteur fixe", "Word2Vec, GloVe", "Le mot garde le même vecteur, quelle que soit la phrase.", LORANGE, ORANGE),
     ("02", "La phrase compte", "ELMo", "Le même mot bouge selon les mots qui l'entourent.", LNAVY, (0x5B, 0x7B, 0xA6)),
     ("03", "Affinage", "BERT", "GoEmotions part de BERT, avec un score pour chaque émotion.", LIGHT, NAVY),
-    ("04", "Ce mémoire", "DistilBERT, RoBERTa", "Même famille que BERT. C'est le point de départ.", LGREEN, GREEN),
+    ("04", "Ce travail", "DistilBERT, RoBERTa", "Même famille que BERT. C'est le point de départ.", LGREEN, GREEN),
 ]
 gw, ggap = 2.85, 0.32
 for i, (num, title, name, line, fill, accent) in enumerate(gens):
