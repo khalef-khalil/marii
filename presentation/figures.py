@@ -78,12 +78,12 @@ def fig_goemotions_cardinality() -> None:
 
 def fig_ablation() -> None:
     specs = [
-        ("Step 0\n(flat)", "baseline_plm_distilbert_base_uncased_campaign.json", GRAY),
+        ("Modèle\nplat", "baseline_plm_distilbert_base_uncased_campaign.json", GRAY),
         ("+M1", "m1_distilbert_base_uncased_campaign.json", ORANGE),
-        ("+M1+M2", "m1_m2_distilbert_base_uncased_campaign.json", GREEN),
-        ("+M3\nNRC", "m1_m2_m3_nrc_distilbert_base_uncased_campaign.json", BLUE1),
-        ("+M3\nSenticNet", "m1_m2_m3_senticnet_distilbert_base_uncased_campaign.json", BLUE2),
-        ("+M4\nSenticNet", "m1_m2_m3_senticnet_m4_distilbert_base_uncased_campaign.json", BLUE3),
+        ("M1+M2", "m1_m2_distilbert_base_uncased_campaign.json", GREEN),
+        ("+M3 NRC\nsur M1+M2", "m1_m2_m3_nrc_distilbert_base_uncased_campaign.json", BLUE1),
+        ("+M3 SenticNet\nsur M1+M2", "m1_m2_m3_senticnet_distilbert_base_uncased_campaign.json", BLUE2),
+        ("+M4\nsur M1+M2+M3", "m1_m2_m3_senticnet_m4_distilbert_base_uncased_campaign.json", BLUE3),
     ]
     labels, means, stds, cols = [], [], [], []
     for lab, fn, col in specs:
@@ -93,12 +93,12 @@ def fig_ablation() -> None:
         stds.append(sd)
         cols.append(col)
     x = np.arange(len(labels))
-    fig, ax = plt.subplots(figsize=(7.6, 4.3))
+    fig, ax = plt.subplots(figsize=(8.4, 4.5))
     ax.bar(x, means, yerr=stds, capsize=5, color=cols, edgecolor="none", error_kw={"elinewidth": 1.6})
     for xi, mu, sd in zip(x, means, stds):
         ax.text(xi, mu + sd + 0.0025, fr(mu), ha="center", fontsize=12, fontweight="bold")
     ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=12)
+    ax.set_xticklabels(labels, fontsize=9)
     ax.set_ylim(0.42, 0.54)
     ax.set_ylabel("F1-macro test (axe tronqué)")
     commas(ax)
