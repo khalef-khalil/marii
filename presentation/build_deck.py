@@ -199,7 +199,7 @@ divider(0, "Commençons par la première partie : le contexte général.")
 s = new("Contexte : un texte, plusieurs émotions", notes=(
     "Un commentaire peut porter plusieurs émotions en même temps. Donc la tâche, ce n'est pas de choisir une seule étiquette. "
     "J'ai travaillé sur GoEmotions. Ce sont des commentaires Reddit, annotés avec 27 émotions plus neutral, donc 28 classes. "
-    "Le découpage est celui des auteurs. "
+    "Le découpage officiel du dataset donne plus de 40 000 exemples pour l'entraînement, environ 5 000 pour la validation, ainsi que pour le test. "
     "Les classes sont très inégales. Sur le test, neutral a 1 787 exemples, et grief seulement 6. "
     "Et comme on le voit à droite, la plupart des commentaires n'ont qu'une seule étiquette."))
 s.add(Box(0.6, 1.55, 6.3, 5.2, [
@@ -497,13 +497,13 @@ divider(3, "Chaque ajout est mesuré avec le même entraînement, d'abord sur Di
 
 # ----------------------------------------------------------------------------- Protocol
 s = new("Protocole d'évaluation", notes=(
-    "Tous les tests utilisent GoEmotions, avec le découpage des auteurs, et les deux modèles, DistilBERT et RoBERTa. "
+    "Tous les tests utilisent GoEmotions, avec ce découpage officiel, et les deux modèles, DistilBERT et RoBERTa. "
     "On part du modèle plat. M1 se compare à lui, c'est la question des phrases. M2 se compare à M1 seul, c'est la question du lien. "
     "Le lexique, c'est M1+M2+M3 contre M1+M2. Le poids, c'est M4 ajouté sur ce modèle. "
     "Le score est le F1-macro au test, et pour chaque essai je garde la meilleure époque en validation. "
     "J'ai fait trois essais. Les réglages à droite sont les mêmes pour tout le monde."))
 s.add(Box(0.6, 1.55, 6.3, 5.2, [
-    P("**Dataset** : GoEmotions, 28 classes, découpage des auteurs", 18, bullet=True, after=12),
+    P("**Dataset** : GoEmotions, 28 classes, découpage officiel", 18, bullet=True, after=12),
     P("**Modèles** : DistilBERT-base et RoBERTa-base", 18, bullet=True, after=12),
     P("**Ablation** : M1 contre le modèle plat, M2 contre M1. Le lexique et le poids s'ajoutent à M1+M2.", 18, bullet=True, after=12),
     P("**Score** : F1-macro au test. L'époque retenue est la meilleure en validation, pour chaque graine.", 18, bullet=True, after=12),
