@@ -1,0 +1,13 @@
+---
+description: Answer the user in English, then the same answer in French
+alwaysApply: true
+---
+
+# Reply language
+
+Every reply to the user has two parts, in this order.
+
+1. The full answer in English.
+2. The same answer in French, after a blank line. Not a summary. The same points, in the same order.
+
+Do not skip the French part because the question was in English. Do not skip the English part because the question was in French.
