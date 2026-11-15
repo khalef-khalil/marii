@@ -330,8 +330,27 @@ divider(1, (
     "Ces questions ont des réponses publiées. Leurs protocoles ne sont pas le nôtre.\n\n"
     "Je range les travaux existants en trois familles, je les compare dans un tableau, puis je montre où se place HAKE-MER."))
 
+def mix(parts, align="l", after=0):
+    """One paragraph, several colors. parts: (text, size, color, bold)."""
+    return dict(runs=[dict(t=t, size=sz, color=c, bold=b, italic=False) for t, sz, c, b in parts],
+                align=align, bullet=False, after=after, indent=0)
+
+
+def work(name, sub, fill=None):
+    return Cell("", fill=fill, align="l", lines=[
+        {"t": name, "size": 14, "bold": True, "color": NAVY},
+        {"t": sub, "size": 11, "bold": False, "color": GRAY},
+    ])
+
+
 # ----------------------------------------------------------------------------- Trois familles
 BLUE = (0x5B, 0x7B, 0xA6)
+BURG = (0x9B, 0x3B, 0x33)
+PINK = (0xF6, 0xE3, 0xE1)
+DEEP = (0xC9, 0xE6, 0xD6)
+RULE = (0xD5, 0xDB, 0xE3)
+PLUM = (0x7A, 0x5C, 0xA6)
+LPLUM = (0xEE, 0xE8, 0xF6)
 s = new("Trois familles de travaux", notes=(
     "Pour situer HAKE-MER, je range les travaux en trois familles.\n\n"
     "La première décide les émotions. Les auteurs de GoEmotions affinent BERT, avec une sortie par émotion. "
@@ -342,37 +361,40 @@ s = new("Trois familles de travaux", notes=(
     "Ces lexiques sont publiés, mais ils n'ont pas été faits pour les 28 émotions de GoEmotions.\n\n"
     "Chaque famille répond à une des trois limites du contexte, mais aucune ne les réunit."))
 families = [
-    (ORANGE, LORANGE, "Décider plusieurs émotions", "Répond à : Émotions décidées seules",
+    (BLUE, LNAVY, "Décider plusieurs émotions", "Émotions décidées seules",
      [("BERT affiné", "Demszky et al., 2020 · GoEmotions"), ("Seq2Emo", "2021 · RNN, GloVe et ELMo")],
      "Point de départ sur GoEmotions ; Seq2Emo relie les émotions",
      "Pas de lien (BERT), ou un lien en chaîne sans les phrases"),
-    (BLUE, LNAVY, "Garder la structure", "Répond à : Structure du texte perdue",
+    (GREEN, LGREEN, "Garder la structure", "Structure du texte perdue",
      [("HAN", "Yang et al., 2016"), ("Mots → phrases → document", "attention à deux niveaux")],
      "Un vecteur par phrase, pas un seul pour tout le texte",
      "Réseau récurrent, longs textes, émotions non reliées"),
-    (GREEN, LGREEN, "Ajouter des connaissances", "Répond à : Émotions rares",
+    (ORANGE, LORANGE, "Ajouter des connaissances", "Émotions rares",
      [("NRC", "Mohammad et Turney, 2013 · 8 émotions"), ("SenticNet 5", "Cambria et al., 2018 · polarité signée")],
      "Un signal affectif sans exemples annotés",
      "Pas faits pour les 28 émotions de GoEmotions"),
 ]
-cw, gap = 3.87, 0.18
+cw, gap = 3.87, 0.30
 for i, (accent, fill, title, responds, items, plus, minus) in enumerate(families):
     x = 0.55 + i * (cw + gap)
-    s.add(Box(x, 1.40, cw, 4.40, fill=WHITE, line=LINE, line_w=1.0))
-    s.add(Box(x, 1.40, cw, 0.62, [P(title, 15, WHITE, True, align="c", after=0)], fill=accent, anchor="m"))
-    s.add(Box(x + 0.12, 2.08, cw - 0.24, 0.38, [P(responds, 12, GRAY, italic=True, after=0)], margins=(0, 0, 0, 0)))
+    s.add(Box(x, 1.40, cw, 4.40, fill=fill))
+    s.add(Box(x, 1.40, cw, 0.62, [P(title, 18, WHITE, True, align="c", after=0)], fill=accent, anchor="m"))
+    s.add(Box(x + 0.15, 2.10, cw - 0.30, 0.38, [mix([
+        ("Répond à : ", 13, GRAY, False), (responds, 13, accent, True)], align="c")], anchor="m", margins=(0, 0, 0, 0)))
     for j, (a, b) in enumerate(items):
-        s.add(Box(x + 0.16, 2.52 + j * 0.78, cw - 0.32, 0.70, [
-            P(a, 14, NAVY, True, align="c", after=1),
-            P(b, 12, INK, align="c", after=0)],
-            fill=fill, anchor="m", margins=(0.08, 0.04, 0.08, 0.04)))
-    s.add(Box(x + 0.16, 4.16, 0.42, 0.42, [P("+", 16, WHITE, True, align="c", after=0)], fill=GREEN, shape="round", anchor="m", margins=(0, 0, 0, 0)))
-    s.add(Box(x + 0.66, 4.12, cw - 0.82, 0.52, [P(plus, 12, INK, after=0)], anchor="m", margins=(0.06, 0.02, 0.06, 0.02)))
-    s.add(Box(x + 0.16, 4.78, 0.42, 0.42, [P("–", 16, WHITE, True, align="c", after=0)], fill=ORANGE, shape="round", anchor="m", margins=(0, 0, 0, 0)))
-    s.add(Box(x + 0.66, 4.74, cw - 0.82, 0.52, [P(minus, 12, INK, after=0)], anchor="m", margins=(0.06, 0.02, 0.06, 0.02)))
+        s.add(Box(x + 0.20, 2.55 + j * 0.78, cw - 0.40, 0.68, [
+            P(a, 15, NAVY, True, after=0),
+            P(b, 12, GRAY, after=0)],
+            fill=WHITE, line=accent, line_w=1.25, shape="round", anchor="m", margins=(0.12, 0.06, 0.12, 0.06)))
+    s.add(Box(x + 0.20, 4.33, 0.42, 0.42, [P("+", 18, WHITE, True, align="c", after=0)],
+              fill=accent, shape="oval", anchor="m", margins=(0, 0, 0, 0)))
+    s.add(Box(x + 0.72, 4.25, cw - 0.92, 0.62, [P(plus, 13, INK, after=0)], anchor="m", margins=(0.04, 0.02, 0.04, 0.02)))
+    s.add(Box(x + 0.20, 5.08, 0.42, 0.42, [P("–", 18, WHITE, True, align="c", after=0)],
+              fill=BURG, shape="oval", anchor="m", margins=(0, 0, 0, 0)))
+    s.add(Box(x + 0.72, 5.00, cw - 0.92, 0.62, [P(minus, 13, INK, after=0)], anchor="m", margins=(0.04, 0.02, 0.04, 0.02)))
 s.add(Box(0.55, 6.00, 12.2, 0.55, [
-    P("Chaque famille répond à une limite du contexte. Aucune ne réunit les trois.", 16, NAVY, True, align="c", after=0)],
-    fill=LIGHT, anchor="m"))
+    P("Chaque famille répond à une limite du contexte. Aucune ne réunit les trois.", 16, WHITE, True, align="c", after=0)],
+    fill=NAVY, anchor="m"))
 
 # ----------------------------------------------------------------------------- Tableau comparatif
 s = new("Tableau comparatif : aucune approche ne réunit les trois", notes=(
@@ -383,16 +405,21 @@ s = new("Tableau comparatif : aucune approche ne réunit les trois", notes=(
     "HAKE-MER est la seule ligne qui met les trois dans le même modèle, sur un encodeur Transformer.\n\n"
     "Pour les scores, 0,46 et 0,473 sont des F1-macro publiés. Le modèle et le partage diffèrent, donc ce sont des repères, pas un classement. "
     "Nos propres scores viennent dans la partie expérimentation, avec le même entraînement pour toutes les variantes."))
-s.add(Table(0.45, 1.42, [2.15, 1.85, 1.85, 2.15, 1.85, 1.55], [
-    ["Travail", "Encodeur", "Phrases séparées", "Lien entre émotions", "Lexique externe", "F1-macro publié"],
-    ["BERT-base\nDemszky et al., 2020", "BERT affiné", "Non", "Non", "Non", "≈ 0,46"],
-    ["Seq2Emo\n2021", "RNN, GloVe + ELMo", "Non", "Oui, en chaîne", "Non", "0,473"],
-    ["HAN\nYang et al., 2016", "RNN", "Oui", "Non", "Non", "autre tâche"],
-    ["NRC, SenticNet\n2013, 2018", "lexique, pas un modèle", "—", "—", "Oui", "—"],
-    [Cell("HAKE-MER\nce mémoire", True, LGREEN), Cell("DistilBERT, RoBERTa", True, LGREEN),
-     Cell("Oui : M1", True, LGREEN), Cell("Oui : M2", True, LGREEN), Cell("Oui : M3", True, LGREEN),
-     Cell("partie 04", True, LGREEN)],
-], size=12, min_row=0.52))
+no = Cell("Non", fill=PINK, color=BURG, align="c")
+yes = Cell("Oui", True, LGREEN, GREEN, "c")
+chain = Cell("Oui, en chaîne", True, LGREEN, GREEN, "c")
+dash = Cell("—", color=GRAY, align="c")
+s.add(Table(0.55, 1.45, [2.55, 2.45, 1.80, 2.05, 1.75, 1.60], [
+    ["Travail", "Encodeur", Cell("Phrases séparées", align="c"), Cell("Lien entre émotions", align="c"),
+     Cell("Lexique externe", align="c"), Cell("F1-macro publié", align="c")],
+    [work("BERT-base", "Demszky et al., 2020"), "BERT affiné", no, no, no, Cell("≈ 0,46", align="c")],
+    [work("Seq2Emo", "2021", LIGHT), Cell("RNN, GloVe + ELMo", fill=LIGHT), no, chain, no, Cell("0,473", fill=LIGHT, align="c")],
+    [work("HAN", "Yang et al., 2016"), "RNN", yes, no, no, Cell("autre tâche", color=GRAY, align="c")],
+    [work("NRC, SenticNet", "2013, 2018", LIGHT), Cell("lexique, pas un modèle", fill=LIGHT), dash, dash, yes, dash],
+    [work("HAKE-MER", "ce mémoire", LGREEN), Cell("DistilBERT, RoBERTa", True, LGREEN, NAVY),
+     Cell("Oui : M1", True, DEEP, GREEN, "c"), Cell("Oui : M2", True, DEEP, GREEN, "c"),
+     Cell("Oui : M3", True, DEEP, GREEN, "c"), Cell("partie 04", True, LGREEN, GRAY, "c")],
+], size=13, min_row=0.62))
 s.add(Box(0.55, 5.30, 12.2, 1.25, [
     P("Les deux scores publiés sont des F1-macro sur GoEmotions, avec un autre modèle et un autre partage : des repères, pas un classement.", 15, INK, after=6),
     P("Seule la dernière ligne réunit les phrases, le lien et le lexique, sur un encodeur Transformer.", 15, NAVY, True, after=0)],
@@ -406,31 +433,34 @@ s = new("Positionnement : de la limite au module testé", notes=(
     "Pour les émotions rares, j'utilise NRC ou SenticNet, avec une porte qui vaut 0 au départ. C'est M3, question 3.\n\n"
     "M4 ajoute un poids par émotion, juste avant la décision. C'est la question 4.\n\n"
     "Je ne revendique pas un gain sur l'état de l'art. Je réunis ces idées dans un même modèle, et je mesure chaque ajout avec le même entraînement."))
-s.add(Box(0.55, 1.38, 2.85, 0.36, [P("Limite du contexte", 13, GRAY, True, after=0)], margins=(0, 0, 0, 0)))
-s.add(Box(3.75, 1.38, 3.55, 0.36, [P("Ce que propose la littérature", 13, GRAY, True, after=0)], margins=(0, 0, 0, 0)))
-s.add(Box(7.75, 1.38, 5.0, 0.36, [P("Ce que HAKE-MER teste", 13, GRAY, True, after=0)], margins=(0, 0, 0, 0)))
+s.add(Box(0.55, 1.30, 2.85, 0.40, [P("Limite du contexte", 14, GRAY, True, after=0)], margins=(0, 0, 0, 0)))
+s.add(Box(3.75, 1.30, 3.65, 0.40, [P("Ce que propose la littérature", 14, GRAY, True, after=0)], margins=(0, 0, 0, 0)))
+s.add(Box(7.75, 1.30, 5.00, 0.40, [P("Ce que HAKE-MER teste", 14, GRAY, True, after=0)], margins=(0, 0, 0, 0)))
 position = [
     ("Structure du texte perdue", "HAN : mots, puis phrases. Réseau récurrent, longs textes.", "M1", GREEN, LGREEN,
-     "Q1   Attention sur les états du Transformer : un vecteur par phrase"),
+     "Q1   ", "Attention sur les états du Transformer : un vecteur par phrase"),
     ("Émotions décidées seules", "Seq2Emo, chaînes : une émotion après l'autre.", "M2", BLUE, LNAVY,
-     "Q2   Chaque émotion lit les phrases, puis les 28 vecteurs se comparent"),
-    ("Émotions rares", "NRC, SenticNet : publiés, pas pour ces 28 émotions.", "M3", GREEN, LGREEN,
-     "Q3   Lexique injecté par une porte g, à 0 au départ"),
-    ("Décision par émotion", "Une sortie sigmoïde par émotion, sans pondération propre.", "M4", VIOLET, LILAC,
-     "Q4   Un poids par émotion, juste avant la décision"),
+     "Q2   ", "Chaque émotion lit les phrases, puis les 28 vecteurs se comparent"),
+    ("Émotions rares", "NRC, SenticNet : publiés, pas pour ces 28 émotions.", "M3", ORANGE, LORANGE,
+     "Q3   ", "Lexique injecté par une porte g, à 0 au départ"),
+    ("Décision par émotion", "Une sortie sigmoïde par émotion, sans pondération propre.", "M4", PLUM, LPLUM,
+     "Q4   ", "Un poids par émotion, juste avant la décision"),
 ]
-for i, (limit, lit, mod, accent, fill, tested) in enumerate(position):
-    y = 1.82 + i * 0.92
-    s.add(Box(0.55, y, 2.85, 0.78, [P(limit, 14, NAVY, True, align="c", after=0)], fill=LIGHT, anchor="m", margins=(0.08, 0.06, 0.08, 0.06)))
-    s.add(Arrow(3.46, y + 0.27, 0.22, 0.22))
-    s.add(Box(3.75, y, 3.55, 0.78, [P(lit, 13, INK, after=0)], anchor="m", margins=(0.1, 0.06, 0.1, 0.06)))
-    s.add(Arrow(7.36, y + 0.27, 0.22, 0.22))
-    s.add(Box(7.65, y, 0.72, 0.78, [P(mod, 14, accent, True, align="c", after=0)], fill=fill, anchor="m", margins=(0.04, 0.04, 0.04, 0.04)))
-    s.add(Box(8.45, y, 4.3, 0.78, [P(tested, 13, INK, after=0)], anchor="m", margins=(0.1, 0.06, 0.1, 0.06)))
-s.add(Box(0.55, 5.55, 12.2, 1.05, [
+for i, (limit, lit, mod, accent, fill, q, tested) in enumerate(position):
+    y = 1.75 + i * 0.96
+    s.add(Box(0.55, y, 2.85, 0.82, [P(limit, 15, accent, True, align="c", after=0)],
+              fill=fill, line=accent, line_w=1.25, shape="round", anchor="m", margins=(0.1, 0.06, 0.1, 0.06)))
+    s.add(Arrow(3.45, y + 0.31, 0.20, 0.20))
+    s.add(Box(3.75, y, 3.65, 0.82, [P(lit, 14, INK, after=0)], fill=LIGHT, anchor="m", margins=(0.12, 0.08, 0.12, 0.08)))
+    s.add(Arrow(7.45, y + 0.31, 0.20, 0.20))
+    s.add(Box(7.75, y, 0.75, 0.82, [P(mod, 18, accent, True, align="c", after=0)],
+              fill=fill, line=accent, line_w=1.25, shape="round", anchor="m", margins=(0.04, 0.04, 0.04, 0.04)))
+    s.add(Box(8.60, y, 4.15, 0.82, [mix([(q, 13, accent, True), (tested, 14, INK, False)])],
+              fill=WHITE, line=RULE, line_w=1.25, shape="round", anchor="m", margins=(0.12, 0.08, 0.12, 0.08)))
+s.add(Box(0.55, 5.75, 12.2, 0.75, [
     P("Pas de gain revendiqué sur l'état de l'art : HAKE-MER réunit ces idées dans un même modèle et mesure chaque ajout avec le même entraînement.",
-      16, NAVY, True, after=0)],
-    fill=LIGHT, anchor="m", margins=(0.25, 0.1, 0.25, 0.1)))
+      15, WHITE, True, after=0)],
+    fill=NAVY, anchor="m", margins=(0.22, 0.08, 0.22, 0.08)))
 
 # ----------------------------------------------------------------------------- 03 Approche proposée
 divider(2, (

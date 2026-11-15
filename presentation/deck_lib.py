@@ -64,8 +64,8 @@ def Table(x, y, cols, rows, size=14, min_row=0.4, header=True, zebra=True, heade
                 header=header, zebra=zebra, header_fill=header_fill)
 
 
-def Cell(text, bold=False, fill=None, color=None, align="l"):
-    return dict(text=text, bold=bold, fill=fill, color=color, align=align)
+def Cell(text, bold=False, fill=None, color=None, align="l", lines=None):
+    return dict(text=text, bold=bold, fill=fill, color=color, align=align, lines=lines)
 
 
 # ----------------------------------------------------------------------------- font metrics (preview)
@@ -169,6 +169,12 @@ def cell_paras(cell, size, header_row):
         cell = Cell(cell)
     color = cell["color"] or (WHITE if header_row else INK)
     bold = cell["bold"] or header_row
+    if cell.get("lines"):
+        paras = []
+        for line in cell["lines"]:
+            paras.append(P(line["t"], line.get("size", size), line.get("color", color),
+                           line.get("bold", bold), align=line.get("align", cell["align"]), after=0))
+        return cell, paras
     lines = str(cell["text"]).split("\n")
     return cell, [P(line, size, color, bold, align=cell["align"], after=0) for line in lines]
 
@@ -274,7 +280,7 @@ def add_el(s, el):
         if el["shape"] == "none" or (el["fill"] is None and el["line"] is None and el["paras"]):
             shp = s.shapes.add_textbox(Inches(el["x"]), Inches(el["y"]), Inches(el["w"]), Inches(el["h"]))
         else:
-            kind = MSO_SHAPE.ROUNDED_RECTANGLE if el["shape"] == "round" else MSO_SHAPE.RECTANGLE
+            kind = {"round": MSO_SHAPE.ROUNDED_RECTANGLE, "oval": MSO_SHAPE.OVAL}.get(el["shape"], MSO_SHAPE.RECTANGLE)
             shp = s.shapes.add_shape(kind, Inches(el["x"]), Inches(el["y"]), Inches(el["w"]), Inches(el["h"]))
             if el["shape"] == "round":
                 shp.adjustments[0] = min(0.5, el["radius"] / min(el["w"], el["h"]))
@@ -376,6 +382,8 @@ def prev_el(im, d, el, sl, problems):
             rr = el["radius"] * PX
             if el["shape"] == "round":
                 d.rounded_rectangle([x, y, x + w, y + h], radius=rr, fill=el["fill"], outline=el["line"], width=max(1, int(el["line_w"])))
+            elif el["shape"] == "oval":
+                d.ellipse([x, y, x + w, y + h], fill=el["fill"], outline=el["line"], width=max(1, int(el["line_w"])))
             else:
                 d.rectangle([x, y, x + w, y + h], fill=el["fill"], outline=el["line"], width=max(1, int(el["line_w"])))
         if el["paras"]:
