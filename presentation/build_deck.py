@@ -846,32 +846,35 @@ s = new("Contributions et perspectives", notes=(
     "au lieu d'un vecteur commun, d'autres jeux de données comme SemEval, et d'autres modèles, au même budget."))
 s.add(Box(0.55, 1.40, 6.0, 0.40, [P("Contributions", 18, NAVY, True, after=0)], margins=(0, 0, 0, 0)))
 contribs = [
-    ("1", "Une architecture modulaire",
+    ("1", GREEN, LGREEN, "Une architecture modulaire",
      "HAKE-MER : quatre modules activables un par un, sur DistilBERT et RoBERTa. Porte g et table vers les 28 émotions."),
-    ("2", "Une ablation contrôlée",
+    ("2", BLUE, LNAVY, "Une ablation contrôlée",
      "2 encodeurs × 3 graines, mêmes réglages pour tous, plus deux contrôles internes de M2."),
-    ("3", "Une analyse au-delà du F1-macro",
+    ("3", ORANGE, LORANGE, "Une analyse au-delà du F1-macro",
      "Par émotion, par nombre d'émotions, et des erreurs : neutral au centre."),
 ]
-for i, (num, title, line) in enumerate(contribs):
-    x = 0.55 + i * 4.15
-    s.add(Box(x, 1.90, 4.00, 2.30, fill=LIGHT))
-    s.add(Box(x + 0.16, 2.06, 0.50, 0.50, [P(num, 18, WHITE, True, align="c", after=0)], fill=GREEN, shape="round", anchor="m", margins=(0, 0, 0, 0)))
-    s.add(Box(x + 0.74, 2.02, 3.10, 0.62, [P(title, 14, NAVY, True, after=0)], anchor="m", margins=(0.04, 0.02, 0.06, 0.02)))
-    s.add(Box(x + 0.16, 2.72, 3.68, 1.30, [P(line, 14, INK, after=0)], margins=(0.04, 0.02, 0.08, 0.04)))
-s.add(Box(0.55, 4.40, 6.0, 0.40, [P("Perspectives", 18, NAVY, True, after=0)], margins=(0, 0, 0, 0)))
+cw, gap = 3.867, 0.30
+for i, (num, accent, fill, title, line) in enumerate(contribs):
+    x = 0.55 + i * (cw + gap)
+    s.add(Box(x, 1.90, cw, 2.30, fill=fill, line=accent, line_w=1.25, shape="round"))
+    s.add(Box(x + 0.20, 2.10, 0.55, 0.55, [P(num, 18, WHITE, True, align="c", after=0)],
+              fill=accent, shape="oval", anchor="m", margins=(0, 0, 0, 0)))
+    s.add(Box(x + 0.85, 2.08, 2.90, 0.68, [P(title, 15, NAVY, True, after=0)], anchor="m", margins=(0.02, 0.0, 0.04, 0.0)))
+    s.add(Box(x + 0.20, 2.80, 3.47, 1.25, [P(line, 14, INK, after=0)], margins=(0.02, 0.02, 0.08, 0.02)))
+s.add(Box(0.55, 4.60, 6.0, 0.40, [P("Perspectives", 18, NAVY, True, after=0)], margins=(0, 0, 0, 0)))
 persp = [
     ("01", "Classes rares, et un seuil par émotion"),
     ("02", "Un lexique lié à chaque émotion"),
     ("03", "D'autres jeux de données, comme SemEval"),
     ("04", "D'autres modèles, au même budget"),
 ]
+pw, pgap = 2.862, 0.25
 for i, (num, line) in enumerate(persp):
-    x = 0.55 + i * 3.15
-    s.add(Box(x, 4.90, 3.00, 1.55, [
-        P(num, 14, ORANGE, True, after=4),
-        P(line, 15, NAVY, True, after=0)],
-        fill=LIGHT, anchor="m", margins=(0.16, 0.12, 0.16, 0.12)))
+    x = 0.55 + i * (pw + pgap)
+    s.add(Box(x, 5.10, pw, 1.30, [
+        P(num, 13, ORANGE, True, after=2),
+        P(line, 14, NAVY, True, after=0)],
+        fill=LIGHT, margins=(0.16, 0.14, 0.14, 0.10)))
 
 # ----------------------------------------------------------------------------- 16. Questions
 s = new(footer=False, notes=(
