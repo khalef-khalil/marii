@@ -169,7 +169,8 @@ def cell_paras(cell, size, header_row):
         cell = Cell(cell)
     color = cell["color"] or (WHITE if header_row else INK)
     bold = cell["bold"] or header_row
-    return cell, [P(cell["text"], size, color, bold, align=cell["align"], after=0)]
+    lines = str(cell["text"]).split("\n")
+    return cell, [P(line, size, color, bold, align=cell["align"], after=0) for line in lines]
 
 
 def table_row_heights(spec):

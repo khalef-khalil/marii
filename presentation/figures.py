@@ -155,6 +155,55 @@ def fig_per_class() -> None:
     save(fig, "per_class")
 
 
+def fig_multi_emotion() -> None:
+    """F1-macro by number of gold emotions. Same aggregation as the experimental chapter."""
+    import statistics
+
+    art = ART
+    slug = "distilbert_base_uncased"
+    files = {
+        "Modèle plat": f"baseline_plm_{slug}_campaign.json",
+        "+M1": f"m1_{slug}_campaign.json",
+        "M1+M2": f"m1_m2_{slug}_campaign.json",
+    }
+    buckets = ("1", "2", "3")
+    series: dict[str, list[float]] = {}
+    for label, fname in files.items():
+        supplement = art / "step_eval_supplements_distilbert" / "campaigns" / fname
+        primary = art / fname
+        path = supplement if supplement.is_file() else primary
+        runs = json.loads(path.read_text(encoding="utf-8"))["runs"]
+        means = []
+        for bucket in buckets:
+            vals = [float(r["test"]["by_gold_cardinality"][bucket]["f1_macro"]) for r in runs]
+            means.append(float(statistics.mean(vals)))
+        series[label] = means
+    # Report table: 0.502 / 0.490 / 0.506 ; 0.437 / 0.361 / 0.488 ; 0.315 / 0.288 / 0.320
+    expect = {
+        "Modèle plat": (0.502, 0.437, 0.315),
+        "+M1": (0.490, 0.361, 0.288),
+        "M1+M2": (0.506, 0.488, 0.320),
+    }
+    for label, exp in expect.items():
+        for got, want in zip(series[label], exp):
+            assert abs(got - want) < 0.0006, (label, got, want)
+
+    labels = ["1 émotion", "2 émotions", "3 émotions"]
+    colors = [GRAY, ORANGE, GREEN]
+    fig, ax = plt.subplots(figsize=(7.2, 3.15))
+    x = np.arange(len(labels))
+    width = 0.24
+    for i, (label, color) in enumerate(zip(series, colors)):
+        ax.bar(x + (i - 1) * width, series[label], width, label=label, color=color, edgecolor="none")
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.set_ylim(0.20, 0.62)
+    ax.set_ylabel("F1-macro test")
+    ax.legend(frameon=False, fontsize=11, ncol=3, loc="upper right")
+    commas(ax)
+    save(fig, "multi_emotion")
+
+
 def fig_errors() -> None:
     agg = json.loads((ART / "error_analysis_m1_m2_aggregate.json").read_text(encoding="utf-8"))
     pairs = agg["top_confusion_pairs_aggregate"][:10]
@@ -184,6 +233,7 @@ def main() -> None:
     fig_ablation()
     fig_backbone()
     fig_per_class()
+    fig_multi_emotion()
     fig_errors()
     print("Figures written to", OUT)
 
