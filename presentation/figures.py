@@ -188,18 +188,23 @@ def fig_multi_emotion() -> None:
         for got, want in zip(series[label], exp):
             assert abs(got - want) < 0.0006, (label, got, want)
 
-    labels = ["1 émotion", "2 émotions", "3 émotions"]
+    labels = ["1 émotion\n(n = 4\u00a0590)", "2 émotions\n(n = 774)", "3 émotions\n(n = 61)"]
     colors = [GRAY, ORANGE, GREEN]
-    fig, ax = plt.subplots(figsize=(7.2, 3.15))
+    fig, ax = plt.subplots(figsize=(7.6, 3.85))
     x = np.arange(len(labels))
     width = 0.24
     for i, (label, color) in enumerate(zip(series, colors)):
-        ax.bar(x + (i - 1) * width, series[label], width, label=label, color=color, edgecolor="none")
+        bars = ax.bar(x + (i - 1) * width, series[label], width, label=label, color=color, edgecolor="none")
+        for bar, value in zip(bars, series[label]):
+            ax.text(bar.get_x() + bar.get_width() / 2, value + 0.006, f"{value:.3f}".replace(".", ","),
+                    ha="center", va="bottom", fontsize=8, color="#1F2937")
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
-    ax.set_ylim(0.20, 0.62)
+    ax.set_ylim(0.20, 0.57)
+    ax.set_yticks([0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55])
     ax.set_ylabel("F1-macro test")
-    ax.legend(frameon=False, fontsize=11, ncol=3, loc="upper right")
+    ax.legend(frameon=False, fontsize=10, ncol=3, loc="lower center", bbox_to_anchor=(0.5, 1.02))
+    fig.subplots_adjust(top=0.86)
     commas(ax)
     save(fig, "multi_emotion")
 

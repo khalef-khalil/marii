@@ -720,25 +720,28 @@ s = new("Émotions multiples : M2 aide les commentaires à deux émotions", note
     f"soit plus {fr(gain_two)}. M1 seul, lui, tombe à {fr(CARD['m1']['2'])}. C'est cohérent avec l'idée que M2 relie les émotions.\n\n"
     "Avec trois émotions, il n'y a que 61 commentaires, et avec quatre ou plus, seulement deux. Je ne conclus pas sur ces cas.\n\n"
     "Donc le lien entre émotions aide surtout les vrais cas multi-émotions, qui sont 14 % du test."))
-s.add(*fpic(FIG / "multi_emotion.png", 0.55, 1.45, 7.6,
-            "F1-macro test selon le nombre d'émotions annotées, moyenne sur 3 graines (tableau 4.22 du mémoire). "
-            "L'axe commence à 0,20. 4 émotions ou plus : 2 exemples, non montré."))
+s.add(Pic(FIG / "multi_emotion.png", 0.55, 1.45, w=7.6))
+s.add(Box(0.55, 5.90, 7.6, 0.40, [
+    P("F1-macro test selon le nombre d'émotions annotées, moyenne sur 3 graines (tableau 4.22 du mémoire). "
+      "L'axe commence à 0,20. 4 émotions ou plus : 2 exemples, non montré.", 11, GRAY, italic=True, after=0)],
+    margins=(0, 0, 0, 0)))
 s.add(Box(8.5, 1.55, 4.25, 1.45, [
-    P("2 émotions : le vrai gain", 16, GREEN, True, after=4),
-    P(f"{fr(CARD['step0']['2'])} → {fr(CARD['m12']['2'])}  soit +{fr(gain_two)} sur le modèle plat", 15, INK, after=0)],
-    fill=LGREEN, anchor="m", margins=(0.16, 0.1, 0.16, 0.1)))
+    P("2 émotions : le vrai gain", 16, NAVY, True, after=4),
+    mix([(f"{fr(CARD['step0']['2'])} → {fr(CARD['m12']['2'])}", 22, GREEN, True),
+         (f"  soit +{fr(gain_two)} sur le modèle plat", 14, INK, False)])],
+    fill=LGREEN, line=GREEN, line_w=1.25, shape="round", anchor="m", margins=(0.16, 0.1, 0.16, 0.1)))
 s.add(Box(8.5, 3.15, 4.25, 1.15, [
     P("1 émotion : stable", 16, NAVY, True, after=4),
-    P(f"{fr(CARD['step0']['1'])} → {fr(CARD['m12']['1'])} : M2 ne dégrade pas les cas simples", 15, INK, after=0)],
-    fill=LIGHT, anchor="m", margins=(0.16, 0.1, 0.16, 0.1)))
+    P(f"{fr(CARD['step0']['1'])} → {fr(CARD['m12']['1'])} : M2 ne dégrade pas les cas simples", 14, INK, after=0)],
+    fill=LIGHT, line=(0x7F, 0x8A, 0x99), line_w=1.25, shape="round", anchor="m", margins=(0.16, 0.1, 0.16, 0.1)))
 s.add(Box(8.5, 4.45, 4.25, 1.3, [
-    P("Prudence", 16, ORANGE, True, after=4),
-    P(f"M1 seul recule partout. 3 émotions : {TEST_CARD[2]} exemples, on ne conclut pas.", 15, INK, after=0)],
-    fill=LORANGE, anchor="m", margins=(0.16, 0.1, 0.16, 0.1)))
+    P("Prudence", 16, NAVY, True, after=4),
+    P(f"M1 seul recule partout. 3 émotions : {TEST_CARD[2]} exemples, on ne conclut pas.", 14, INK, after=0)],
+    fill=LORANGE, line=ORANGE, line_w=1.25, shape="round", anchor="m", margins=(0.16, 0.1, 0.16, 0.1)))
 s.add(Box(0.55, 6.35, 12.2, 0.55, [
     P("Réponse à la question de recherche : le lien entre émotions aide surtout les commentaires qui en portent plusieurs.",
-      15, NAVY, True, align="c", after=0)],
-    fill=LNAVY, anchor="m"))
+      15, WHITE, True, align="c", after=0)],
+    fill=NAVY, anchor="m"))
 
 # ----------------------------------------------------------------------------- 12. Errors
 s = new("Les erreurs : neutral est au centre", notes=(
